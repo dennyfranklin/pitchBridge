@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PitchBridge — Where Ideas Meet Capital</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- LANDING -->
+<div id="landing" class="screen active">
+  <div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div>
+  <div class="land-badge">🚀 Now Open for Early Access</div>
+  <h1 class="land-h1">Where <span class="hi">Ideas</span><br>Meet <span class="hg">Capital</span></h1>
+  <p class="land-sub">Post your startup idea, get matched with real investors, and close deals — all in one place.</p>
+  <div class="land-btns">
+    <button class="btn btn-primary" onclick="showAuth('signup')">Get Started Free</button>
+    <button class="btn btn-ghost" onclick="showAuth('login')">Sign In</button>
+  </div>
+  <div class="stats">
+    <div><div class="stat-num">2.4<span>K</span></div><div class="stat-label">Ideas Posted</div></div>
+    <div><div class="stat-num">$48<span>M</span></div><div class="stat-label">Deals Closed</div></div>
+    <div><div class="stat-num">380<span>+</span></div><div class="stat-label">Active Investors</div></div>
+  </div>
+</div>
+
+<!-- AUTH -->
+<div id="auth" class="screen">
+  <div class="orb orb1"></div><div class="orb orb2"></div>
+  <div class="auth-card">
+    <span class="auth-logo">PitchBridge</span>
+    <div id="signup-form">
+      <div class="auth-title">Create your account</div>
+      <div class="auth-sub">Takes less than 60 seconds ⚡</div>
+      <label>Full Name</label>
+      <input type="text" id="su-name" placeholder="e.g. Denny Franklin">
+      <label>Email</label>
+      <input type="email" id="su-email" placeholder="you@email.com">
+      <label>Password</label>
+      <input type="password" id="su-pass" placeholder="••••••••">
+      <label>I am a...</label>
+      <div class="role-grid">
+        <div class="role-card" onclick="selectRole(this,'entrepreneur')"><div class="role-icon">💡</div><div class="role-name">Entrepreneur</div></div>
+        <div class="role-card" onclick="selectRole(this,'investor')"><div class="role-icon">💼</div><div class="role-name">Investor</div></div>
+        <div class="role-card" onclick="selectRole(this,'both')"><div class="role-icon">⚡</div><div class="role-name">Both</div></div>
+      </div>
+      <div id="signup-error" class="form-error"></div>
+      <button class="btn btn-primary btn-full" id="signup-btn" onclick="doSignup()">Create Account →</button>
+      <div class="auth-switch">Already have an account? <a onclick="toggleAuth('login')">Sign in</a></div>
+    </div>
+    <div id="login-form" style="display:none">
+      <div class="auth-title">Welcome back!</div>
+      <div class="auth-sub">Sign in to your account</div>
+      <label>Email</label>
+      <input type="email" id="li-email" placeholder="you@email.com">
+      <label>Password</label>
+      <input type="password" id="li-pass" placeholder="••••••••">
+      <div id="login-error" class="form-error"></div>
+      <button class="btn btn-primary btn-full" id="login-btn" onclick="doLogin()" style="margin-top:8px">Sign In →</button>
+      <div class="auth-switch">New here? <a onclick="toggleAuth('signup')">Create account</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" class="screen">
+  <nav class="nav">
+    <div class="nav-logo">PitchBridge</div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="showPage('feed',this)">🏠 Feed</button>
+      <button class="nav-tab" onclick="showPage('investors',this)">💼 Investors</button>
+      <button class="nav-tab" onclick="showPage('profile',this)">👤 Profile</button>
+      <button id="admin-tab" class="nav-tab" onclick="showPage('admin',this)" style="display:none">🛡 Admin</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div class="avatar" id="nav-avatar">D</div>
+      <button class="btn btn-ghost" style="padding:7px 16px;font-size:13px;" onclick="doLogout()">Logout</button>
+    </div>
+  </nav>
+  <div class="app-body">
+    <div class="feed-col">
+
+      <!-- FEED -->
+      <div id="page-feed" class="page active">
+        <div class="post-box" id="post-box-wrap">
+          <div class="post-box-top">
+            <div class="avatar" id="post-avatar">D</div>
+            <textarea class="post-textarea" id="post-text" placeholder="Describe your startup idea..."></textarea>
+          </div>
+          <div style="margin-top:12px;">
+            <label>Idea Title</label>
+            <input type="text" id="post-title" placeholder="Give your idea a catchy name">
+            <label>Funding Goal</label>
+            <input type="text" id="post-ask" placeholder="e.g. $250K">
+            <label>Category</label>
+            <div class="post-tags">
+              <div class="tag-pill" onclick="selectTag(this,'AI')">🤖 AI</div>
+              <div class="tag-pill" onclick="selectTag(this,'EV')">⚡ EV</div>
+              <div class="tag-pill" onclick="selectTag(this,'Product')">📦 Product</div>
+              <div class="tag-pill" onclick="selectTag(this,'Tech')">💻 Tech</div>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;">
+            <div style="font-size:12px;color:var(--muted);">🔒 Full pitch protected by NDA</div>
+            <button class="btn btn-primary" style="padding:9px 22px;font-size:14px;" onclick="postIdea()">Post Idea 🚀</button>
+          </div>
+        </div>
+        <div id="ideas-feed"><div class="loading">Loading ideas...</div></div>
+      </div>
+
+      <!-- INVESTORS -->
+      <div id="page-investors" class="page">
+        <div class="page-title">Active Investors</div>
+        <div id="investors-list"><div class="loading">Loading investors...</div></div>
+      </div>
+
+      <!-- PROFILE -->
+      <div id="page-profile" class="page">
+        <div class="profile-hero">
+          <div class="profile-av" id="profile-av">D</div>
+          <div>
+            <div class="profile-name" id="profile-name">Loading...</div>
+            <div class="profile-role-badge" id="profile-role-badge">💡 Entrepreneur</div>
+            <div class="profile-bio" id="profile-bio">Founder & visionary on PitchBridge.</div>
+            <div class="profile-stats">
+              <div><div class="ps-num" id="ps-ideas">0</div><div class="ps-label">Ideas</div></div>
+              <div><div class="ps-num" id="ps-connections">0</div><div class="ps-label">Connections</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="page-title" style="font-size:17px;margin-bottom:14px;">My Ideas</div>
+        <div id="my-ideas"></div>
+      </div>
+
+      <!-- ADMIN -->
+      <div id="page-admin" class="page">
+        <div class="page-title">🛡 Admin Dashboard</div>
+        <div class="admin-grid">
+          <div class="admin-stat"><div class="admin-stat-num" id="a-ideas">—</div><div class="admin-stat-label">Total Ideas</div></div>
+          <div class="admin-stat"><div class="admin-stat-num" id="a-users">—</div><div class="admin-stat-label">Total Users</div></div>
+          <div class="admin-stat"><div class="admin-stat-num" id="a-pending">—</div><div class="admin-stat-label">Pending Verifications</div></div>
+          <div class="admin-stat"><div class="admin-stat-num" id="a-requests">—</div><div class="admin-stat-label">Connect Requests</div></div>
+        </div>
+        <div class="page-title" style="font-size:17px;margin-bottom:14px;">Pending Investor Verifications</div>
+        <div id="admin-verifications"><div class="loading">Loading...</div></div>
+        <div class="page-title" style="font-size:17px;margin:20px 0 14px;">Connect Requests (Schedule Call)</div>
+        <div id="admin-requests"><div class="loading">Loading...</div></div>
+      </div>
+
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="side-col">
+      <div class="side-card">
+        <div class="side-title">Top Investors</div>
+        <div id="side-investors"><div class="loading" style="font-size:13px;">Loading...</div></div>
+      </div>
+      <div class="side-card">
+        <div class="side-title">Trending</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;">
+          <div class="trend-tag">🤖 AI</div>
+          <div class="trend-tag">⚡ EV</div>
+          <div class="trend-tag">📦 Product</div>
+          <div class="trend-tag">💻 Tech</div>
+          <div class="trend-tag">🌱 CleanTech</div>
+        </div>
+      </div>
+      <div class="side-card how-card">
+        <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:10px;">💡 How it works</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.8;">
+          1. Post your idea teaser<br>
+          2. Investor requests access<br>
+          3. Sign NDA to see full pitch<br>
+          4. We schedule your Zoom call<br>
+          5. Deal closed = commission 🎉
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NDA MODAL -->
+<div class="modal-bg" id="invest-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('invest-modal')">✕</button>
+    <div class="modal-title">🔐 Request Full Access</div>
+    <div class="modal-sub">To view the complete pitch, please agree to the NDA. This protects the founder's idea.</div>
+    <div class="nda-box"><b>Non-Disclosure Agreement (Summary)</b><br><br>By proceeding, you agree that any information shared about this idea is strictly confidential. You will not share, replicate, or use this idea without written consent. PitchBridge earns a commission on any successful deal.</div>
+    <label style="display:flex;gap:10px;align-items:center;cursor:pointer;font-size:14px;color:var(--text);text-transform:none;letter-spacing:0;margin-bottom:20px;">
+      <input type="checkbox" id="nda-check" style="width:auto;margin:0;"> I agree to the NDA and want to see the full pitch
+    </label>
+    <button class="btn btn-primary btn-full" onclick="confirmInvest()">Send Connection Request →</button>
+  </div>
+</div>
+
+<div class="toast hidden" id="toast"></div>
+
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
