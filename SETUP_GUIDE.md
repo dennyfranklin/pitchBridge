@@ -1,53 +1,43 @@
 # 🚀 PitchBridge — Setup Guide for Denny
-## How to get your app LIVE in under 30 minutes (no coding needed!)
+## Go live in under 30 minutes — no coding needed!
 
 ---
 
-## STEP 1 — Set up Supabase (Your Free Backend/Database)
+## STEP 1 — Add Your Supabase Keys
 
-1. Go to 👉 https://supabase.com
-2. Click "Start your project" and sign up for free
-3. Click "New Project"
-   - Name it: pitchbridge
-   - Set a strong database password (save this!)
-   - Choose the region closest to you
-4. Wait ~2 minutes for it to set up
+1. Go to supabase.com → your pitchbridge project
+2. Click ⚙️ Settings → API
+3. Copy your **Project URL** and **anon/public key**
+4. Open `js/config.js` in Notepad
+5. Paste them in replacing the placeholder text
+6. Save the file ✅
 
 ---
 
-## STEP 2 — Create Your Database Tables
+## STEP 2 — Run the Database SQL
 
-1. In your Supabase project, click "SQL Editor" in the left menu
-2. Click "New Query"
-3. Copy and paste ALL of this code and click "Run":
+1. In Supabase → click **SQL Editor** → New Query
+2. Paste and run this:
 
 ```sql
--- PROFILES TABLE (stores all user info)
 create table profiles (
   id uuid references auth.users primary key,
-  full_name text,
-  email text,
-  role text check (role in ('entrepreneur', 'investor', 'both')),
-  focus text,
-  is_admin boolean default false,
+  full_name text, email text,
+  role text check (role in ('entrepreneur','investor','both')),
+  focus text, is_admin boolean default false,
   is_verified boolean default false,
-  avatar_color text default '#7c6fff',
+  avatar_color text default '#5b4fcf',
   created_at timestamp with time zone default now()
 );
-
--- IDEAS TABLE (stores all posted ideas)
 create table ideas (
   id uuid primary key default gen_random_uuid(),
   user_id uuid references profiles(id),
-  title text not null,
-  body text not null,
+  title text, body text not null,
   funding_ask text default 'TBD',
   category text default 'Tech',
   likes integer default 0,
   created_at timestamp with time zone default now()
 );
-
--- CONNECT REQUESTS (investor wants to connect with entrepreneur)
 create table connect_requests (
   id uuid primary key default gen_random_uuid(),
   from_user_id uuid references profiles(id),
@@ -55,8 +45,6 @@ create table connect_requests (
   status text default 'pending',
   created_at timestamp with time zone default now()
 );
-
--- NDA REQUESTS (investor agrees to NDA for an idea)
 create table nda_requests (
   id uuid primary key default gen_random_uuid(),
   idea_id uuid references ideas(id),
@@ -64,91 +52,46 @@ create table nda_requests (
   status text default 'pending',
   created_at timestamp with time zone default now()
 );
-
--- SECURITY: Allow users to read/write their own data
 alter table profiles enable row level security;
 alter table ideas enable row level security;
 alter table connect_requests enable row level security;
 alter table nda_requests enable row level security;
-
 create policy "Public profiles" on profiles for select using (true);
-create policy "Users insert own profile" on profiles for insert with check (auth.uid() = id);
-create policy "Users update own profile" on profiles for update using (auth.uid() = id);
-
+create policy "Insert own profile" on profiles for insert with check (auth.uid()=id);
+create policy "Update own profile" on profiles for update using (auth.uid()=id);
 create policy "Public ideas" on ideas for select using (true);
-create policy "Users insert ideas" on ideas for insert with check (auth.uid() = user_id);
-create policy "Users update own ideas" on ideas for update using (auth.uid() = user_id);
-create policy "Users update likes" on ideas for update using (true);
-
-create policy "Users insert connect requests" on connect_requests for insert with check (auth.uid() = from_user_id);
-create policy "Users read connect requests" on connect_requests for select using (auth.uid() = from_user_id or auth.uid() = to_user_id);
-create policy "Admin update connect requests" on connect_requests for update using (true);
-
-create policy "Investors insert nda" on nda_requests for insert with check (auth.uid() = investor_id);
-create policy "Users read nda" on nda_requests for select using (auth.uid() = investor_id);
+create policy "Insert ideas" on ideas for insert with check (auth.uid()=user_id);
+create policy "Update own ideas" on ideas for update using (auth.uid()=user_id);
+create policy "Update likes" on ideas for update using (true);
+create policy "Insert connect" on connect_requests for insert with check (auth.uid()=from_user_id);
+create policy "Read connect" on connect_requests for select using (auth.uid()=from_user_id or auth.uid()=to_user_id);
+create policy "Update connect" on connect_requests for update using (true);
+create policy "Insert nda" on nda_requests for insert with check (auth.uid()=investor_id);
+create policy "Read nda" on nda_requests for select using (auth.uid()=investor_id);
 ```
 
-4. Click "Run" — you should see "Success"!
+---
+
+## STEP 3 — Make Yourself Admin
+
+1. Sign up on your app first
+2. Go to Supabase → Table Editor → profiles
+3. Find your row → set `is_admin` to `true`
+4. Now you'll see the 🛡 Admin tab!
 
 ---
 
-## STEP 3 — Get Your Supabase Keys
+## STEP 4 — Deploy to Vercel (Free!)
 
-1. In Supabase, go to ⚙️ "Project Settings" → "API"
-2. You'll see two things you need:
-   - **Project URL** (looks like: https://xxxxx.supabase.co)
-   - **anon public key** (a long string of letters)
-3. Open the file `js/config.js` in your pitchbridge folder
-4. Replace these two lines:
-   ```
-   const SUPABASE_URL = 'YOUR_SUPABASE_URL_HERE';
-   const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY_HERE';
-   ```
-   With your actual URL and key. Example:
-   ```
-   const SUPABASE_URL = 'https://abcdef123.supabase.co';
-   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
-   ```
+1. Go to 👉 vercel.com → sign up free
+2. Click "Add New Site" → "Deploy manually"  
+3. Drag your entire `pitchbridge_final` folder onto the page
+4. Your app is LIVE! 🎉
 
 ---
 
-## STEP 4 — Make Yourself Admin
+## ✅ You're Done!
 
-After you sign up on the app for the first time:
-1. Go to Supabase → "Table Editor" → "profiles"
-2. Find your row and set `is_admin` to `true`
-3. Now you'll see the 🛡 Admin tab when you log in!
-
----
-
-## STEP 5 — Deploy to Netlify (Go Live!)
-
-### Option A — Drag and Drop (Easiest!)
-1. Go to 👉 https://netlify.com and sign up free
-2. Click "Add new site" → "Deploy manually"
-3. Drag your entire `pitchbridge` folder onto the page
-4. Done! Netlify gives you a free URL like: https://pitchbridge-abc123.netlify.app
-
-### Option B — Connect GitHub (Better for updates)
-1. Upload your pitchbridge folder to GitHub (github.com)
-2. In Netlify, click "Add new site" → "Import from Git"
-3. Connect your GitHub and select the pitchbridge repo
-4. Every time you update files on GitHub, Netlify auto-updates your site!
-
----
-
-## 🎉 YOU'RE LIVE!
-
-Your PitchBridge app is now:
-✅ Live on the internet
-✅ Has real user accounts
-✅ Stores real data in a database
-✅ Free to run (Supabase free tier = 50,000 users!)
-✅ Admin panel for Denny to manage everything
-
----
-
-## Need help?
-- Supabase docs: https://supabase.com/docs
-- Netlify docs: https://docs.netlify.com
-- Or just ask Claude! 😄
+Total cost: $0/month
+Handles up to: 50,000 users free
+Questions? Just ask Claude! 😄

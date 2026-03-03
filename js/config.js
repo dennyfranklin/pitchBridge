@@ -1,15 +1,24 @@
 // ============================================================
 // PITCHBRIDGE — SUPABASE CONFIG
 // ============================================================
-// Step 1: Go to https://supabase.com and create a free account
-// Step 2: Create a new project called "pitchbridge"
-// Step 3: Go to Project Settings → API
-// Step 4: Copy your Project URL and anon/public key below
+// Step 1: Go to supabase.com → Your Project → Settings → API
+// Step 2: Copy your Project URL and anon/public key below
+// Step 3: Save this file
+// ⚠️ NEVER share these keys publicly!
 // ============================================================
 
-const SUPABASE_URL = 'YOUR_SUPABASE_URL_HERE';
-const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY_HERE';
+const SUPABASE_URL = 'https://melodic-hamster-146aca.netlify.app/';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRvdndwZW5reHhrenp5amhkbnZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1MzQxMzEsImV4cCI6MjA4ODExMDEzMX0.HNwv2-JWxEHxwS_-W-gJ35ds3RVh2grxhm3_uymQUX0';
 
-// Initialize Supabase client
+// Initialize Supabase
 const { createClient } = supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// Google Sign-In
+async function signInWithGoogle() {
+  const { error } = await sb.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: window.location.origin }
+  });
+  if (error) showToast('❌ Google Sign-In failed: ' + error.message);
+}

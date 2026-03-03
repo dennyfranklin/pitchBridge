@@ -4,149 +4,531 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PitchBridge — Where Ideas Meet Capital</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f4f4f8;--surface:#fff;--surface2:#f0f0f6;--border:#e4e4ee;
+  --accent:#5b4fcf;--accent-light:#ede9ff;--accent-glow:rgba(91,79,207,0.18);
+  --gold:#d4a017;--red:#e63560;--green:#00a878;--text:#18182e;--muted:#8888aa;--card:#fff;
+  --nav-h:62px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+.screen{display:none;min-height:100vh;}
+.screen.active{display:flex;}
+
+/* ======= LANDING ======= */
+#landing{flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 20px;position:relative;overflow:hidden;background:linear-gradient(145deg,#f0eeff 0%,#fff 55%,#eef4ff 100%);}
+.orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:0.16;pointer-events:none;}
+.orb1{width:550px;height:550px;background:#7c6fff;top:-140px;left:-120px;}
+.orb2{width:380px;height:380px;background:#f472b6;bottom:-80px;right:-80px;}
+.orb3{width:300px;height:300px;background:#fbbf24;top:45%;left:50%;transform:translate(-50%,-50%);}
+.land-badge{display:inline-flex;align-items:center;gap:7px;background:var(--accent-light);border:1px solid rgba(91,79,207,0.25);border-radius:100px;padding:7px 20px;font-size:12px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);margin-bottom:36px;animation:fadeUp .5s ease both;}
+.land-h1{font-family:'Syne',sans-serif;font-size:clamp(42px,8.5vw,90px);font-weight:800;line-height:1.0;margin-bottom:22px;animation:fadeUp .5s .1s ease both;color:var(--text);}
+.land-h1 .hi{color:var(--accent);} .land-h1 .hg{color:var(--gold);}
+.land-sub{font-size:17px;color:var(--muted);max-width:480px;line-height:1.7;margin-bottom:44px;animation:fadeUp .5s .2s ease both;}
+.land-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;animation:fadeUp .5s .3s ease both;}
+.stats{display:flex;gap:48px;justify-content:center;margin-top:68px;flex-wrap:wrap;animation:fadeUp .5s .4s ease both;}
+.stat-num{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:var(--text);}
+.stat-num em{color:var(--accent);font-style:normal;}
+.stat-label{font-size:13px;color:var(--muted);margin-top:3px;}
+
+/* ======= BUTTONS ======= */
+.btn{padding:12px 28px;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;border:none;transition:all .2s;}
+.btn-primary{background:var(--accent);color:#fff;}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px var(--accent-glow);background:#4a3eb8;}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.btn-ghost{background:transparent;color:var(--text);border:1.5px solid var(--border);}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px);}
+.btn-google{background:#fff;color:#333;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:13px;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;margin-bottom:20px;}
+.btn-google:hover{border-color:#aaa;box-shadow:0 4px 16px rgba(0,0,0,0.08);}
+.btn-full{width:100%;padding:14px;border-radius:12px;font-size:15px;margin-top:4px;}
+
+/* ======= AUTH ======= */
+#auth{align-items:center;justify-content:center;padding:20px;background:linear-gradient(145deg,#f0eeff,#fff,#eef4ff);overflow:hidden;}
+.auth-card{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:42px 38px;width:100%;max-width:440px;z-index:1;animation:fadeUp .4s ease both;box-shadow:0 12px 48px rgba(91,79,207,0.1);}
+.auth-logo{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--accent);display:block;margin-bottom:26px;}
+.auth-title{font-family:'Syne',sans-serif;font-size:25px;font-weight:700;margin-bottom:5px;}
+.auth-sub{color:var(--muted);font-size:14px;margin-bottom:26px;}
+.divider{display:flex;align-items:center;gap:12px;margin:16px 0;color:var(--muted);font-size:13px;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;}
+input,select,textarea{width:100%;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:11px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color .2s;margin-bottom:14px;appearance:none;}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);background:#faf9ff;}
+input::placeholder,textarea::placeholder{color:#bbbbd0;}
+.role-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:18px;}
+.role-card{background:var(--surface2);border:2px solid var(--border);border-radius:12px;padding:13px 6px;text-align:center;cursor:pointer;transition:all .2s;}
+.role-card:hover{border-color:var(--accent);background:var(--accent-light);}
+.role-card.sel{border-color:var(--accent);background:var(--accent-light);}
+.role-icon{font-size:22px;margin-bottom:5px;}
+.role-name{font-size:11px;font-weight:700;color:var(--text);}
+.form-error{color:var(--red);font-size:13px;margin-bottom:8px;min-height:16px;}
+.auth-switch{text-align:center;margin-top:16px;font-size:14px;color:var(--muted);}
+.auth-switch a{color:var(--accent);cursor:pointer;font-weight:600;}
+
+/* ======= NAV ======= */
+#app{flex-direction:column;}
+.nav{background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:var(--nav-h);position:sticky;top:0;z-index:200;box-shadow:0 1px 10px rgba(0,0,0,0.06);}
+.nav-logo{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--accent);}
+.nav-center{display:flex;gap:2px;}
+.nav-tab{padding:7px 14px;border-radius:9px;font-size:13px;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--muted);transition:all .2s;position:relative;}
+.nav-tab:hover{color:var(--text);background:var(--surface2);}
+.nav-tab.active{color:var(--accent);background:var(--accent-light);font-weight:700;}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.notif-btn{position:relative;width:38px;height:38px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;transition:all .2s;}
+.notif-btn:hover{background:var(--accent-light);border-color:var(--accent);}
+.notif-count{position:absolute;top:-3px;right:-3px;background:var(--red);color:#fff;border-radius:50%;width:18px;height:18px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid var(--surface);}
+.notif-count.hidden{display:none;}
+.nav-avatar{width:36px;height:36px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;cursor:pointer;flex-shrink:0;color:#fff;overflow:hidden;border:2px solid var(--accent-light);}
+.nav-avatar img{width:100%;height:100%;object-fit:cover;}
+
+/* ======= LAYOUT ======= */
+.app-body{display:flex;flex:1;max-width:1120px;margin:0 auto;width:100%;padding:22px 16px;gap:22px;}
+.feed-col{flex:1;min-width:0;}
+.side-col{width:272px;flex-shrink:0;}
+.page{display:none;}
+.page.active{display:block;}
+.page-title{font-family:'Syne',sans-serif;font-size:21px;font-weight:700;margin-bottom:18px;color:var(--text);}
+
+/* ======= POST BOX ======= */
+.post-box{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px;margin-bottom:18px;box-shadow:0 2px 10px rgba(0,0,0,0.04);}
+.post-top{display:flex;gap:11px;align-items:flex-start;}
+.post-av{width:38px;height:38px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff;flex-shrink:0;overflow:hidden;border:2px solid var(--accent-light);}
+.post-av img{width:100%;height:100%;object-fit:cover;}
+.post-textarea{flex:1;resize:none;height:72px;margin-bottom:0;font-size:14px;}
+.post-meta{display:flex;flex-direction:column;gap:10px;margin-top:11px;}
+.post-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.post-tags{display:flex;gap:7px;flex-wrap:wrap;}
+.tag-pill{padding:5px 12px;border-radius:100px;font-size:12px;font-weight:600;border:1.5px solid var(--border);background:var(--surface2);color:var(--muted);cursor:pointer;transition:all .2s;}
+.tag-pill:hover,.tag-pill.sel{border-color:var(--accent);color:var(--accent);background:var(--accent-light);}
+.post-actions{display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
+.post-media-btns{display:flex;gap:8px;}
+.media-btn{padding:7px 13px;border-radius:9px;font-size:12px;font-weight:600;border:1.5px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:5px;}
+.media-btn:hover{border-color:var(--accent);color:var(--accent);}
+.media-preview{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+.media-thumb{width:80px;height:80px;border-radius:10px;object-fit:cover;border:1px solid var(--border);}
+
+/* ======= IDEA CARD ======= */
+.idea-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px;margin-bottom:14px;transition:all .25s;animation:fadeUp .4s ease both;box-shadow:0 2px 10px rgba(0,0,0,0.04);}
+.idea-card:hover{border-color:rgba(91,79,207,.3);box-shadow:0 6px 22px rgba(91,79,207,.08);transform:translateY(-2px);}
+.card-head{display:flex;gap:11px;align-items:center;margin-bottom:13px;}
+.card-av{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;color:#fff;overflow:hidden;border:2px solid rgba(255,255,255,.6);}
+.card-av img{width:100%;height:100%;object-fit:cover;}
+.card-info .card-name{font-weight:700;font-size:14px;}
+.card-info .card-meta-row{font-size:12px;color:var(--muted);margin-top:2px;}
+.card-badge-wrap{margin-left:auto;display:flex;gap:6px;}
+.badge{padding:3px 10px;border-radius:100px;font-size:11px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;}
+.badge-tech{background:rgba(91,79,207,.1);color:var(--accent);}
+.badge-ev{background:rgba(0,168,120,.12);color:var(--green);}
+.badge-ai{background:rgba(212,160,23,.12);color:var(--gold);}
+.badge-product{background:rgba(230,53,96,.1);color:var(--red);}
+.card-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin-bottom:7px;}
+.card-body{font-size:14px;color:#555577;line-height:1.6;margin-bottom:14px;}
+.card-images{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+.card-img{width:120px;height:90px;border-radius:10px;object-fit:cover;border:1px solid var(--border);}
+.card-teaser{background:#faf9ff;border:1px dashed rgba(91,79,207,.22);border-radius:10px;padding:11px 14px;font-size:13px;color:var(--muted);margin-bottom:14px;}
+.card-footer{display:flex;gap:7px;align-items:center;flex-wrap:wrap;padding-top:12px;border-top:1px solid var(--border);}
+.card-btn{padding:7px 14px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .2s;display:flex;align-items:center;gap:5px;}
+.card-btn-invest{background:var(--accent);color:#fff;}
+.card-btn-invest:hover{background:#4a3eb8;transform:translateY(-1px);}
+.card-btn-action{background:var(--surface2);color:var(--muted);border:1px solid var(--border);}
+.card-btn-action:hover{border-color:var(--accent);color:var(--accent);}
+.card-btn-action.liked{color:var(--red);border-color:var(--red);}
+.card-ask{font-size:13px;color:var(--gold);font-weight:700;margin-left:auto;}
+.comments-section{margin-top:14px;padding-top:14px;border-top:1px solid var(--border);display:none;}
+.comments-section.open{display:block;}
+.comment-input-row{display:flex;gap:9px;align-items:center;margin-bottom:12px;}
+.comment-input{flex:1;background:var(--surface2);border:1.5px solid var(--border);border-radius:100px;padding:9px 16px;font-size:13px;color:var(--text);outline:none;font-family:'DM Sans',sans-serif;}
+.comment-input:focus{border-color:var(--accent);}
+.comment-send{padding:8px 16px;border-radius:100px;background:var(--accent);color:#fff;border:none;font-weight:600;font-size:13px;cursor:pointer;}
+.comment{display:flex;gap:9px;margin-bottom:10px;animation:fadeUp .3s ease both;}
+.comment-av{width:30px;height:30px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;}
+.comment-bubble{background:var(--surface2);border-radius:12px;padding:9px 13px;font-size:13px;color:var(--text);line-height:1.5;}
+.comment-author{font-weight:700;font-size:12px;color:var(--accent);margin-bottom:3px;}
+
+/* ======= SIDEBAR ======= */
+.side-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:14px;box-shadow:0 2px 10px rgba(0,0,0,0.04);}
+.side-title{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;margin-bottom:13px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+.side-person{display:flex;gap:9px;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);}
+.side-person:last-child{border-bottom:none;}
+.side-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;color:#fff;overflow:hidden;}
+.side-av img{width:100%;height:100%;object-fit:cover;}
+.side-name{font-size:13px;font-weight:600;color:var(--text);}
+.side-role{font-size:11px;color:var(--muted);}
+.side-btn{margin-left:auto;padding:4px 11px;border-radius:8px;font-size:11px;font-weight:700;background:var(--accent-light);color:var(--accent);border:none;cursor:pointer;white-space:nowrap;}
+.side-btn:hover{background:var(--accent);color:#fff;}
+.trend-tag{padding:5px 11px;border-radius:100px;font-size:12px;font-weight:600;background:var(--surface2);color:var(--muted);border:1px solid var(--border);cursor:pointer;transition:all .2s;display:inline-block;margin:3px;}
+.trend-tag:hover{border-color:var(--accent);color:var(--accent);}
+.how-card{background:linear-gradient(135deg,rgba(91,79,207,.07),rgba(212,160,23,.05));border-color:rgba(91,79,207,.18);}
+
+/* ======= PROFILE PAGE ======= */
+.profile-cover{height:140px;background:linear-gradient(120deg,var(--accent),#8b7cf6,#f472b6);border-radius:18px 18px 0 0;position:relative;margin-bottom:60px;}
+.profile-hero{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px 24px 24px;margin-bottom:18px;box-shadow:0 2px 10px rgba(0,0,0,0.04);position:relative;}
+.profile-av-wrap{position:absolute;top:-54px;left:24px;}
+.profile-av-big{width:96px;height:96px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:700;color:#fff;border:4px solid var(--surface);overflow:hidden;cursor:pointer;}
+.profile-av-big img{width:100%;height:100%;object-fit:cover;}
+.profile-av-edit{position:absolute;bottom:2px;right:2px;width:26px;height:26px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;border:2px solid var(--surface);}
+.profile-main{margin-top:48px;}
+.profile-name{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--text);}
+.profile-profession{font-size:14px;color:var(--muted);margin:4px 0;}
+.profile-role-pill{display:inline-block;padding:4px 13px;border-radius:100px;font-size:12px;font-weight:700;background:var(--accent-light);color:var(--accent);margin:6px 0;}
+.profile-summary{font-size:14px;color:#555577;line-height:1.6;margin:8px 0;}
+.profile-stats-row{display:flex;gap:28px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
+.pstat{text-align:center;}
+.pstat-num{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--text);}
+.pstat-label{font-size:11px;color:var(--muted);margin-top:2px;}
+.profile-edit-section{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:0 2px 10px rgba(0,0,0,0.04);}
+.section-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:14px;color:var(--text);}
+
+/* AVATAR PICKER */
+.avatar-grid{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+.av-option{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;border:3px solid transparent;transition:all .2s;}
+.av-option:hover{transform:scale(1.1);}
+.av-option.sel{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow);}
+
+/* ======= CHAT PAGE ======= */
+.chat-layout{display:flex;height:calc(100vh - var(--nav-h) - 48px);background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,0.04);}
+.chat-list{width:260px;border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;}
+.chat-list-header{padding:16px;border-bottom:1px solid var(--border);font-family:'Syne',sans-serif;font-size:15px;font-weight:700;}
+.chat-search{padding:10px 14px;border-bottom:1px solid var(--border);}
+.chat-search input{margin:0;padding:8px 12px;font-size:13px;border-radius:100px;}
+.chat-item{display:flex;gap:10px;align-items:center;padding:13px 14px;cursor:pointer;transition:all .2s;border-bottom:1px solid var(--border);}
+.chat-item:hover,.chat-item.active{background:var(--accent-light);}
+.chat-av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;color:#fff;overflow:hidden;}
+.chat-av img{width:100%;height:100%;object-fit:cover;}
+.chat-name{font-size:13px;font-weight:600;color:var(--text);}
+.chat-preview{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px;}
+.chat-unread{margin-left:auto;width:18px;height:18px;background:var(--accent);border-radius:50%;font-size:10px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.chat-window{flex:1;display:flex;flex-direction:column;}
+.chat-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:11px;}
+.chat-header-name{font-weight:700;font-size:15px;}
+.chat-header-status{font-size:12px;color:var(--green);}
+.chat-messages{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px;}
+.msg{max-width:70%;animation:fadeUp .3s ease both;}
+.msg.me{align-self:flex-end;}
+.msg.them{align-self:flex-start;}
+.msg-bubble{padding:10px 15px;border-radius:16px;font-size:14px;line-height:1.5;}
+.msg.me .msg-bubble{background:var(--accent);color:#fff;border-radius:16px 16px 4px 16px;}
+.msg.them .msg-bubble{background:var(--surface2);color:var(--text);border-radius:16px 16px 16px 4px;}
+.msg-time{font-size:11px;color:var(--muted);margin-top:4px;text-align:right;}
+.msg.them .msg-time{text-align:left;}
+.chat-input-bar{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:10px;align-items:center;}
+.chat-input{flex:1;background:var(--surface2);border:1.5px solid var(--border);border-radius:100px;padding:10px 16px;font-size:14px;color:var(--text);outline:none;font-family:'DM Sans',sans-serif;}
+.chat-input:focus{border-color:var(--accent);}
+.chat-send{width:40px;height:40px;border-radius:50%;background:var(--accent);border:none;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.chat-send:hover{background:#4a3eb8;}
+.chat-placeholder{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;color:var(--muted);}
+.chat-placeholder-icon{font-size:48px;}
+
+/* ======= NETWORK PAGE ======= */
+.network-tabs{display:flex;gap:6px;margin-bottom:18px;}
+.net-tab{padding:8px 18px;border-radius:100px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:transparent;color:var(--muted);transition:all .2s;}
+.net-tab:hover{border-color:var(--accent);color:var(--accent);}
+.net-tab.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+.network-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;}
+.network-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;text-align:center;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,0.04);}
+.network-card:hover{border-color:rgba(91,79,207,.3);transform:translateY(-2px);box-shadow:0 6px 20px rgba(91,79,207,.08);}
+.net-av{width:60px;height:60px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff;overflow:hidden;}
+.net-av img{width:100%;height:100%;object-fit:cover;}
+.net-name{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:3px;}
+.net-role{font-size:12px;color:var(--muted);margin-bottom:12px;}
+.net-follow-btn{width:100%;padding:8px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:transparent;color:var(--accent);transition:all .2s;}
+.net-follow-btn:hover,.net-follow-btn.following{background:var(--accent);color:#fff;border-color:var(--accent);}
+
+/* ======= NOTIFICATIONS ======= */
+.notif-panel{position:fixed;top:calc(var(--nav-h) + 8px);right:16px;width:320px;background:var(--surface);border:1px solid var(--border);border-radius:18px;box-shadow:0 12px 40px rgba(0,0,0,0.12);z-index:500;display:none;animation:fadeUp .3s ease both;overflow:hidden;}
+.notif-panel.open{display:block;}
+.notif-header{padding:14px 16px;border-bottom:1px solid var(--border);font-family:'Syne',sans-serif;font-size:15px;font-weight:700;display:flex;justify-content:space-between;align-items:center;}
+.notif-clear{font-size:12px;color:var(--accent);cursor:pointer;font-weight:600;}
+.notif-item{display:flex;gap:11px;align-items:flex-start;padding:13px 16px;border-bottom:1px solid var(--border);transition:background .2s;cursor:pointer;}
+.notif-item:hover{background:var(--surface2);}
+.notif-item.unread{background:#faf9ff;}
+.notif-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.notif-text{font-size:13px;color:var(--text);line-height:1.5;}
+.notif-text strong{color:var(--accent);}
+.notif-time{font-size:11px;color:var(--muted);margin-top:3px;}
+
+/* ======= MODALS ======= */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(24,24,46,.4);z-index:999;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(6px);}
+.modal-bg.open{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:34px;width:100%;max-width:480px;animation:fadeUp .3s ease both;box-shadow:0 20px 60px rgba(91,79,207,.15);}
+.modal-title{font-family:'Syne',sans-serif;font-size:21px;font-weight:700;margin-bottom:7px;}
+.modal-sub{color:var(--muted);font-size:14px;margin-bottom:22px;line-height:1.5;}
+.modal-close{float:right;background:var(--surface2);border:none;color:var(--muted);width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;}
+.nda-box{background:#faf9ff;border-radius:12px;padding:15px;margin-bottom:18px;font-size:13px;color:#555577;line-height:1.7;border:1px solid rgba(91,79,207,.15);}
+
+/* ======= MISC ======= */
+.loading{color:var(--muted);font-size:14px;padding:20px 0;display:flex;align-items:center;gap:8px;}
+.empty-state{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px;}
+.empty-state-icon{font-size:40px;margin-bottom:12px;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--text);color:#fff;border-radius:100px;padding:12px 24px;font-size:14px;font-weight:500;z-index:9999;animation:fadeUp .3s ease both;box-shadow:0 8px 28px rgba(0,0,0,.2);white-space:nowrap;}
+.toast.hidden{display:none;}
+
+/* ======= ADMIN ======= */
+.admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px;}
+.admin-stat{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,.04);}
+.admin-stat-num{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--accent);}
+.admin-stat-label{font-size:12px;color:var(--muted);margin-top:3px;}
+.request-item{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:10px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;box-shadow:0 2px 6px rgba(0,0,0,.03);}
+.req-name{font-weight:600;color:var(--text);}
+.req-detail{font-size:12px;color:var(--muted);margin-top:2px;}
+.req-approve{padding:7px 14px;border-radius:8px;background:var(--green);color:#fff;border:none;font-weight:700;font-size:12px;cursor:pointer;}
+.req-deny{padding:7px 14px;border-radius:8px;background:#fff;color:var(--red);border:1.5px solid var(--red);font-weight:700;font-size:12px;cursor:pointer;margin-left:5px;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+</style>
 </head>
 <body>
- 
-<!-- LANDING -->
-<div id="landing" class="screen active"> 
+
+<!-- ======= LANDING ======= -->
+<div id="landing" class="screen active">
   <div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div>
-  <div class="land-badge">🚀 Now Open for Early Access</div>
+  <div class="land-badge">🚀 Early Access Open</div>
   <h1 class="land-h1">Where <span class="hi">Ideas</span><br>Meet <span class="hg">Capital</span></h1>
-  <p class="land-sub">Post your startup idea, get matched with real investors, and close deals — all in one place.</p>
+  <p class="land-sub">Post your startup idea, connect with verified investors, and close real deals — all in one place.</p>
   <div class="land-btns">
     <button class="btn btn-primary" onclick="showAuth('signup')">Get Started Free</button>
     <button class="btn btn-ghost" onclick="showAuth('login')">Sign In</button>
   </div>
   <div class="stats">
-    <div><div class="stat-num">2.4<span>K</span></div><div class="stat-label">Ideas Posted</div></div>
-    <div><div class="stat-num">$48<span>M</span></div><div class="stat-label">Deals Closed</div></div>
-    <div><div class="stat-num">380<span>+</span></div><div class="stat-label">Active Investors</div></div>
+    <div><div class="stat-num">2.4<em>K</em></div><div class="stat-label">Ideas Posted</div></div>
+    <div><div class="stat-num">$48<em>M</em></div><div class="stat-label">Deals Closed</div></div>
+    <div><div class="stat-num">380<em>+</em></div><div class="stat-label">Active Investors</div></div>
   </div>
 </div>
 
-<!-- AUTH -->
+<!-- ======= AUTH ======= -->
 <div id="auth" class="screen">
   <div class="orb orb1"></div><div class="orb orb2"></div>
   <div class="auth-card">
     <span class="auth-logo">PitchBridge</span>
+
+    <!-- SIGNUP -->
     <div id="signup-form">
       <div class="auth-title">Create your account</div>
       <div class="auth-sub">Takes less than 60 seconds ⚡</div>
+      <button class="btn-google" onclick="showToast('🔗 Google Sign-In requires Supabase setup!')">
+        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        Continue with Google
+      </button>
+      <div class="divider">or</div>
       <label>Full Name</label>
       <input type="text" id="su-name" placeholder="e.g. Denny Franklin">
       <label>Email</label>
       <input type="email" id="su-email" placeholder="you@email.com">
       <label>Password</label>
       <input type="password" id="su-pass" placeholder="••••••••">
-      <label>I am a...</label>
+      <label>I am a... <span style="color:var(--red);font-size:11px;">(cannot be changed later)</span></label>
       <div class="role-grid">
         <div class="role-card" onclick="selectRole(this,'entrepreneur')"><div class="role-icon">💡</div><div class="role-name">Entrepreneur</div></div>
         <div class="role-card" onclick="selectRole(this,'investor')"><div class="role-icon">💼</div><div class="role-name">Investor</div></div>
         <div class="role-card" onclick="selectRole(this,'both')"><div class="role-icon">⚡</div><div class="role-name">Both</div></div>
       </div>
       <div id="signup-error" class="form-error"></div>
-      <button class="btn btn-primary btn-full" id="signup-btn" onclick="doSignup()">Create Account →</button>
+      <button class="btn btn-primary btn-full" onclick="doSignup()">Create Account →</button>
       <div class="auth-switch">Already have an account? <a onclick="toggleAuth('login')">Sign in</a></div>
     </div>
+
+    <!-- LOGIN -->
     <div id="login-form" style="display:none">
       <div class="auth-title">Welcome back!</div>
-      <div class="auth-sub">Sign in to your account</div>
+      <div class="auth-sub">Sign in to continue</div>
+      <button class="btn-google" onclick="showToast('🔗 Google Sign-In requires Supabase setup!')">
+        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        Continue with Google
+      </button>
+      <div class="divider">or</div>
       <label>Email</label>
       <input type="email" id="li-email" placeholder="you@email.com">
       <label>Password</label>
       <input type="password" id="li-pass" placeholder="••••••••">
       <div id="login-error" class="form-error"></div>
-      <button class="btn btn-primary btn-full" id="login-btn" onclick="doLogin()" style="margin-top:8px">Sign In →</button>
+      <button class="btn btn-primary btn-full" onclick="doLogin()">Sign In →</button>
       <div class="auth-switch">New here? <a onclick="toggleAuth('signup')">Create account</a></div>
     </div>
   </div>
 </div>
 
-<!-- APP -->
+<!-- ======= APP ======= -->
 <div id="app" class="screen">
+
+  <!-- NAV -->
   <nav class="nav">
     <div class="nav-logo">PitchBridge</div>
-    <div class="nav-tabs">
-      <button class="nav-tab active" onclick="showPage('feed',this)">🏠 Feed</button>
-      <button class="nav-tab" onclick="showPage('investors',this)">💼 Investors</button>
+    <div class="nav-center">
+      <button class="nav-tab active" onclick="showPage('feed',this)">🏠 Home</button>
+      <button class="nav-tab" onclick="showPage('network',this)">🌐 Network</button>
+      <button class="nav-tab" onclick="showPage('chat',this)">💬 Chat</button>
       <button class="nav-tab" onclick="showPage('profile',this)">👤 Profile</button>
       <button id="admin-tab" class="nav-tab" onclick="showPage('admin',this)" style="display:none">🛡 Admin</button>
     </div>
-    <div style="display:flex;align-items:center;gap:12px;">
-      <div class="avatar" id="nav-avatar">D</div>
-      <button class="btn btn-ghost" style="padding:7px 16px;font-size:13px;" onclick="doLogout()">Logout</button>
+    <div class="nav-right">
+      <div class="notif-btn" onclick="toggleNotif()">
+        🔔
+        <div class="notif-count" id="notif-count">3</div>
+      </div>
+      <div class="nav-avatar" id="nav-avatar" onclick="showPage('profile',null)">D</div>
+      <button class="btn btn-ghost" style="padding:6px 14px;font-size:13px;" onclick="doLogout()">Logout</button>
     </div>
   </nav>
+
+  <!-- NOTIFICATION PANEL -->
+  <div class="notif-panel" id="notif-panel">
+    <div class="notif-header">Notifications <span class="notif-clear" onclick="clearNotifs()">Mark all read</span></div>
+    <div class="notif-item unread" onclick="markRead(this)">
+      <div class="notif-icon" style="background:#ede9ff;">💼</div>
+      <div><div class="notif-text"><strong>James Carter</strong> sent you a connection request</div><div class="notif-time">2 minutes ago</div></div>
+    </div>
+    <div class="notif-item unread" onclick="markRead(this)">
+      <div class="notif-icon" style="background:#fef3c7;">❤️</div>
+      <div><div class="notif-text"><strong>Priya Sharma</strong> liked your idea <strong>CleanDrive AI</strong></div><div class="notif-time">15 minutes ago</div></div>
+    </div>
+    <div class="notif-item unread" onclick="markRead(this)">
+      <div class="notif-icon" style="background:#d1fae5;">💬</div>
+      <div><div class="notif-text"><strong>Tom Wilson</strong> commented on your post</div><div class="notif-time">1 hour ago</div></div>
+    </div>
+    <div class="notif-item" onclick="markRead(this)">
+      <div class="notif-icon" style="background:#fee2e2;">🎉</div>
+      <div><div class="notif-text">Your idea was viewed by <strong>5 investors</strong> today!</div><div class="notif-time">3 hours ago</div></div>
+    </div>
+  </div>
+
   <div class="app-body">
     <div class="feed-col">
 
-      <!-- FEED -->
+      <!-- HOME / FEED -->
       <div id="page-feed" class="page active">
         <div class="post-box" id="post-box-wrap">
-          <div class="post-box-top">
-            <div class="avatar" id="post-avatar">D</div>
-            <textarea class="post-textarea" id="post-text" placeholder="Describe your startup idea..."></textarea>
+          <div class="post-top">
+            <div class="post-av" id="post-avatar-wrap"><span id="post-avatar-text">D</span></div>
+            <textarea class="post-textarea" id="post-text" placeholder="Share your idea or update..."></textarea>
           </div>
-          <div style="margin-top:12px;">
-            <label>Idea Title</label>
-            <input type="text" id="post-title" placeholder="Give your idea a catchy name">
-            <label>Funding Goal</label>
-            <input type="text" id="post-ask" placeholder="e.g. $250K">
-            <label>Category</label>
-            <div class="post-tags">
+          <div class="post-meta">
+            <input type="text" id="post-title" placeholder="💡 Idea title (optional for general posts)" style="margin-bottom:0;">
+            <input type="text" id="post-ask" placeholder="💰 Funding goal e.g. $250K (optional)" style="margin-bottom:0;">
+            <div class="post-tags" id="post-tag-row">
               <div class="tag-pill" onclick="selectTag(this,'AI')">🤖 AI</div>
               <div class="tag-pill" onclick="selectTag(this,'EV')">⚡ EV</div>
               <div class="tag-pill" onclick="selectTag(this,'Product')">📦 Product</div>
               <div class="tag-pill" onclick="selectTag(this,'Tech')">💻 Tech</div>
             </div>
           </div>
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;">
-            <div style="font-size:12px;color:var(--muted);">🔒 Full pitch protected by NDA</div>
-            <button class="btn btn-primary" style="padding:9px 22px;font-size:14px;" onclick="postIdea()">Post Idea 🚀</button>
+          <div class="post-actions">
+            <div class="post-media-btns">
+              <button class="media-btn" onclick="triggerFileUpload('img')">📷 Photo</button>
+              <button class="media-btn" onclick="triggerFileUpload('vid')">🎥 Video</button>
+              <input type="file" id="img-upload" accept="image/*" style="display:none" onchange="previewMedia(this,'image')">
+              <input type="file" id="vid-upload" accept="video/*" style="display:none" onchange="previewMedia(this,'video')">
+            </div>
+            <div style="font-size:11px;color:var(--muted);">🔒 Full pitch protected by NDA</div>
+            <button class="btn btn-primary" style="padding:8px 20px;font-size:13px;" onclick="postIdea()">Post 🚀</button>
           </div>
+          <div class="media-preview" id="media-preview"></div>
         </div>
-        <div id="ideas-feed"><div class="loading">Loading ideas...</div></div>
+        <div id="ideas-feed"></div>
       </div>
 
-      <!-- INVESTORS -->
-      <div id="page-investors" class="page">
-        <div class="page-title">Active Investors</div>
-        <div id="investors-list"><div class="loading">Loading investors...</div></div>
+      <!-- NETWORK -->
+      <div id="page-network" class="page">
+        <div class="page-title">🌐 Your Network</div>
+        <div class="network-tabs">
+          <button class="net-tab active" onclick="switchNetTab(this,'suggestions')">Suggestions</button>
+          <button class="net-tab" onclick="switchNetTab(this,'followers')">Followers</button>
+          <button class="net-tab" onclick="switchNetTab(this,'following')">Following</button>
+        </div>
+        <div id="network-grid" class="network-grid"></div>
+      </div>
+
+      <!-- CHAT -->
+      <div id="page-chat" class="page">
+        <div class="chat-layout">
+          <div class="chat-list">
+            <div class="chat-list-header">💬 Messages</div>
+            <div class="chat-search"><input type="text" placeholder="Search conversations..." style="border-radius:100px;"></div>
+            <div id="chat-list-items"></div>
+          </div>
+          <div class="chat-window" id="chat-window">
+            <div class="chat-placeholder">
+              <div class="chat-placeholder-icon">💬</div>
+              <div>Select a conversation to start chatting</div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- PROFILE -->
       <div id="page-profile" class="page">
+        <div class="profile-cover"></div>
         <div class="profile-hero">
-          <div class="profile-av" id="profile-av">D</div>
-          <div>
-            <div class="profile-name" id="profile-name">Loading...</div>
-            <div class="profile-role-badge" id="profile-role-badge">💡 Entrepreneur</div>
-            <div class="profile-bio" id="profile-bio">Founder & visionary on PitchBridge.</div>
-            <div class="profile-stats">
-              <div><div class="ps-num" id="ps-ideas">0</div><div class="ps-label">Ideas</div></div>
-              <div><div class="ps-num" id="ps-connections">0</div><div class="ps-label">Connections</div></div>
+          <div class="profile-av-wrap">
+            <div class="profile-av-big" id="profile-av-big" onclick="openAvatarPicker()">
+              <span id="profile-av-text">D</span>
+            </div>
+            <div class="profile-av-edit" onclick="openAvatarPicker()">✏️</div>
+          </div>
+          <div class="profile-main">
+            <div class="profile-name" id="profile-name-display">Denny Franklin</div>
+            <div class="profile-profession" id="profile-profession-display">Add your profession</div>
+            <div class="profile-role-pill" id="profile-role-pill">💡 Entrepreneur</div>
+            <div class="profile-summary" id="profile-summary-display">Add a summary about yourself...</div>
+            <div class="profile-stats-row">
+              <div class="pstat"><div class="pstat-num" id="ps-posts">0</div><div class="pstat-label">Posts</div></div>
+              <div class="pstat"><div class="pstat-num" id="ps-followers">0</div><div class="pstat-label">Followers</div></div>
+              <div class="pstat"><div class="pstat-num" id="ps-following">0</div><div class="pstat-label">Following</div></div>
             </div>
           </div>
         </div>
-        <div class="page-title" style="font-size:17px;margin-bottom:14px;">My Ideas</div>
-        <div id="my-ideas"></div>
+
+        <!-- EDIT PROFILE -->
+        <div class="profile-edit-section">
+          <div class="section-title">✏️ Edit Profile</div>
+          <label>Profession</label>
+          <input type="text" id="edit-profession" placeholder="e.g. Founder & CEO, Software Engineer">
+          <label>Summary</label>
+          <textarea id="edit-summary" placeholder="Tell people about yourself..." style="height:80px;resize:none;"></textarea>
+          <button class="btn btn-primary" style="padding:10px 22px;font-size:14px;" onclick="saveProfile()">Save Changes</button>
+        </div>
+
+        <!-- AVATAR PICKER -->
+        <div class="profile-edit-section">
+          <div class="section-title">🎭 Choose Your Avatar</div>
+          <div class="avatar-grid" id="avatar-grid"></div>
+          <div style="font-size:13px;color:var(--muted);">Or upload your own photo:</div>
+          <input type="file" id="profile-photo-upload" accept="image/*" onchange="uploadProfilePhoto(this)" style="margin-top:10px;">
+        </div>
+
+        <div class="section-title" style="margin-bottom:14px;">📌 My Posts</div>
+        <div id="my-posts"></div>
       </div>
 
       <!-- ADMIN -->
       <div id="page-admin" class="page">
         <div class="page-title">🛡 Admin Dashboard</div>
         <div class="admin-grid">
-          <div class="admin-stat"><div class="admin-stat-num" id="a-ideas">—</div><div class="admin-stat-label">Total Ideas</div></div>
-          <div class="admin-stat"><div class="admin-stat-num" id="a-users">—</div><div class="admin-stat-label">Total Users</div></div>
-          <div class="admin-stat"><div class="admin-stat-num" id="a-pending">—</div><div class="admin-stat-label">Pending Verifications</div></div>
-          <div class="admin-stat"><div class="admin-stat-num" id="a-requests">—</div><div class="admin-stat-label">Connect Requests</div></div>
+          <div class="admin-stat"><div class="admin-stat-num" id="a-ideas">6</div><div class="admin-stat-label">Total Posts</div></div>
+          <div class="admin-stat"><div class="admin-stat-num" id="a-users">12</div><div class="admin-stat-label">Total Users</div></div>
+          <div class="admin-stat"><div class="admin-stat-num">2</div><div class="admin-stat-label">Pending Verifications</div></div>
+          <div class="admin-stat"><div class="admin-stat-num">3</div><div class="admin-stat-label">Connect Requests</div></div>
         </div>
-        <div class="page-title" style="font-size:17px;margin-bottom:14px;">Pending Investor Verifications</div>
-        <div id="admin-verifications"><div class="loading">Loading...</div></div>
-        <div class="page-title" style="font-size:17px;margin:20px 0 14px;">Connect Requests (Schedule Call)</div>
-        <div id="admin-requests"><div class="loading">Loading...</div></div>
+        <div class="section-title" style="margin-bottom:14px;">Pending Investor Verifications</div>
+        <div class="request-item">
+          <div style="width:36px;height:36px;border-radius:50%;background:#00a878;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;flex-shrink:0;">R</div>
+          <div style="flex:1;"><div class="req-name">Raj Mehta</div><div class="req-detail">EV & Clean Energy · Joined 2 days ago</div></div>
+          <button class="req-approve" onclick="showToast('✅ Raj Mehta verified!')">Approve</button>
+          <button class="req-deny" onclick="showToast('❌ Denied.')">Deny</button>
+        </div>
+        <div class="request-item">
+          <div style="width:36px;height:36px;border-radius:50%;background:#d4a017;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;flex-shrink:0;">S</div>
+          <div style="flex:1;"><div class="req-name">Sara Kim</div><div class="req-detail">AI & SaaS · Joined 5 days ago</div></div>
+          <button class="req-approve" onclick="showToast('✅ Sara Kim verified!')">Approve</button>
+          <button class="req-deny" onclick="showToast('❌ Denied.')">Deny</button>
+        </div>
+        <div class="section-title" style="margin:20px 0 14px;">Connect Requests</div>
+        <div class="request-item">
+          <div style="width:36px;height:36px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;flex-shrink:0;">M</div>
+          <div style="flex:1;"><div class="req-name">Michael Torres → CleanDrive AI</div><div class="req-detail">Investor wants to connect. Ready to schedule Zoom.</div></div>
+          <button class="req-approve" onclick="showToast('📅 Zoom link sent to both parties!')">Schedule Call</button>
+        </div>
       </div>
 
     </div>
@@ -154,25 +536,23 @@
     <!-- SIDEBAR -->
     <div class="side-col">
       <div class="side-card">
-        <div class="side-title">Top Investors</div>
-        <div id="side-investors"><div class="loading" style="font-size:13px;">Loading...</div></div>
+        <div class="side-title">People to Connect</div>
+        <div id="side-people"></div>
       </div>
       <div class="side-card">
-        <div class="side-title">Trending</div>
-        <div style="display:flex;flex-wrap:wrap;gap:8px;">
-          <div class="trend-tag">🤖 AI</div>
-          <div class="trend-tag">⚡ EV</div>
-          <div class="trend-tag">📦 Product</div>
-          <div class="trend-tag">💻 Tech</div>
-          <div class="trend-tag">🌱 CleanTech</div>
+        <div class="side-title">Trending Topics</div>
+        <div>
+          <span class="trend-tag">🤖 AI</span><span class="trend-tag">⚡ EV</span>
+          <span class="trend-tag">📦 Product</span><span class="trend-tag">💻 Tech</span>
+          <span class="trend-tag">🌱 CleanTech</span><span class="trend-tag">🏥 HealthTech</span>
         </div>
       </div>
       <div class="side-card how-card">
-        <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:10px;">💡 How it works</div>
+        <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:10px;">💡 How PitchBridge works</div>
         <div style="font-size:13px;color:var(--muted);line-height:1.8;">
           1. Post your idea teaser<br>
           2. Investor requests access<br>
-          3. Sign NDA to see full pitch<br>
+          3. Sign NDA → see full pitch<br>
           4. We schedule your Zoom call<br>
           5. Deal closed = commission 🎉
         </div>
@@ -186,8 +566,8 @@
   <div class="modal">
     <button class="modal-close" onclick="closeModal('invest-modal')">✕</button>
     <div class="modal-title">🔐 Request Full Access</div>
-    <div class="modal-sub">To view the complete pitch, please agree to the NDA. This protects the founder's idea.</div>
-    <div class="nda-box"><b>Non-Disclosure Agreement (Summary)</b><br><br>By proceeding, you agree that any information shared about this idea is strictly confidential. You will not share, replicate, or use this idea without written consent. PitchBridge earns a commission on any successful deal.</div>
+    <div class="modal-sub">Agree to the NDA to view the full pitch and connect with this founder.</div>
+    <div class="nda-box"><b>Non-Disclosure Agreement (Summary)</b><br><br>By proceeding, you confirm this information is strictly confidential. You will not share, copy, or use this idea without written consent. PitchBridge earns a commission on any successful deal closed through this platform.</div>
     <label style="display:flex;gap:10px;align-items:center;cursor:pointer;font-size:14px;color:var(--text);text-transform:none;letter-spacing:0;margin-bottom:20px;">
       <input type="checkbox" id="nda-check" style="width:auto;margin:0;"> I agree to the NDA and want to see the full pitch
     </label>
@@ -197,9 +577,450 @@
 
 <div class="toast hidden" id="toast"></div>
 
-<!-- Supabase SDK -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js"></script>
-<script src="js/app.js"></script>
+<script>
+// ===== STATE =====
+let currentUser = null;
+let selectedRole = '';
+let selectedTag = '';
+let mediaFiles = [];
+let userProfile = { name:'', role:'', profession:'', summary:'', avatar:'', avatarType:'emoji' };
+let netActiveTab = 'suggestions';
+let activeChat = null;
+let notifOpen = false;
+
+// ===== SAMPLE DATA =====
+const AVATARS = [
+  {emoji:'👨‍💼',bg:'#5b4fcf'},{emoji:'👩‍💼',bg:'#e63560'},{emoji:'🧑‍🚀',bg:'#00a878'},
+  {emoji:'👨‍💻',bg:'#d4a017'},{emoji:'👩‍🔬',bg:'#8b5cf6'},{emoji:'🦸',bg:'#0ea5e9'},
+  {emoji:'🧙‍♂️',bg:'#f59e0b'},{emoji:'🧑‍🎨',bg:'#ec4899'},{emoji:'🤴',bg:'#10b981'},
+];
+
+let ideas = [
+  {id:1,name:'Aisha Patel',profession:'Founder & CEO',role:'entrepreneur',avatar:'A',color:'#e63560',title:'CleanDrive AI',body:'An AI platform that optimizes EV charging schedules based on grid load, weather, and user behavior — cutting charging costs by 40%.',category:'EV',ask:'$500K',likes:24,liked:false,comments:[{author:'James',text:'This is brilliant! The EV space needs this.'}]},
+  {id:2,name:'Marcus Lee',profession:'Serial Entrepreneur',role:'investor',avatar:'M',color:'#d4a017',title:'MediMatch',body:'Connecting rural patients with specialist doctors via AI-powered symptom matching and video consultations.',category:'AI',ask:'$250K',likes:18,liked:false,comments:[]},
+  {id:3,name:'Sofia Reyes',profession:'Product Designer',role:'entrepreneur',avatar:'S',color:'#00a878',title:'PackZero',body:'Biodegradable packaging made from agricultural waste, targeting e-commerce brands wanting to go green.',category:'Product',ask:'$1M',likes:31,liked:false,comments:[{author:'Tom',text:'Love the sustainability angle!'},{author:'Priya',text:'Would love to invest in this.'}]},
+];
+
+let myPosts = [];
+
+const networkPeople = [
+  {name:'James Carter',role:'Investor',focus:'EV & Clean Energy',av:'J',color:'#00a878',following:false},
+  {name:'Priya Sharma',role:'Investor',focus:'AI & ML',av:'P',color:'#5b4fcf',following:false},
+  {name:'Tom Wilson',role:'Entrepreneur',focus:'Physical Products',av:'T',color:'#d4a017',following:false},
+  {name:'Nadia Osei',role:'Investor',focus:'HealthTech',av:'N',color:'#e63560',following:false},
+  {name:'Arjun Mehta',role:'Entrepreneur',focus:'Fintech',av:'A',color:'#0ea5e9',following:false},
+  {name:'Liu Wei',role:'Both',focus:'Deep Tech',av:'L',color:'#8b5cf6',following:false},
+];
+
+const chatContacts = [
+  {id:1,name:'James Carter',av:'J',color:'#00a878',preview:'Interested in your idea!',unread:2,messages:[
+    {me:false,text:"Hi! I saw your CleanDrive AI idea. It's impressive!",time:'10:30 AM'},
+    {me:true,text:'Thank you James! Happy to tell you more.',time:'10:32 AM'},
+    {me:false,text:'Interested in your idea! Can we schedule a call?',time:'10:35 AM'},
+  ]},
+  {id:2,name:'Priya Sharma',av:'P',color:'#5b4fcf',preview:'When can we connect?',unread:1,messages:[
+    {me:false,text:'Hello! PitchBridge connected us. When can we connect?',time:'Yesterday'},
+  ]},
+  {id:3,name:'Tom Wilson',av:'T',color:'#d4a017',preview:'Great platform!',unread:0,messages:[
+    {me:true,text:'Hey Tom, welcome to PitchBridge!',time:'Mon'},
+    {me:false,text:'Great platform! Looking forward to investing.',time:'Mon'},
+  ]},
+];
+
+// ===== AUTH =====
+function showAuth(mode){
+  document.getElementById('landing').classList.remove('active');
+  document.getElementById('auth').classList.add('active');
+  toggleAuth(mode);
+}
+function toggleAuth(mode){
+  document.getElementById('signup-form').style.display = mode==='signup' ? 'block' : 'none';
+  document.getElementById('login-form').style.display = mode==='login' ? 'block' : 'none';
+}
+function selectRole(el, role){
+  document.querySelectorAll('.role-card').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel'); selectedRole=role;
+}
+function doSignup(){
+  const name=document.getElementById('su-name').value.trim();
+  const email=document.getElementById('su-email').value.trim();
+  const errEl=document.getElementById('signup-error');
+  if(!name||!email){errEl.textContent='Please fill in all fields.';return;}
+  if(!selectedRole){errEl.textContent='Please pick your role.';return;}
+  currentUser={name,email,role:selectedRole,isAdmin:false};
+  userProfile={name,role:selectedRole,profession:'',summary:'',avatar:name[0].toUpperCase(),avatarType:'initial',color:'#5b4fcf'};
+  enterApp();
+}
+function doLogin(){
+  const email=document.getElementById('li-email').value.trim();
+  const errEl=document.getElementById('login-error');
+  if(!email){errEl.textContent='Please enter your email.';return;}
+  const isAdmin=email==='admin@pb.com';
+  currentUser={name:'Denny Franklin',email,role:'both',isAdmin};
+  userProfile={name:'Denny Franklin',role:'both',profession:'Founder & CEO',summary:'Building PitchBridge to connect the world\'s best ideas with capital.',avatar:'D',avatarType:'initial',color:'#5b4fcf'};
+  enterApp();
+}
+function doLogout(){
+  currentUser=null;
+  document.getElementById('app').classList.remove('active');
+  document.getElementById('landing').classList.add('active');
+  showToast('👋 Logged out!');
+}
+function enterApp(){
+  document.getElementById('auth').classList.remove('active');
+  document.getElementById('app').classList.add('active');
+  updateNavAvatar();
+  if(currentUser.isAdmin) document.getElementById('admin-tab').style.display='inline-block';
+  if(currentUser.role==='investor') document.getElementById('post-box-wrap').style.display='none';
+  renderFeed(); renderSidebar(); renderNetwork('suggestions'); renderChatList();
+  showToast('👋 Welcome, '+userProfile.name.split(' ')[0]+'!');
+}
+
+function updateNavAvatar(){
+  const el=document.getElementById('nav-avatar');
+  if(userProfile.avatarType==='photo'&&userProfile.photoUrl){
+    el.innerHTML=`<img src="${userProfile.photoUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+  } else if(userProfile.avatarType==='emoji'){
+    el.innerHTML=userProfile.avatar;
+    el.style.background=userProfile.color||'#5b4fcf';
+    el.style.fontSize='18px';
+  } else {
+    el.textContent=userProfile.avatar||'D';
+    el.style.background=userProfile.color||'#5b4fcf';
+    el.style.fontSize='14px';
+  }
+}
+
+// ===== PAGES =====
+function showPage(page, tab){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  if(tab) tab.classList.add('active');
+  if(page==='profile') renderProfilePage();
+  if(page==='network') renderNetwork(netActiveTab);
+  closeNotifPanel();
+}
+
+// ===== FEED =====
+function selectTag(el, tag){ document.querySelectorAll('.tag-pill').forEach(t=>t.classList.remove('sel')); el.classList.add('sel'); selectedTag=tag; }
+
+function triggerFileUpload(type){ document.getElementById(type+'-upload').click(); }
+
+function previewMedia(input, type){
+  const file=input.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const prev=document.getElementById('media-preview');
+    if(type==='image'){
+      const img=document.createElement('img'); img.src=e.target.result; img.className='media-thumb';
+      prev.appendChild(img); mediaFiles.push({type:'image',url:e.target.result});
+    } else {
+      const vid=document.createElement('video'); vid.src=e.target.result; vid.className='media-thumb'; vid.controls=true;
+      prev.appendChild(vid); mediaFiles.push({type:'video',url:e.target.result});
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+function postIdea(){
+  const body=document.getElementById('post-text').value.trim();
+  if(!body){showToast('⚠️ Please write something first');return;}
+  const title=document.getElementById('post-title').value.trim();
+  const ask=document.getElementById('post-ask').value.trim();
+  const post={id:Date.now(),name:userProfile.name,profession:userProfile.profession||'Member',role:currentUser.role,avatar:userProfile.avatar,color:userProfile.color||'#5b4fcf',avatarType:userProfile.avatarType,photoUrl:userProfile.photoUrl,title,body,category:selectedTag||'',ask,likes:0,liked:false,comments:[],media:[...mediaFiles],mine:true};
+  myPosts.unshift(post); ideas.unshift(post);
+  document.getElementById('post-text').value=''; document.getElementById('post-title').value=''; document.getElementById('post-ask').value='';
+  document.getElementById('media-preview').innerHTML=''; mediaFiles=[]; selectedTag='';
+  document.querySelectorAll('.tag-pill').forEach(t=>t.classList.remove('sel'));
+  renderFeed(); showToast('🚀 Posted!');
+  document.getElementById('ps-posts').textContent=myPosts.length;
+}
+
+function renderFeed(){
+  document.getElementById('ideas-feed').innerHTML=ideas.map(idea=>ideaCardHTML(idea)).join('');
+}
+
+function getAvatarHTML(item, size=42){
+  if(item.avatarType==='photo'&&item.photoUrl) return `<img src="${item.photoUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+  if(item.avatarType==='emoji') return `<span style="font-size:${size*0.5}px;">${item.avatar}</span>`;
+  return item.avatar||'?';
+}
+
+function ideaCardHTML(idea){
+  const bc={AI:'badge-ai',EV:'badge-ev',Product:'badge-product',Tech:'badge-tech'}[idea.category]||'badge-tech';
+  const isInv=currentUser&&(currentUser.role==='investor'||currentUser.role==='both');
+  const likedStyle=idea.liked?'color:var(--red);border-color:var(--red);':'';
+  const mediaHTML=idea.media&&idea.media.length?`<div class="card-images">${idea.media.map(m=>m.type==='image'?`<img src="${m.url}" class="card-img">`:`<video src="${m.url}" class="card-img" controls></video>`).join('')}</div>`:'';
+  const commentsHTML=`<div class="comments-section" id="comments-${idea.id}">
+    <div class="comment-input-row">
+      <div class="post-av" style="width:30px;height:30px;font-size:11px;">${getAvatarHTML(userProfile,30)}</div>
+      <input class="comment-input" placeholder="Write a comment..." id="cinput-${idea.id}">
+      <button class="comment-send" onclick="addComment(${idea.id})">Send</button>
+    </div>
+    <div id="clist-${idea.id}">${idea.comments.map(c=>`
+    <div class="comment">
+      <div class="comment-av">${c.author[0]}</div>
+      <div class="comment-bubble"><div class="comment-author">${c.author}</div>${c.text}</div>
+    </div>`).join('')}
+    </div>
+  </div>`;
+
+  return `<div class="idea-card" id="card-${idea.id}">
+  <div class="card-head">
+    <div class="card-av" style="background:${idea.color||'#5b4fcf'};">${getAvatarHTML(idea)}</div>
+    <div class="card-info">
+      <div class="card-name">${idea.name}</div>
+      <div class="card-meta-row">${idea.profession||'Member'}${idea.category?` · <span class="badge ${bc}">${idea.category}</span>`:''}</div>
+    </div>
+    ${idea.ask?`<div class="card-ask" style="margin-left:auto;">Seeking: ${idea.ask}</div>`:''}
+  </div>
+  ${idea.title?`<div class="card-title">${idea.title}</div>`:''}
+  <div class="card-body">${idea.body}</div>
+  ${mediaHTML}
+  ${idea.ask?`<div class="card-teaser">🔒 Full pitch & financials visible after NDA agreement</div>`:''}
+  <div class="card-footer">
+    ${isInv&&idea.ask?`<button class="card-btn card-btn-invest" onclick="openInvest(${idea.id})">💼 Request Access</button>`:''}
+    <button class="card-btn card-btn-action ${idea.liked?'liked':''}" style="${likedStyle}" onclick="likePost(${idea.id},this)">❤️ ${idea.likes}</button>
+    <button class="card-btn card-btn-action" onclick="toggleComments(${idea.id})">💬 ${idea.comments.length}</button>
+    <button class="card-btn card-btn-action" onclick="showToast('🔗 Link copied!')">↗ Share</button>
+  </div>
+  ${commentsHTML}
+</div>`;
+}
+
+function likePost(id, btn){
+  const idea=ideas.find(i=>i.id===id); if(!idea) return;
+  idea.liked=!idea.liked; idea.likes+=idea.liked?1:-1;
+  btn.textContent=`❤️ ${idea.likes}`;
+  btn.style=idea.liked?'color:var(--red);border-color:var(--red);':'';
+  btn.classList.toggle('liked',idea.liked);
+}
+
+function toggleComments(id){
+  const el=document.getElementById('comments-'+id);
+  el.classList.toggle('open');
+}
+
+function addComment(id){
+  const input=document.getElementById('cinput-'+id);
+  const text=input.value.trim(); if(!text) return;
+  const idea=ideas.find(i=>i.id===id); if(!idea) return;
+  const comment={author:userProfile.name.split(' ')[0],text};
+  idea.comments.push(comment);
+  const listEl=document.getElementById('clist-'+id);
+  const div=document.createElement('div'); div.className='comment'; div.style.animation='fadeUp .3s ease both';
+  div.innerHTML=`<div class="comment-av">${comment.author[0]}</div><div class="comment-bubble"><div class="comment-author">${comment.author}</div>${text}</div>`;
+  listEl.appendChild(div);
+  const countBtn=document.querySelector(`#card-${id} .card-btn-action:nth-child(2)`);
+  if(countBtn) countBtn.textContent=`💬 ${idea.comments.length}`;
+  input.value='';
+}
+
+// ===== NETWORK =====
+function switchNetTab(el, tab){
+  document.querySelectorAll('.net-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active'); netActiveTab=tab; renderNetwork(tab);
+}
+
+function renderNetwork(tab){
+  let people;
+  if(tab==='suggestions') people=networkPeople.filter(p=>!p.following);
+  else if(tab==='following') people=networkPeople.filter(p=>p.following);
+  else people=networkPeople.slice(0,3);
+  document.getElementById('network-grid').innerHTML=people.length?people.map(p=>`
+  <div class="network-card">
+    <div class="net-av" style="background:${p.color};">${p.av}</div>
+    <div class="net-name">${p.name}</div>
+    <div class="net-role">${p.role} · ${p.focus}</div>
+    <button class="net-follow-btn ${p.following?'following':''}" onclick="toggleFollow(this,'${p.name}')">${p.following?'✓ Following':'+ Follow'}</button>
+  </div>`).join('')
+  :`<div class="empty-state" style="grid-column:1/-1;"><div class="empty-state-icon">👥</div><div>${tab==='followers'?'No followers yet.':tab==='following'?'You are not following anyone yet.':'No suggestions.'}</div></div>`;
+}
+
+function toggleFollow(btn, name){
+  const person=networkPeople.find(p=>p.name===name); if(!person) return;
+  person.following=!person.following;
+  if(person.following){btn.textContent='✓ Following';btn.classList.add('following');showToast('✅ Following '+name+'!');}
+  else{btn.textContent='+ Follow';btn.classList.remove('following');}
+  renderNetwork(netActiveTab);
+}
+
+// ===== CHAT =====
+function renderChatList(){
+  document.getElementById('chat-list-items').innerHTML=chatContacts.map(c=>`
+  <div class="chat-item" id="chatitem-${c.id}" onclick="openChat(${c.id})">
+    <div class="chat-av" style="background:${c.color};">${c.av}</div>
+    <div style="flex:1;min-width:0;">
+      <div class="chat-name">${c.name}</div>
+      <div class="chat-preview">${c.preview}</div>
+    </div>
+    ${c.unread>0?`<div class="chat-unread">${c.unread}</div>`:''}
+  </div>`).join('');
+}
+
+function openChat(id){
+  const contact=chatContacts.find(c=>c.id===id); if(!contact) return;
+  activeChat=id; contact.unread=0;
+  document.querySelectorAll('.chat-item').forEach(el=>el.classList.remove('active'));
+  document.getElementById('chatitem-'+id).classList.add('active');
+  renderChatList();
+  document.getElementById('chat-window').innerHTML=`
+  <div class="chat-header">
+    <div class="chat-av" style="background:${contact.color};width:36px;height:36px;">${contact.av}</div>
+    <div><div class="chat-header-name">${contact.name}</div><div class="chat-header-status">● Online</div></div>
+  </div>
+  <div class="chat-messages" id="chat-msgs">${contact.messages.map(m=>`
+    <div class="msg ${m.me?'me':'them'}">
+      <div class="msg-bubble">${m.text}</div>
+      <div class="msg-time">${m.time}</div>
+    </div>`).join('')}
+  </div>
+  <div class="chat-input-bar">
+    <input class="chat-input" placeholder="Type a message..." id="chat-input-field" onkeydown="if(event.key==='Enter')sendMsg(${id})">
+    <button class="chat-send" onclick="sendMsg(${id})">➤</button>
+  </div>`;
+  const msgs=document.getElementById('chat-msgs');
+  if(msgs) msgs.scrollTop=msgs.scrollHeight;
+}
+
+function sendMsg(contactId){
+  const input=document.getElementById('chat-input-field');
+  const text=input.value.trim(); if(!text) return;
+  const contact=chatContacts.find(c=>c.id===contactId); if(!contact) return;
+  const now=new Date(); const time=now.getHours()+':'+(now.getMinutes()<10?'0':'')+now.getMinutes();
+  const msg={me:true,text,time};
+  contact.messages.push(msg); contact.preview=text;
+  input.value='';
+  const msgs=document.getElementById('chat-msgs');
+  const div=document.createElement('div'); div.className='msg me'; div.style.animation='fadeUp .3s ease both';
+  div.innerHTML=`<div class="msg-bubble">${text}</div><div class="msg-time">${time}</div>`;
+  msgs.appendChild(div); msgs.scrollTop=msgs.scrollHeight;
+  // Simulate reply
+  setTimeout(()=>{
+    const replies=["That sounds great!","Let's connect soon!","Very interesting idea.","I'll review and get back to you."];
+    const reply={me:false,text:replies[Math.floor(Math.random()*replies.length)],time};
+    contact.messages.push(reply);
+    const rdiv=document.createElement('div'); rdiv.className='msg them'; rdiv.style.animation='fadeUp .3s ease both';
+    rdiv.innerHTML=`<div class="msg-bubble">${reply.text}</div><div class="msg-time">${time}</div>`;
+    msgs.appendChild(rdiv); msgs.scrollTop=msgs.scrollHeight;
+  },1200);
+}
+
+// ===== SIDEBAR =====
+function renderSidebar(){
+  document.getElementById('side-people').innerHTML=networkPeople.slice(0,3).map(p=>`
+  <div class="side-person">
+    <div class="side-av" style="background:${p.color};">${p.av}</div>
+    <div><div class="side-name">${p.name}</div><div class="side-role">${p.role}</div></div>
+    <button class="side-btn" onclick="showToast('✅ Connected with ${p.name}!')">Connect</button>
+  </div>`).join('');
+}
+
+// ===== PROFILE =====
+function renderProfilePage(){
+  document.getElementById('profile-name-display').textContent=userProfile.name;
+  document.getElementById('profile-profession-display').textContent=userProfile.profession||'Add your profession';
+  document.getElementById('profile-summary-display').textContent=userProfile.summary||'Add a summary about yourself...';
+  document.getElementById('edit-profession').value=userProfile.profession||'';
+  document.getElementById('edit-summary').value=userProfile.summary||'';
+  const rm={entrepreneur:'💡 Entrepreneur',investor:'💼 Investor',both:'⚡ Entrepreneur & Investor'};
+  document.getElementById('profile-role-pill').textContent=rm[userProfile.role]||'';
+  // Profile avatar
+  const bigAv=document.getElementById('profile-av-big');
+  const avText=document.getElementById('profile-av-text');
+  if(userProfile.avatarType==='photo'&&userProfile.photoUrl){
+    bigAv.style.background='transparent';
+    avText.innerHTML=`<img src="${userProfile.photoUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+  } else if(userProfile.avatarType==='emoji'){
+    bigAv.style.background=userProfile.color||'#5b4fcf';
+    avText.innerHTML=`<span style="font-size:40px;">${userProfile.avatar}</span>`;
+  } else {
+    bigAv.style.background=userProfile.color||'#5b4fcf';
+    avText.textContent=userProfile.avatar||'D';
+  }
+  document.getElementById('ps-posts').textContent=myPosts.length;
+  document.getElementById('ps-followers').textContent=networkPeople.filter(p=>p.following).length;
+  // Avatar grid
+  renderAvatarGrid();
+  // My posts
+  document.getElementById('my-posts').innerHTML=myPosts.length
+    ?myPosts.map(p=>ideaCardHTML(p)).join('')
+    :'<div class="empty-state"><div class="empty-state-icon">📝</div><div>No posts yet. Share your first idea!</div></div>';
+}
+
+function renderAvatarGrid(){
+  const grid=document.getElementById('avatar-grid');
+  grid.innerHTML=AVATARS.map((av,i)=>`
+  <div class="av-option ${userProfile.avatar===av.emoji&&userProfile.avatarType==='emoji'?'sel':''}"
+    style="background:${av.bg};" onclick="selectAvatar(${i})">${av.emoji}</div>`).join('');
+}
+
+function selectAvatar(i){
+  const av=AVATARS[i];
+  userProfile.avatar=av.emoji; userProfile.color=av.bg; userProfile.avatarType='emoji';
+  userProfile.photoUrl=null;
+  updateNavAvatar(); renderAvatarGrid();
+  // Update post avatar
+  const postAvText=document.getElementById('post-avatar-text');
+  if(postAvText){ postAvText.innerHTML=`<span style="font-size:18px;">${av.emoji}</span>`; }
+  document.getElementById('post-avatar-wrap').style.background=av.bg;
+  showToast('✅ Avatar updated!');
+}
+
+function openAvatarPicker(){ document.getElementById('profile-photo-upload').click(); }
+
+function uploadProfilePhoto(input){
+  const file=input.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    userProfile.photoUrl=e.target.result; userProfile.avatarType='photo';
+    updateNavAvatar(); renderProfilePage(); showToast('✅ Photo updated!');
+  };
+  reader.readAsDataURL(file);
+}
+
+function saveProfile(){
+  userProfile.profession=document.getElementById('edit-profession').value.trim();
+  userProfile.summary=document.getElementById('edit-summary').value.trim();
+  renderProfilePage(); showToast('✅ Profile saved!');
+}
+
+// ===== NOTIFICATIONS =====
+function toggleNotif(){
+  notifOpen=!notifOpen;
+  document.getElementById('notif-panel').classList.toggle('open',notifOpen);
+}
+function closeNotifPanel(){ notifOpen=false; document.getElementById('notif-panel').classList.remove('open'); }
+function markRead(el){ el.classList.remove('unread'); updateNotifCount(); }
+function clearNotifs(){
+  document.querySelectorAll('.notif-item').forEach(el=>el.classList.remove('unread'));
+  updateNotifCount();
+}
+function updateNotifCount(){
+  const count=document.querySelectorAll('.notif-item.unread').length;
+  const el=document.getElementById('notif-count');
+  el.textContent=count; el.classList.toggle('hidden',count===0);
+}
+document.addEventListener('click',e=>{
+  if(notifOpen&&!e.target.closest('.notif-panel')&&!e.target.closest('.notif-btn')) closeNotifPanel();
+});
+
+// ===== INVEST MODAL =====
+function openInvest(id){ document.getElementById('nda-check').checked=false; document.getElementById('invest-modal').classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+function confirmInvest(){
+  if(!document.getElementById('nda-check').checked){showToast('⚠️ Please agree to the NDA first');return;}
+  closeModal('invest-modal'); showToast('✅ Request sent! Admin will schedule your call within 24h.');
+}
+
+// ===== TOAST =====
+let toastTimer;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.remove('hidden');
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.add('hidden'),3000);
+}
+</script>
 </body>
 </html>
