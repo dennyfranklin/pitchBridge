@@ -277,6 +277,41 @@ input::placeholder,textarea::placeholder{color:#bbbbd0;}
 </head>
 <body>
 
+
+<!-- PERSONA SELECTION SCREEN -->
+<div id="persona-screen" class="screen" style="align-items:center;justify-content:center;padding:20px;background:linear-gradient(145deg,#f0eeff,#fff,#eef4ff);">
+  <div class="auth-card" style="max-width:480px;">
+    <span class="auth-logo">PitchBridge</span>
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:24px;">
+      <div id="persona-avatar" style="width:56px;height:56px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff;flex-shrink:0;overflow:hidden;border:3px solid var(--accent-light);"></div>
+      <div>
+        <div id="persona-name" style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;"></div>
+        <div id="persona-email" style="font-size:13px;color:var(--muted);margin-top:2px;"></div>
+      </div>
+    </div>
+    <div class="auth-title">One last step!</div>
+    <div class="auth-sub" style="margin-bottom:22px;">How will you be using PitchBridge? <span style="color:var(--red);font-size:12px;">(cannot be changed later)</span></div>
+    <div class="role-grid" style="grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:24px;">
+      <div class="persona-card role-card" data-role="entrepreneur" onclick="selectPersona(this)">
+        <div class="role-icon">💡</div>
+        <div class="role-name">Entrepreneur</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:4px;">I have ideas</div>
+      </div>
+      <div class="persona-card role-card" data-role="investor" onclick="selectPersona(this)">
+        <div class="role-icon">💼</div>
+        <div class="role-name">Investor</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:4px;">I fund ideas</div>
+      </div>
+      <div class="persona-card role-card" data-role="both" onclick="selectPersona(this)">
+        <div class="role-icon">⚡</div>
+        <div class="role-name">Both</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:4px;">I do both</div>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-full" id="persona-btn" onclick="confirmPersona()">Enter PitchBridge →</button>
+  </div>
+</div>
+
 <!-- LANDING -->
 <div id="landing" class="screen active">
   <div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div>
@@ -522,8 +557,8 @@ input::placeholder,textarea::placeholder{color:#bbbbd0;}
 // ⚠️  PASTE YOUR SUPABASE KEYS HERE
 // Get them from: supabase.com → Project → Settings → API
 // ============================================================
-const SUPABASE_URL = 'https://dovwpenkxxkzzyjhdnve.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_VM9-r1qNqGotIqatBGrDJw_dzofGd7m';
+const SUPABASE_URL = 'YOUR_SUPABASE_URL_HERE';
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY_HERE';
 // ============================================================
 
 const { createClient } = supabase;
@@ -571,18 +606,49 @@ window.addEventListener('DOMContentLoaded', async () => {
 });
 
 async function createProfileFromGoogle(user) {
-  // New Google user — need to pick role
-  const name = user.user_metadata?.full_name || user.email.split('@')[0];
-  const photoUrl = user.user_metadata?.avatar_url || null;
-  const role = prompt('Welcome to PitchBridge! Are you an entrepreneur, investor, or both? Type: entrepreneur / investor / both') || 'entrepreneur';
+  const name = user.user_metadata?.full_name || user.user_metadata?.name || user.email.split('@')[0];
+  const photoUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture || null;
+  showPersonaScreen(user, name, photoUrl);
+}
+
+function showPersonaScreen(user, name, photoUrl) {
+  document.getElementById('landing').classList.remove('active');
+  document.getElementById('auth').classList.remove('active');
+  document.getElementById('app').classList.remove('active');
+  document.getElementById('persona-screen').classList.add('active');
+  document.getElementById('persona-name').textContent = 'Hi, ' + name.split(' ')[0] + '! 👋';
+  document.getElementById('persona-email').textContent = user.email;
+  const avEl = document.getElementById('persona-avatar');
+  if (photoUrl) {
+    avEl.innerHTML = '<img src="' + photoUrl + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+  } else {
+    avEl.textContent = name[0].toUpperCase();
+  }
+  window._pendingUser = { user, name, photoUrl };
+}
+
+async function confirmPersona() {
+  const selected = document.querySelector('.persona-card.sel');
+  if (!selected) { showToast('Please select your role first!'); return; }
+  const role = selected.dataset.role;
+  const { user, name, photoUrl } = window._pendingUser;
   const color = AVATAR_COLORS[Math.floor(Math.random() * AVATAR_COLORS.length)];
+  const btn = document.getElementById('persona-btn');
+  btn.disabled = true; btn.textContent = 'Setting up your account...';
   await sb.from('profiles').insert({
     id: user.id, full_name: name, email: user.email,
-    role: role.toLowerCase(), is_admin: false, is_verified: false,
+    role, is_admin: false, is_verified: false,
     avatar_color: color, avatar_url: photoUrl
   });
+  currentUser = user;
   await loadProfile();
+  document.getElementById('persona-screen').classList.remove('active');
   enterApp();
+}
+
+function selectPersona(el) {
+  document.querySelectorAll('.persona-card').forEach(c => c.classList.remove('sel'));
+  el.classList.add('sel');
 }
 
 // ============================================================
