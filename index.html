@@ -6,6 +6,7 @@
 <title>PitchBridge — Where Ideas Meet Capital</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
 /* ============================================================
    PITCHBRIDGE V4 — FULL BACKEND VERSION
@@ -271,6 +272,67 @@ input::placeholder,textarea::placeholder{color:#bbbbd0;}
 .toast.hidden{display:none;}
 .how-card{background:linear-gradient(135deg,rgba(91,79,207,.07),rgba(212,160,23,.05));border-color:rgba(91,79,207,.18);}
 
+
+/* SEARCH BAR */
+.search-bar-wrap{position:relative;margin-bottom:18px;}
+.search-bar{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:100px;padding:10px 20px 10px 42px;font-size:14px;color:var(--text);outline:none;font-family:'DM Sans',sans-serif;transition:border-color .2s;}
+.search-bar:focus{border-color:var(--accent);}
+.search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none;}
+.search-results{background:var(--surface);border:1px solid var(--border);border-radius:14px;margin-top:8px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,0.1);display:none;}
+.search-results.open{display:block;}
+.search-result-item{display:flex;gap:10px;align-items:center;padding:11px 16px;cursor:pointer;transition:background .2s;border-bottom:1px solid var(--border);}
+.search-result-item:last-child{border-bottom:none;}
+.search-result-item:hover{background:var(--accent-light);}
+.search-result-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:#fff;flex-shrink:0;}
+.search-result-name{font-size:13px;font-weight:600;}
+.search-result-role{font-size:11px;color:var(--muted);}
+
+/* PITCH FORM */
+.pitch-step{display:none;}
+.pitch-step.active{display:block;}
+.pitch-progress{display:flex;gap:6px;margin-bottom:24px;}
+.pitch-prog-dot{flex:1;height:4px;border-radius:100px;background:var(--border);transition:background .3s;}
+.pitch-prog-dot.done{background:var(--accent);}
+.pitch-section-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:16px;color:var(--accent);}
+.pitch-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:24px;margin-bottom:16px;box-shadow:0 2px 10px rgba(0,0,0,0.04);}
+.pitch-nav{display:flex;gap:10px;justify-content:space-between;margin-top:20px;}
+.pitch-q{margin-bottom:16px;}
+.pitch-q label{font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;display:block;text-transform:none;letter-spacing:0;}
+.pitch-q input,.pitch-q textarea,.pitch-q select{margin-bottom:0;}
+.pitch-q textarea{height:80px;resize:none;}
+.upload-area{border:2px dashed var(--border);border-radius:12px;padding:28px;text-align:center;cursor:pointer;transition:all .2s;background:var(--surface2);}
+.upload-area:hover{border-color:var(--accent);background:var(--accent-light);}
+.upload-icon{font-size:32px;margin-bottom:8px;}
+.upload-text{font-size:13px;color:var(--muted);}
+.upload-file-name{font-size:13px;color:var(--green);font-weight:600;margin-top:8px;}
+
+/* LOGOUT CONFIRM MODAL */
+.logout-modal{max-width:380px;text-align:center;}
+.logout-icon{font-size:48px;margin-bottom:16px;}
+.logout-btns{display:flex;gap:10px;justify-content:center;margin-top:20px;}
+
+/* NOTIF PUSH BANNER */
+.notif-banner{position:fixed;top:0;left:0;right:0;background:var(--accent);color:#fff;padding:14px 20px;z-index:9999;display:flex;align-items:center;justify-content:space-between;animation:slideDown .4s ease both;font-size:14px;font-weight:500;}
+.notif-banner.hidden{display:none;}
+@keyframes slideDown{from{transform:translateY(-100%);}to{transform:translateY(0);}}
+.notif-banner-btns{display:flex;gap:10px;}
+.notif-banner-btn{padding:6px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;}
+.notif-allow{background:#fff;color:var(--accent);}
+.notif-deny{background:rgba(255,255,255,0.2);color:#fff;}
+
+/* PITCH PAGE */
+.pitch-hero{background:linear-gradient(135deg,var(--accent),#8b7cf6);border-radius:18px;padding:28px;margin-bottom:20px;color:#fff;text-align:center;}
+.pitch-hero-title{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;margin-bottom:8px;}
+.pitch-hero-sub{font-size:14px;opacity:0.85;line-height:1.6;}
+.pitch-list{display:flex;flex-direction:column;gap:14px;}
+.pitch-item{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;display:flex;gap:14px;align-items:center;box-shadow:0 2px 8px rgba(0,0,0,0.04);}
+.pitch-item-av{width:48px;height:48px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;color:#fff;flex-shrink:0;}
+.pitch-item-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:4px;}
+.pitch-item-meta{font-size:12px;color:var(--muted);}
+.pitch-status{padding:4px 12px;border-radius:100px;font-size:11px;font-weight:700;margin-left:auto;}
+.pitch-status-pending{background:rgba(212,160,23,.12);color:var(--gold);}
+.pitch-status-reviewing{background:rgba(91,79,207,.1);color:var(--accent);}
+
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
 @keyframes spin{to{transform:rotate(360deg);}}
 </style>
@@ -385,13 +447,14 @@ input::placeholder,textarea::placeholder{color:#bbbbd0;}
       <button class="nav-tab active" onclick="showPage('feed',this)">🏠 Home</button>
       <button class="nav-tab" onclick="showPage('network',this)">🌐 Network</button>
       <button class="nav-tab" onclick="showPage('chat',this)">💬 Chat</button>
+      <button class="nav-tab" onclick="showPage('pitch',this)">💡 Pitch</button>
       <button class="nav-tab" onclick="showPage('profile',this)">👤 Profile</button>
       <button id="admin-tab" class="nav-tab" onclick="showPage('admin',this)" style="display:none">🛡 Admin</button>
     </div>
     <div class="nav-right">
       <div class="notif-btn" onclick="toggleNotif()">🔔<div class="notif-count hidden" id="notif-count">0</div></div>
       <div class="nav-avatar" id="nav-avatar">D</div>
-      <button class="btn btn-ghost" style="padding:6px 14px;font-size:13px;" onclick="doLogout()">Logout</button>
+      <button class="btn btn-ghost" style="padding:6px 14px;font-size:13px;" onclick="confirmLogout()">Logout</button>
     </div>
   </nav>
 
@@ -406,6 +469,11 @@ input::placeholder,textarea::placeholder{color:#bbbbd0;}
 
       <!-- HOME FEED -->
       <div id="page-feed" class="page active">
+        <div class="search-bar-wrap">
+          <span class="search-icon">🔍</span>
+          <input class="search-bar" placeholder="Search people, ideas..." oninput="doSearch(this.value)" id="main-search">
+          <div class="search-results" id="search-results"></div>
+        </div>
         <div class="post-box" id="post-box-wrap">
           <div class="post-top">
             <div class="post-av" id="post-av-el">D</div>
@@ -437,6 +505,11 @@ input::placeholder,textarea::placeholder{color:#bbbbd0;}
 
       <!-- NETWORK -->
       <div id="page-network" class="page">
+        <div class="search-bar-wrap">
+          <span class="search-icon">🔍</span>
+          <input class="search-bar" placeholder="Search people..." oninput="doSearch(this.value)" id="net-search">
+          <div class="search-results" id="net-search-results"></div>
+        </div>
         <div class="page-title">🌐 Your Network</div>
         <div class="network-tabs">
           <button class="net-tab active" onclick="switchNetTab(this,'suggestions')">Suggestions</button>
@@ -497,6 +570,18 @@ input::placeholder,textarea::placeholder{color:#bbbbd0;}
         <div id="my-posts"><div class="loading"><span class="spinner"></span>Loading...</div></div>
       </div>
 
+
+      <!-- PITCH YOUR IDEAS -->
+      <div id="page-pitch" class="page">
+        <div class="pitch-hero">
+          <div class="pitch-hero-title">💡 Pitch Your Idea</div>
+          <div class="pitch-hero-sub">Submit your startup pitch to PitchBridge.<br>We review every submission and connect you with the right investors.</div>
+          <button class="btn" style="background:#fff;color:var(--accent);margin-top:18px;font-weight:700;" onclick="openPitchForm()">+ Submit New Pitch</button>
+        </div>
+        <div class="section-title" style="margin-bottom:14px;">📋 My Submissions</div>
+        <div id="my-pitches" class="pitch-list"><div class="loading"><span class="spinner"></span>Loading...</div></div>
+      </div>
+
       <!-- ADMIN -->
       <div id="page-admin" class="page">
         <div class="page-title">🛡 Admin Dashboard</div>
@@ -536,6 +621,112 @@ input::placeholder,textarea::placeholder{color:#bbbbd0;}
   </div>
 </div>
 
+
+<!-- NOTIFICATION PERMISSION BANNER -->
+<div class="notif-banner hidden" id="notif-banner">
+  <span>🔔 Enable notifications to stay updated on connections and messages</span>
+  <div class="notif-banner-btns">
+    <button class="notif-banner-btn notif-allow" onclick="enableNotifications()">Allow</button>
+    <button class="notif-banner-btn notif-deny" onclick="document.getElementById('notif-banner').classList.add('hidden')">Not Now</button>
+  </div>
+</div>
+
+<!-- LOGOUT CONFIRM MODAL -->
+<div class="modal-bg" id="logout-modal">
+  <div class="modal logout-modal">
+    <div class="logout-icon">👋</div>
+    <div class="modal-title" style="text-align:center;">Leaving so soon?</div>
+    <div class="modal-sub" style="text-align:center;">Are you sure you want to logout of PitchBridge?</div>
+    <div class="logout-btns">
+      <button class="btn btn-ghost" onclick="closeModal('logout-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="doLogout()">Yes, Logout</button>
+    </div>
+  </div>
+</div>
+
+<!-- PITCH FORM MODAL -->
+<div class="modal-bg" id="pitch-modal" style="align-items:flex-start;padding:20px;overflow-y:auto;">
+  <div class="modal" style="max-width:600px;margin:auto;">
+    <button class="modal-close" onclick="closeModal('pitch-modal')">✕</button>
+    <div class="modal-title">💡 Submit Your Pitch</div>
+    <div class="modal-sub">Fill in all sections. This goes directly to the PitchBridge team.</div>
+    
+    <!-- Progress -->
+    <div class="pitch-progress" id="pitch-progress">
+      <div class="pitch-prog-dot done" id="prog-0"></div>
+      <div class="pitch-prog-dot" id="prog-1"></div>
+      <div class="pitch-prog-dot" id="prog-2"></div>
+      <div class="pitch-prog-dot" id="prog-3"></div>
+      <div class="pitch-prog-dot" id="prog-4"></div>
+    </div>
+
+    <!-- STEP 1: About Business -->
+    <div class="pitch-step active" id="pitch-step-0">
+      <div class="pitch-section-title">🏢 About Your Business</div>
+      <div class="pitch-q"><label>1. What problem does your startup solve?</label><textarea id="pq1" placeholder="Describe the problem clearly..."></textarea></div>
+      <div class="pitch-q"><label>2. Who is your target customer?</label><input type="text" id="pq2" placeholder="e.g. Small business owners in India"></div>
+      <div class="pitch-q"><label>3. How big is the market?</label><input type="text" id="pq3" placeholder="e.g. ₹500 crore market"></div>
+      <div class="pitch-q"><label>4. What makes you different from competitors?</label><textarea id="pq4" placeholder="Your unique advantage..."></textarea></div>
+      <div class="pitch-q"><label>5. Who are your main competitors?</label><input type="text" id="pq5" placeholder="e.g. Zerodha, Groww"></div>
+      <div class="pitch-nav"><div></div><button class="btn btn-primary" onclick="nextPitchStep(1)">Next →</button></div>
+    </div>
+
+    <!-- STEP 2: Traction -->
+    <div class="pitch-step" id="pitch-step-1">
+      <div class="pitch-section-title">📈 About Traction</div>
+      <div class="pitch-q"><label>6. Do you have a working product or prototype?</label><select id="pq6"><option>Yes, fully working product</option><option>Yes, prototype/MVP</option><option>No, idea stage</option></select></div>
+      <div class="pitch-q"><label>7. How many users/customers do you have right now?</label><input type="text" id="pq7" placeholder="e.g. 500 users"></div>
+      <div class="pitch-q"><label>8. What is your monthly revenue currently?</label><input type="text" id="pq8" placeholder="e.g. ₹50,000/month or Pre-revenue"></div>
+      <div class="pitch-q"><label>9. How fast are you growing? (monthly %)</label><input type="text" id="pq9" placeholder="e.g. 20% month-on-month"></div>
+      <div class="pitch-q"><label>10. Do you have any letters of intent or pilot customers?</label><textarea id="pq10" placeholder="Describe any LOIs, pilots or early customers..."></textarea></div>
+      <div class="pitch-nav"><button class="btn btn-ghost" onclick="nextPitchStep(0)">← Back</button><button class="btn btn-primary" onclick="nextPitchStep(2)">Next →</button></div>
+    </div>
+
+    <!-- STEP 3: Funding -->
+    <div class="pitch-step" id="pitch-step-2">
+      <div class="pitch-section-title">💰 About Funding</div>
+      <div class="pitch-q"><label>11. How much funding are you seeking?</label><input type="text" id="pq11" placeholder="e.g. ₹1 Crore"></div>
+      <div class="pitch-q"><label>12. What will the funding be used for?</label><textarea id="pq12" placeholder="e.g. 40% marketing, 30% hiring, 30% product"></textarea></div>
+      <div class="pitch-q"><label>13. What equity are you offering to investors?</label><input type="text" id="pq13" placeholder="e.g. 10% equity"></div>
+      <div class="pitch-q"><label>14. Have you raised funding before? If yes, how much?</label><input type="text" id="pq14" placeholder="e.g. Yes, ₹20L from angel investor or No"></div>
+      <div class="pitch-q"><label>15. What is your company valuation?</label><input type="text" id="pq15" placeholder="e.g. ₹10 Crore"></div>
+      <div class="pitch-nav"><button class="btn btn-ghost" onclick="nextPitchStep(1)">← Back</button><button class="btn btn-primary" onclick="nextPitchStep(3)">Next →</button></div>
+    </div>
+
+    <!-- STEP 4: Team & Financials -->
+    <div class="pitch-step" id="pitch-step-3">
+      <div class="pitch-section-title">👥 Team & Financials</div>
+      <div class="pitch-q"><label>16. Who are the founders and what is their background?</label><textarea id="pq16" placeholder="Names, experience, LinkedIn..."></textarea></div>
+      <div class="pitch-q"><label>17. How many full time employees do you have?</label><input type="text" id="pq17" placeholder="e.g. 5 full time, 2 part time"></div>
+      <div class="pitch-q"><label>18. Do you have any advisors or mentors?</label><input type="text" id="pq18" placeholder="Names and background..."></div>
+      <div class="pitch-q"><label>19. What is your business model?</label><textarea id="pq19" placeholder="How do you make money?"></textarea></div>
+      <div class="pitch-q"><label>20. What is your current burn rate per month?</label><input type="text" id="pq20" placeholder="e.g. ₹2L/month"></div>
+      <div class="pitch-q"><label>21. How long will this funding last? (runway)</label><input type="text" id="pq21" placeholder="e.g. 18 months"></div>
+      <div class="pitch-q"><label>22. When do you expect to be profitable?</label><input type="text" id="pq22" placeholder="e.g. 24 months from funding"></div>
+      <div class="pitch-nav"><button class="btn btn-ghost" onclick="nextPitchStep(2)">← Back</button><button class="btn btn-primary" onclick="nextPitchStep(4)">Next →</button></div>
+    </div>
+
+    <!-- STEP 5: Upload & Submit -->
+    <div class="pitch-step" id="pitch-step-4">
+      <div class="pitch-section-title">📎 Upload Pitch Deck</div>
+      <div class="upload-area" onclick="document.getElementById('pitch-deck-upload').click()">
+        <div class="upload-icon">📄</div>
+        <div class="upload-text">Click to upload your pitch deck<br><span style="font-size:11px;">PDF, PPT, DOC accepted · Max 10MB</span></div>
+        <div class="upload-file-name" id="upload-file-name"></div>
+      </div>
+      <input type="file" id="pitch-deck-upload" accept=".pdf,.ppt,.pptx,.doc,.docx" style="display:none" onchange="showFileName(this)">
+      <div style="margin-top:20px;background:var(--accent-light);border-radius:12px;padding:16px;font-size:13px;color:var(--accent);line-height:1.7;">
+        <b>📧 What happens after you submit:</b><br>
+        1. You receive a confirmation email instantly<br>
+        2. Our team receives your full pitch details<br>
+        3. We review within 3-5 business days<br>
+        4. We connect you with matching investors
+      </div>
+      <div class="pitch-nav"><button class="btn btn-ghost" onclick="nextPitchStep(3)">← Back</button><button class="btn btn-primary" id="pitch-submit-btn" onclick="submitPitch()">Submit Pitch 🚀</button></div>
+    </div>
+  </div>
+</div>
+
 <!-- NDA MODAL -->
 <div class="modal-bg" id="invest-modal">
   <div class="modal">
@@ -557,8 +748,8 @@ input::placeholder,textarea::placeholder{color:#bbbbd0;}
 // ⚠️  PASTE YOUR SUPABASE KEYS HERE
 // Get them from: supabase.com → Project → Settings → API
 // ============================================================
-const SUPABASE_URL = 'https://dovwpenkxxkzzyjhdnve.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_VM9-r1qNqGotIqatBGrDJw_dzofGd7m';
+const SUPABASE_URL = 'YOUR_SUPABASE_URL_HERE';
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY_HERE';
 // ============================================================
 
 const { createClient } = supabase;
@@ -739,6 +930,8 @@ function enterApp() {
   renderFeed();
   renderSidebar();
   loadNotifications();
+  restoreCurrentPage();
+  setTimeout(askNotificationPermission, 2000);
   showToast('👋 Welcome, ' + (currentProfile?.full_name || 'there').split(' ')[0] + '!');
 }
 
@@ -768,10 +961,12 @@ function showPage(page, tab) {
   document.getElementById('page-' + page).classList.add('active');
   if (tab) tab.classList.add('active');
   closeNotifPanel();
+  saveCurrentPage(page);
   if (page === 'profile') renderProfilePage();
   if (page === 'network') renderNetwork(netTab);
   if (page === 'chat') renderChatList();
   if (page === 'admin') renderAdmin();
+  if (page === 'pitch') renderMyPitches();
 }
 
 // ============================================================
@@ -1240,6 +1435,225 @@ function showToast(msg) {
   t.textContent = msg; t.classList.remove('hidden');
   clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.add('hidden'), 3200);
 }
+
+// ============================================================
+// SEARCH
+// ============================================================
+async function doSearch(query) {
+  const resultsEl = document.getElementById('search-results') || document.getElementById('net-search-results');
+  if (!query || query.length < 2) { resultsEl.classList.remove('open'); return; }
+  const { data: users } = await sb.from('profiles').select('*').ilike('full_name', '%' + query + '%').limit(8);
+  resultsEl.classList.add('open');
+  if (!users || !users.length) {
+    resultsEl.innerHTML = '<div style="padding:16px;font-size:13px;color:var(--muted);text-align:center;">No results found for "' + query + '"</div>';
+    return;
+  }
+  const rm = { entrepreneur: 'Entrepreneur', investor: 'Investor', both: 'Both' };
+  resultsEl.innerHTML = users.map(u => {
+    const ini = (u.full_name || 'U').split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
+    return '<div class="search-result-item" onclick="viewUserProfile('' + u.id + '')">' +
+      '<div class="search-result-av" style="background:' + (u.avatar_color||'#5b4fcf') + ';">' + (u.avatar_url ? '<img src="'+u.avatar_url+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">' : u.avatar_emoji || ini) + '</div>' +
+      '<div><div class="search-result-name">' + (u.full_name||'User') + '</div><div class="search-result-role">' + (rm[u.role]||u.role||'Member') + '</div></div>' +
+      '</div>';
+  }).join('');
+}
+
+async function viewUserProfile(userId) {
+  document.querySelectorAll('.search-results').forEach(el => el.classList.remove('open'));
+  showToast('👤 Loading profile...');
+}
+
+// Close search on outside click
+document.addEventListener('click', e => {
+  if (!e.target.closest('.search-bar-wrap')) {
+    document.querySelectorAll('.search-results').forEach(el => el.classList.remove('open'));
+  }
+});
+
+// ============================================================
+// LOGOUT CONFIRMATION
+// ============================================================
+function confirmLogout() {
+  document.getElementById('logout-modal').classList.add('open');
+}
+
+// ============================================================
+// PAGE PERSISTENCE (stay on same page on reload)
+// ============================================================
+function saveCurrentPage(page) {
+  localStorage.setItem('pb_current_page', page);
+}
+
+function restoreCurrentPage() {
+  const saved = localStorage.getItem('pb_current_page');
+  if (saved) {
+    const tab = document.querySelector('.nav-tab[onclick*="' + saved + '"]');
+    showPage(saved, tab);
+  }
+}
+
+// ============================================================
+// PUSH NOTIFICATIONS
+// ============================================================
+function askNotificationPermission() {
+  if (!('Notification' in window)) return;
+  if (Notification.permission === 'default') {
+    document.getElementById('notif-banner').classList.remove('hidden');
+  }
+}
+
+function enableNotifications() {
+  document.getElementById('notif-banner').classList.add('hidden');
+  if ('Notification' in window) {
+    Notification.requestPermission().then(permission => {
+      if (permission === 'granted') {
+        showToast('🔔 Notifications enabled!');
+        registerServiceWorker();
+      }
+    });
+  }
+}
+
+function registerServiceWorker() {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  }
+}
+
+function sendPushNotification(title, body) {
+  if (Notification.permission === 'granted') {
+    new Notification(title, { body, icon: '/icon.png' });
+  }
+}
+
+// ============================================================
+// PITCH FORM
+// ============================================================
+let currentPitchStep = 0;
+
+function openPitchForm() {
+  currentPitchStep = 0;
+  updatePitchStep(0);
+  document.getElementById('pitch-modal').classList.add('open');
+}
+
+function nextPitchStep(step) {
+  currentPitchStep = step;
+  updatePitchStep(step);
+}
+
+function updatePitchStep(step) {
+  document.querySelectorAll('.pitch-step').forEach((el, i) => {
+    el.classList.toggle('active', i === step);
+  });
+  document.querySelectorAll('.pitch-prog-dot').forEach((el, i) => {
+    el.classList.toggle('done', i <= step);
+  });
+}
+
+function showFileName(input) {
+  const file = input.files[0];
+  if (file) document.getElementById('upload-file-name').textContent = '✅ ' + file.name;
+}
+
+async function submitPitch() {
+  const btn = document.getElementById('pitch-submit-btn');
+  btn.disabled = true; btn.textContent = 'Submitting...';
+
+  const pitchData = {
+    problem: document.getElementById('pq1').value,
+    target_customer: document.getElementById('pq2').value,
+    market_size: document.getElementById('pq3').value,
+    differentiation: document.getElementById('pq4').value,
+    competitors: document.getElementById('pq5').value,
+    has_product: document.getElementById('pq6').value,
+    users_count: document.getElementById('pq7').value,
+    monthly_revenue: document.getElementById('pq8').value,
+    growth_rate: document.getElementById('pq9').value,
+    loi: document.getElementById('pq10').value,
+    funding_ask: document.getElementById('pq11').value,
+    funding_use: document.getElementById('pq12').value,
+    equity_offered: document.getElementById('pq13').value,
+    prev_funding: document.getElementById('pq14').value,
+    valuation: document.getElementById('pq15').value,
+    founders: document.getElementById('pq16').value,
+    employees: document.getElementById('pq17').value,
+    advisors: document.getElementById('pq18').value,
+    business_model: document.getElementById('pq19').value,
+    burn_rate: document.getElementById('pq20').value,
+    runway: document.getElementById('pq21').value,
+    profitable_when: document.getElementById('pq22').value,
+    user_id: currentUser.id,
+    user_email: currentUser.email,
+    user_name: currentProfile?.full_name,
+    status: 'pending'
+  };
+
+  // Save to Supabase
+  await sb.from('pitches').insert(pitchData);
+
+  // Send confirmation email via EmailJS
+  await sendPitchEmails(pitchData);
+
+  closeModal('pitch-modal');
+  btn.disabled = false; btn.textContent = 'Submit Pitch 🚀';
+  showToast('🚀 Pitch submitted! Check your email for confirmation.');
+  renderMyPitches();
+}
+
+async function sendPitchEmails(data) {
+  // ⚠️ Replace these with your EmailJS credentials
+  // Sign up free at emailjs.com → get Service ID, Template ID, Public Key
+  const EMAILJS_SERVICE_ID = 'YOUR_EMAILJS_SERVICE_ID';
+  const EMAILJS_TEMPLATE_ID = 'YOUR_EMAILJS_TEMPLATE_ID';
+  const EMAILJS_PUBLIC_KEY = 'YOUR_EMAILJS_PUBLIC_KEY';
+  const COMPANY_EMAIL = 'YOUR_COMPANY_EMAIL_HERE';
+
+  if (EMAILJS_SERVICE_ID === 'YOUR_EMAILJS_SERVICE_ID') {
+    console.log('EmailJS not configured yet. Pitch saved to database.');
+    return;
+  }
+
+  // Email to entrepreneur
+  await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+    to_email: data.user_email,
+    to_name: data.user_name,
+    subject: 'We received your pitch! 🚀',
+    message: 'Hey ' + data.user_name + '! We have received your pitch for "' + data.problem.slice(0,60) + '...". Our team is currently reviewing it and will get back to you very soon with updates. Thank you for choosing PitchBridge! Team PitchBridge'
+  }, EMAILJS_PUBLIC_KEY);
+
+  // Email to company
+  await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+    to_email: COMPANY_EMAIL,
+    to_name: 'PitchBridge Team',
+    subject: 'New Pitch Submitted by ' + data.user_name,
+    message: 'New pitch from: ' + data.user_name + ' (' + data.user_email + ')\n\n' +
+      'Problem: ' + data.problem + '\n' +
+      'Market Size: ' + data.market_size + '\n' +
+      'Funding Ask: ' + data.funding_ask + '\n' +
+      'Valuation: ' + data.valuation + '\n' +
+      'Revenue: ' + data.monthly_revenue + '\n' +
+      'Users: ' + data.users_count + '\n' +
+      'Equity: ' + data.equity_offered
+  }, EMAILJS_PUBLIC_KEY);
+}
+
+async function renderMyPitches() {
+  const el = document.getElementById('my-pitches');
+  if (!el) return;
+  const { data: pitches } = await sb.from('pitches').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
+  if (!pitches || !pitches.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">💡</div>No pitches submitted yet.<br>Click "Submit New Pitch" to get started!</div>';
+    return;
+  }
+  el.innerHTML = pitches.map(p => '<div class="pitch-item">' +
+    '<div class="pitch-item-av">💡</div>' +
+    '<div><div class="pitch-item-title">' + (p.funding_ask || 'Startup Pitch') + '</div>' +
+    '<div class="pitch-item-meta">Submitted ' + new Date(p.created_at).toLocaleDateString() + ' · ' + (p.market_size||'') + '</div></div>' +
+    '<div class="pitch-status pitch-status-' + (p.status||'pending') + '">' + (p.status === 'reviewing' ? '🔍 Reviewing' : '⏳ Pending') + '</div>' +
+    '</div>').join('');
+}
+
 </script>
 </body>
 </html>
