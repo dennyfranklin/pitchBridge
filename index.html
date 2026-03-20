@@ -1604,37 +1604,32 @@ async function submitPitch() {
 async function sendPitchEmails(data) {
   // ⚠️ Replace these with your EmailJS credentials
   // Sign up free at emailjs.com → get Service ID, Template ID, Public Key
-  const EMAILJS_SERVICE_ID = 'YOUR_EMAILJS_SERVICE_ID';
-  const EMAILJS_TEMPLATE_ID = 'YOUR_EMAILJS_TEMPLATE_ID';
-  const EMAILJS_PUBLIC_KEY = 'YOUR_EMAILJS_PUBLIC_KEY';
-  const COMPANY_EMAIL = 'YOUR_COMPANY_EMAIL_HERE';
+  const EMAILJS_SERVICE_ID = 'service_b2gsl4oD';
+  const EMAILJS_TEMPLATE_ID = 'template_o6eeqkk';
+  const EMAILJS_PUBLIC_KEY = 'DjGvoMavHPkHcV4XM';
+  const COMPANY_EMAIL = 'dennyfranklin2004@gmail.com';
 
   if (EMAILJS_SERVICE_ID === 'YOUR_EMAILJS_SERVICE_ID') {
-    console.log('EmailJS not configured yet. Pitch saved to database.');
+    console.log('EmailJS not configured yet.');
     return;
   }
 
-  // Email to entrepreneur
+  const date = new Date().toLocaleString();
+
+  // Email 1 — To Entrepreneur
   await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
     to_email: data.user_email,
     to_name: data.user_name,
-    subject: 'We received your pitch! 🚀',
-    message: 'Hey ' + data.user_name + '! We have received your pitch for "' + data.problem.slice(0,60) + '...". Our team is currently reviewing it and will get back to you very soon with updates. Thank you for choosing PitchBridge! Team PitchBridge'
+    subject: 'We have received your pitch! 🚀 — PitchBridge',
+    message: `Hey ${data.user_name}!\n\nThank you for submitting your pitch to PitchBridge. 🎉\n\nWe have successfully received your startup pitch and our team is currently reviewing it carefully.\n\nHere is what happens next:\n\n✅ Step 1 — Our team reviews your pitch (3-5 business days)\n✅ Step 2 — We match you with the right investors\n✅ Step 3 — We schedule a call between you and the investor\n✅ Step 4 — You pitch, we facilitate, deals get closed!\n\nWe will keep you posted on every update. In the meantime, feel free to update your profile and explore other ideas on PitchBridge.\n\nIf you have any questions, simply reply to this email.\n\nWe believe in your idea. Let's make it happen! 💪\n\nWarm regards,\nTeam PitchBridge`
   }, EMAILJS_PUBLIC_KEY);
 
-  // Email to company
+  // Email 2 — To Company with ALL 22 answers
   await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
     to_email: COMPANY_EMAIL,
     to_name: 'PitchBridge Team',
-    subject: 'New Pitch Submitted by ' + data.user_name,
-    message: 'New pitch from: ' + data.user_name + ' (' + data.user_email + ')\n\n' +
-      'Problem: ' + data.problem + '\n' +
-      'Market Size: ' + data.market_size + '\n' +
-      'Funding Ask: ' + data.funding_ask + '\n' +
-      'Valuation: ' + data.valuation + '\n' +
-      'Revenue: ' + data.monthly_revenue + '\n' +
-      'Users: ' + data.users_count + '\n' +
-      'Equity: ' + data.equity_offered
+    subject: `🚨 New Pitch Submitted by ${data.user_name} — PitchBridge`,
+    message: `Hi PitchBridge Team,\n\nA new pitch has been submitted. Full details below:\n\n════════════════════════════\n👤 SUBMITTED BY\n════════════════════════════\nName:  ${data.user_name}\nEmail: ${data.user_email}\nDate:  ${date}\n\n════════════════════════════\n🏢 ABOUT THE BUSINESS\n════════════════════════════\n1. Problem being solved:\n${data.problem}\n\n2. Target customer:\n${data.target_customer}\n\n3. Market size:\n${data.market_size}\n\n4. What makes them different:\n${data.differentiation}\n\n5. Main competitors:\n${data.competitors}\n\n════════════════════════════\n📈 TRACTION\n════════════════════════════\n6. Has working product:\n${data.has_product}\n\n7. Current users/customers:\n${data.users_count}\n\n8. Monthly revenue:\n${data.monthly_revenue}\n\n9. Growth rate:\n${data.growth_rate}\n\n10. LOI or pilot customers:\n${data.loi}\n\n════════════════════════════\n💰 FUNDING\n════════════════════════════\n11. Funding amount seeking:\n${data.funding_ask}\n\n12. Use of funds:\n${data.funding_use}\n\n13. Equity offered:\n${data.equity_offered}\n\n14. Previous funding raised:\n${data.prev_funding}\n\n15. Company valuation:\n${data.valuation}\n\n════════════════════════════\n👥 TEAM\n════════════════════════════\n16. Founders background:\n${data.founders}\n\n17. Full time employees:\n${data.employees}\n\n18. Advisors or mentors:\n${data.advisors}\n\n════════════════════════════\n📊 FINANCIALS\n════════════════════════════\n19. Business model:\n${data.business_model}\n\n20. Monthly burn rate:\n${data.burn_rate}\n\n21. Runway after funding:\n${data.runway}\n\n22. Expected profitability:\n${data.profitable_when}\n\n════════════════════════════\nLogin to PitchBridge Admin Dashboard to review.\n— PitchBridge Automated System`
   }, EMAILJS_PUBLIC_KEY);
 }
 
