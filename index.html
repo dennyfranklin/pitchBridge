@@ -1443,7 +1443,7 @@ function showToast(msg) {
 // ============================================================
 // SEARCH
 // ============================================================
-async window.doSearch = async function(query) {
+window.doSearch = async function(query) {
   const resultsEl = document.getElementById('search-results') || document.getElementById('net-search-results');
   if (!query || query.length < 2) { resultsEl.classList.remove('open'); return; }
   const { data: users } = await sb.from('profiles').select('*').ilike('full_name', '%' + query + '%').limit(8);
