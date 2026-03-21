@@ -375,14 +375,14 @@ input::placeholder,textarea::placeholder{color:#bbbbd0;}
 </div>
 
 <!-- LANDING -->
-<div id="landing" class="screen active">
+<div id="landing" class="screen active" style="display:flex;">
   <div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div>
   <div class="land-badge">🚀 Early Access Open</div>
   <h1 class="land-h1">Where <span class="hi">Ideas</span><br>Meet <span class="hg">Capital</span></h1>
   <p class="land-sub">Post your startup idea, connect with verified investors, and close real deals — all in one place.</p>
   <div class="land-btns">
-    <button class="btn btn-primary" onclick="showAuth('signup')">Get Started Free</button>
-    <button class="btn btn-ghost" onclick="showAuth('login')">Sign In</button>
+    <button class="btn btn-primary" onclick="document.getElementById('landing').style.display='none';document.getElementById('auth').style.display='flex';document.getElementById('signup-form').style.display='block';document.getElementById('login-form').style.display='none';">Get Started Free</button>
+    <button class="btn btn-ghost" onclick="document.getElementById('landing').style.display='none';document.getElementById('auth').style.display='flex';document.getElementById('signup-form').style.display='none';document.getElementById('login-form').style.display='block';">Sign In</button>
   </div>
   <div class="stats">
     <div><div class="stat-num">2.4<em>K</em></div><div class="stat-label">Ideas Posted</div></div>
@@ -392,7 +392,7 @@ input::placeholder,textarea::placeholder{color:#bbbbd0;}
 </div>
 
 <!-- AUTH -->
-<div id="auth" class="screen">
+<div id="auth" class="screen" style="display:none;">
   <div class="orb orb1"></div><div class="orb orb2"></div>
   <div class="auth-card">
     <span class="auth-logo">PitchBridge</span>
@@ -418,7 +418,7 @@ input::placeholder,textarea::placeholder{color:#bbbbd0;}
       </div>
       <div id="signup-error" class="form-error"></div>
       <button class="btn btn-primary btn-full" id="signup-btn" onclick="doSignup()">Create Account →</button>
-      <div class="auth-switch">Already have an account? <a onclick="toggleAuth('login')">Sign in</a></div>
+      <div class="auth-switch">Already have an account? <a onclick="document.getElementById('signup-form').style.display='none';document.getElementById('login-form').style.display='block';">Sign in</a></div>
     </div>
     <div id="login-form" style="display:none">
       <div class="auth-title">Welcome back!</div>
@@ -434,13 +434,13 @@ input::placeholder,textarea::placeholder{color:#bbbbd0;}
       <input type="password" id="li-pass" placeholder="••••••••">
       <div id="login-error" class="form-error"></div>
       <button class="btn btn-primary btn-full" id="login-btn" onclick="doLogin()">Sign In →</button>
-      <div class="auth-switch">New here? <a onclick="toggleAuth('signup')">Create account</a></div>
+      <div class="auth-switch">New here? <a onclick="document.getElementById('signup-form').style.display='block';document.getElementById('login-form').style.display='none';">Create account</a></div>
     </div>
   </div>
 </div>
 
 <!-- APP -->
-<div id="app" class="screen">
+<div id="app" class="screen" style="display:none;">
   <nav class="nav">
     <div class="nav-logo">PitchBridge</div>
     <div class="nav-center">
@@ -747,11 +747,16 @@ input::placeholder,textarea::placeholder{color:#bbbbd0;}
 // ============================================================
 // PASTE YOUR SUPABASE KEYS HERE
 // ============================================================
-const SUPABASE_URL = 'https://dovwpenkxxkzzyjhdnve.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_VM9-r1qNqGotIqatBGrDJw_dzofGd7m';
+const SUPABASE_URL = 'YOUR_SUPABASE_URL_HERE';
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY_HERE';
 
-const { createClient } = supabase;
-const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let sb;
+try {
+  const { createClient } = supabase;
+  sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+} catch(e) {
+  console.error('Supabase init failed:', e);
+}
 
 const AVATAR_COLORS = ['#5b4fcf','#e63560','#00a878','#d4a017','#0ea5e9','#8b5cf6','#f59e0b','#ec4899'];
 const AVATARS = [
@@ -1001,10 +1006,10 @@ async function sendPitchEmails(data){
   // PASTE YOUR EMAILJS KEYS HERE
   // Sign up free at emailjs.com
   // ============================================================
-  const EMAILJS_SERVICE_ID = 'service_b2gsl4o';
-  const EMAILJS_TEMPLATE_ID = 'template_856ro3q';
-  const EMAILJS_PUBLIC_KEY = 'DjGvoMavHPkHcV4XM';
-  const COMPANY_EMAIL = 'dennyfranklin2004@gmail.com';
+  const EMAILJS_SERVICE_ID = 'YOUR_EMAILJS_SERVICE_ID';
+  const EMAILJS_TEMPLATE_ID = 'YOUR_EMAILJS_TEMPLATE_ID';
+  const EMAILJS_PUBLIC_KEY = 'YOUR_EMAILJS_PUBLIC_KEY';
+  const COMPANY_EMAIL = 'YOUR_COMPANY_EMAIL_HERE';
   // ============================================================
   if(EMAILJS_SERVICE_ID==='YOUR_EMAILJS_SERVICE_ID'){console.log('EmailJS not configured yet.');return;}
   const date=new Date().toLocaleString();
