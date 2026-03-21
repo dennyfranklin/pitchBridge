@@ -745,919 +745,361 @@ input::placeholder,textarea::placeholder{color:#bbbbd0;}
 
 <script>
 // ============================================================
-// ⚠️  PASTE YOUR SUPABASE KEYS HERE
-// Get them from: supabase.com → Project → Settings → API
+// PASTE YOUR SUPABASE KEYS HERE
 // ============================================================
-const SUPABASE_URL = 'https://dovwpenkxxkzzyjhdnve.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_VM9-r1qNqGotIqatBGrDJw_dzofGd7m';
-// ============================================================
+const SUPABASE_URL = 'YOUR_SUPABASE_URL_HERE';
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY_HERE';
 
 const { createClient } = supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const AVATAR_COLORS = ['#5b4fcf','#e63560','#00a878','#d4a017','#0ea5e9','#8b5cf6','#f59e0b','#ec4899'];
 const AVATARS = [
-  {e:'👨‍💼',c:'#5b4fcf'},{e:'👩‍💼',c:'#e63560'},{e:'🧑‍🚀',c:'#00a878'},
-  {e:'👨‍💻',c:'#d4a017'},{e:'👩‍🔬',c:'#8b5cf6'},{e:'🦸',c:'#0ea5e9'},
-  {e:'🧙‍♂️',c:'#f59e0b'},{e:'🧑‍🎨',c:'#ec4899'},{e:'🤴',c:'#10b981'},
+  {e:'👨\u200d💼',c:'#5b4fcf'},{e:'👩\u200d💼',c:'#e63560'},{e:'🧑\u200d🚀',c:'#00a878'},
+  {e:'👨\u200d💻',c:'#d4a017'},{e:'👩\u200d🔬',c:'#8b5cf6'},{e:'🦸',c:'#0ea5e9'},
+  {e:'🧙',c:'#f59e0b'},{e:'🧑\u200d🎨',c:'#ec4899'},{e:'🤴',c:'#10b981'},
 ];
 
-let currentUser = null;
-let currentProfile = null;
-let selectedRole = '';
-let selectedTag = '';
-let mediaFiles = [];
-let currentIdeaId = null;
-let notifOpen = false;
-let activeChat = null;
-let netTab = 'suggestions';
-let allUsers = [];
+let currentUser=null,currentProfile=null,selectedRole='',selectedTag='',mediaFiles=[],currentIdeaId=null,notifOpen=false,activeChat=null,netTab='suggestions',currentPitchStep=0;
 
-// ============================================================
-// INIT — Check session on page load
-// ============================================================
+// INIT
 window.addEventListener('DOMContentLoaded', async () => {
-  const { data: { session } } = await sb.auth.getSession();
-  if (session) {
-    currentUser = session.user;
-    await loadProfile();
-    if (currentProfile) enterApp();
-    else await createProfileFromGoogle(session.user);
-  }
-
-  // Listen for auth changes (Google redirect)
-  sb.auth.onAuthStateChange(async (event, session) => {
-    if (event === 'SIGNED_IN' && session && !currentUser) {
-      currentUser = session.user;
-      await loadProfile();
-      if (!currentProfile) await createProfileFromGoogle(session.user);
-      else enterApp();
-    }
+  try {
+    const {data:{session}} = await sb.auth.getSession();
+    if(session){ currentUser=session.user; await loadProfile(); if(currentProfile) enterApp(); else showPersonaScreen(session.user,session.user.user_metadata?.full_name||session.user.email.split('@')[0],session.user.user_metadata?.avatar_url||null); }
+  } catch(e){console.error(e);}
+  sb.auth.onAuthStateChange(async(event,session)=>{
+    if(event==='SIGNED_IN'&&session&&!currentUser){ currentUser=session.user; await loadProfile(); if(!currentProfile) showPersonaScreen(session.user,session.user.user_metadata?.full_name||session.user.email.split('@')[0],session.user.user_metadata?.avatar_url||null); else enterApp(); }
   });
 });
 
-async function createProfileFromGoogle(user) {
-  const name = user.user_metadata?.full_name || user.user_metadata?.name || user.email.split('@')[0];
-  const photoUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture || null;
-  showPersonaScreen(user, name, photoUrl);
-}
-
-function showPersonaScreen(user, name, photoUrl) {
-  document.getElementById('landing').classList.remove('active');
-  document.getElementById('auth').classList.remove('active');
-  document.getElementById('app').classList.remove('active');
-  const ps = document.getElementById('persona-screen');
-  ps.style.display = 'flex';
-  ps.classList.add('active');
-  document.getElementById('persona-name').textContent = 'Hi, ' + name.split(' ')[0] + '! 👋';
-  document.getElementById('persona-email').textContent = user.email;
-  const avEl = document.getElementById('persona-avatar');
-  if (photoUrl) {
-    avEl.innerHTML = '<img src="' + photoUrl + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
-  } else {
-    avEl.textContent = name[0].toUpperCase();
-  }
-  window._pendingUser = { user, name, photoUrl };
-}
-
-window.confirmPersona = async function() {
-  const selected = document.querySelector('.persona-card.sel');
-  if (!selected) { showToast('Please select your role first!'); return; }
-  const role = selected.dataset.role;
-  const { user, name, photoUrl } = window._pendingUser;
-  const color = AVATAR_COLORS[Math.floor(Math.random() * AVATAR_COLORS.length)];
-  const btn = document.getElementById('persona-btn');
-  btn.disabled = true; btn.textContent = 'Setting up your account...';
-  await sb.from('profiles').insert({
-    id: user.id, full_name: name, email: user.email,
-    role, is_admin: false, is_verified: false,
-    avatar_color: color, avatar_url: photoUrl
-  });
-  currentUser = user;
-  await loadProfile();
-  const ps = document.getElementById('persona-screen');
-  ps.style.display = 'none';
-  ps.classList.remove('active');
-  enterApp();
-}
-
-window.selectPersona = function(el) {
-  document.querySelectorAll('.persona-card').forEach(c => c.classList.remove('sel'));
-  el.classList.add('sel');
-}
-
-// ============================================================
 // AUTH
-// ============================================================
-window.showAuth = function(mode) {
-  document.getElementById('landing').classList.remove('active');
-  document.getElementById('auth').classList.add('active');
-  toggleAuth(mode);
+function showAuth(mode){ document.getElementById('landing').classList.remove('active'); document.getElementById('auth').classList.add('active'); toggleAuth(mode); }
+function toggleAuth(mode){ document.getElementById('signup-form').style.display=mode==='signup'?'block':'none'; document.getElementById('login-form').style.display=mode==='login'?'block':'none'; }
+function selectRole(el,role){ document.querySelectorAll('.role-card').forEach(c=>c.classList.remove('sel')); el.classList.add('sel'); selectedRole=role; }
+async function signInWithGoogle(){ try{ const{error}=await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.origin}}); if(error)showToast('❌ '+error.message); }catch(e){showToast('❌ Google sign in failed');} }
+async function doSignup(){
+  const name=document.getElementById('su-name').value.trim(), email=document.getElementById('su-email').value.trim(), password=document.getElementById('su-pass').value;
+  const errEl=document.getElementById('signup-error'), btn=document.getElementById('signup-btn');
+  errEl.textContent='';
+  if(!name||!email||!password){errEl.textContent='Please fill in all fields.';return;}
+  if(!selectedRole){errEl.textContent='Please select your role.';return;}
+  if(password.length<6){errEl.textContent='Password must be at least 6 characters.';return;}
+  btn.disabled=true; btn.textContent='Creating account...';
+  try{
+    const{data,error}=await sb.auth.signUp({email,password});
+    if(error){errEl.textContent=error.message;btn.disabled=false;btn.textContent='Create Account →';return;}
+    currentUser=data.user;
+    const color=AVATAR_COLORS[Math.floor(Math.random()*AVATAR_COLORS.length)];
+    await sb.from('profiles').insert({id:currentUser.id,full_name:name,email,role:selectedRole,is_admin:false,is_verified:false,avatar_color:color});
+    await loadProfile(); enterApp();
+  }catch(e){errEl.textContent='Something went wrong.';btn.disabled=false;btn.textContent='Create Account →';}
 }
-window.toggleAuth = function(mode) {
-  document.getElementById('signup-form').style.display = mode === 'signup' ? 'block' : 'none';
-  document.getElementById('login-form').style.display = mode === 'login' ? 'block' : 'none';
+async function doLogin(){
+  const email=document.getElementById('li-email').value.trim(), password=document.getElementById('li-pass').value;
+  const errEl=document.getElementById('login-error'), btn=document.getElementById('login-btn');
+  errEl.textContent='';
+  if(!email||!password){errEl.textContent='Please enter your email and password.';return;}
+  btn.disabled=true; btn.textContent='Signing in...';
+  try{
+    const{data,error}=await sb.auth.signInWithPassword({email,password});
+    if(error){errEl.textContent=error.message;btn.disabled=false;btn.textContent='Sign In →';return;}
+    currentUser=data.user; await loadProfile(); enterApp();
+  }catch(e){errEl.textContent='Something went wrong.';btn.disabled=false;btn.textContent='Sign In →';}
 }
-window.selectRole = function(el, role) {
-  document.querySelectorAll('.role-card').forEach(c => c.classList.remove('sel'));
-  el.classList.add('sel'); selectedRole = role;
+function confirmLogout(){ document.getElementById('logout-modal').classList.add('open'); }
+async function doLogout(){ await sb.auth.signOut(); currentUser=null; currentProfile=null; closeModal('logout-modal'); document.getElementById('app').classList.remove('active'); document.getElementById('landing').classList.add('active'); showToast('👋 Logged out!'); }
+async function loadProfile(){ try{ const{data}=await sb.from('profiles').select('*').eq('id',currentUser.id).single(); currentProfile=data; }catch(e){currentProfile=null;} }
+
+// PERSONA
+function showPersonaScreen(user,name,photoUrl){
+  document.querySelectorAll('.screen').forEach(s=>{s.classList.remove('active');s.style.display='none';});
+  const ps=document.getElementById('persona-screen'); ps.style.display='flex'; ps.classList.add('active');
+  document.getElementById('persona-name').textContent='Hi, '+name.split(' ')[0]+'! 👋';
+  document.getElementById('persona-email').textContent=user.email;
+  const avEl=document.getElementById('persona-avatar');
+  if(photoUrl) avEl.innerHTML='<img src="'+photoUrl+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">'; else avEl.textContent=name[0].toUpperCase();
+  window._pendingUser={user,name,photoUrl};
+}
+function selectPersona(el){ document.querySelectorAll('.persona-card').forEach(c=>c.classList.remove('sel')); el.classList.add('sel'); }
+async function confirmPersona(){
+  const selected=document.querySelector('.persona-card.sel');
+  if(!selected){showToast('Please select your role!');return;}
+  const role=selected.dataset.role, {user,name,photoUrl}=window._pendingUser;
+  const color=AVATAR_COLORS[Math.floor(Math.random()*AVATAR_COLORS.length)];
+  const btn=document.getElementById('persona-btn'); btn.disabled=true; btn.textContent='Setting up...';
+  try{
+    await sb.from('profiles').insert({id:user.id,full_name:name,email:user.email,role,is_admin:false,is_verified:false,avatar_color:color,avatar_url:photoUrl});
+    currentUser=user; await loadProfile();
+    const ps=document.getElementById('persona-screen'); ps.style.display='none'; ps.classList.remove('active');
+    enterApp();
+  }catch(e){showToast('Setup failed. Try again.');btn.disabled=false;btn.textContent='Enter PitchBridge →';}
 }
 
-window.signInWithGoogle = async function() {
-  const { error } = await sb.auth.signInWithOAuth({
-    provider: 'google',
-    options: { redirectTo: window.location.origin }
-  });
-  if (error) showToast('❌ ' + error.message);
-}
-
-window.doSignup = async function() {
-  const name = document.getElementById('su-name').value.trim();
-  const email = document.getElementById('su-email').value.trim();
-  const password = document.getElementById('su-pass').value;
-  const errEl = document.getElementById('signup-error');
-  const btn = document.getElementById('signup-btn');
-  errEl.textContent = '';
-  if (!name || !email || !password) { errEl.textContent = 'Please fill in all fields.'; return; }
-  if (!selectedRole) { errEl.textContent = 'Please select your role.'; return; }
-  if (password.length < 6) { errEl.textContent = 'Password must be at least 6 characters.'; return; }
-  btn.disabled = true; btn.textContent = 'Creating account...';
-  const { data, error } = await sb.auth.signUp({ email, password });
-  if (error) { errEl.textContent = error.message; btn.disabled = false; btn.textContent = 'Create Account →'; return; }
-  currentUser = data.user;
-  const color = AVATAR_COLORS[Math.floor(Math.random() * AVATAR_COLORS.length)];
-  await sb.from('profiles').insert({
-    id: currentUser.id, full_name: name, email,
-    role: selectedRole, is_admin: false, is_verified: false, avatar_color: color
-  });
-  await loadProfile();
-  enterApp();
-}
-
-window.doLogin = async function() {
-  const email = document.getElementById('li-email').value.trim();
-  const password = document.getElementById('li-pass').value;
-  const errEl = document.getElementById('login-error');
-  const btn = document.getElementById('login-btn');
-  errEl.textContent = '';
-  if (!email || !password) { errEl.textContent = 'Please enter your email and password.'; return; }
-  btn.disabled = true; btn.textContent = 'Signing in...';
-  const { data, error } = await sb.auth.signInWithPassword({ email, password });
-  if (error) { errEl.textContent = error.message; btn.disabled = false; btn.textContent = 'Sign In →'; return; }
-  currentUser = data.user;
-  await loadProfile();
-  enterApp();
-}
-
-window.doLogout = async function() {
-  await sb.auth.signOut();
-  currentUser = null; currentProfile = null;
-  document.getElementById('app').classList.remove('active');
-  document.getElementById('landing').classList.add('active');
-  showToast('👋 Logged out!');
-}
-
-async function loadProfile() {
-  const { data } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
-  currentProfile = data;
-}
-
-// ============================================================
 // ENTER APP
-// ============================================================
-function enterApp() {
-  document.getElementById('auth').classList.remove('active');
-  document.getElementById('app').classList.add('active');
+function enterApp(){
+  document.querySelectorAll('.screen').forEach(s=>{s.classList.remove('active');s.style.display='none';});
+  const app=document.getElementById('app'); app.style.display='flex'; app.classList.add('active');
   updateNavAvatar();
-  if (currentProfile?.is_admin) document.getElementById('admin-tab').style.display = 'inline-block';
-  if (currentProfile?.role === 'investor') document.getElementById('post-box-wrap').style.display = 'none';
-  renderFeed();
-  renderSidebar();
-  loadNotifications();
-  restoreCurrentPage();
-  setTimeout(askNotificationPermission, 2000);
-  showToast('👋 Welcome, ' + (currentProfile?.full_name || 'there').split(' ')[0] + '!');
+  if(currentProfile?.is_admin) document.getElementById('admin-tab').style.display='inline-block';
+  if(currentProfile?.role==='investor') document.getElementById('post-box-wrap').style.display='none';
+  renderFeed(); renderSidebar(); loadNotifications(); restoreCurrentPage();
+  setTimeout(askNotificationPermission,2000);
+  showToast('👋 Welcome, '+(currentProfile?.full_name||'there').split(' ')[0]+'!');
+}
+function updateNavAvatar(){
+  const el=document.getElementById('nav-avatar'), pAv=document.getElementById('post-av-el');
+  const ini=(currentProfile?.full_name||'U').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  if(currentProfile?.avatar_url){ el.innerHTML='<img src="'+currentProfile.avatar_url+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">'; if(pAv)pAv.innerHTML='<img src="'+currentProfile.avatar_url+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">'; }
+  else if(currentProfile?.avatar_emoji){ el.innerHTML='<span style="font-size:18px;">'+currentProfile.avatar_emoji+'</span>'; el.style.background=currentProfile.avatar_color||'#5b4fcf'; if(pAv){pAv.innerHTML='<span style="font-size:16px;">'+currentProfile.avatar_emoji+'</span>';pAv.style.background=currentProfile.avatar_color;} }
+  else{ el.textContent=ini; el.style.background=currentProfile?.avatar_color||'#5b4fcf'; if(pAv){pAv.textContent=ini;pAv.style.background=currentProfile?.avatar_color||'#5b4fcf';} }
 }
 
-function updateNavAvatar() {
-  const el = document.getElementById('nav-avatar');
-  const postAv = document.getElementById('post-av-el');
-  if (currentProfile?.avatar_url) {
-    el.innerHTML = `<img src="${currentProfile.avatar_url}">`;
-    if (postAv) postAv.innerHTML = `<img src="${currentProfile.avatar_url}">`;
-  } else if (currentProfile?.avatar_emoji) {
-    el.innerHTML = `<span style="font-size:18px;">${currentProfile.avatar_emoji}</span>`;
-    el.style.background = currentProfile.avatar_color || '#5b4fcf';
-    if (postAv) { postAv.innerHTML = `<span style="font-size:16px;">${currentProfile.avatar_emoji}</span>`; postAv.style.background = currentProfile.avatar_color; }
-  } else {
-    const ini = (currentProfile?.full_name || 'U').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
-    el.textContent = ini; el.style.background = currentProfile?.avatar_color || '#5b4fcf';
-    if (postAv) { postAv.textContent = ini; postAv.style.background = currentProfile?.avatar_color || '#5b4fcf'; }
-  }
-}
-
-// ============================================================
 // PAGES
-// ============================================================
-window.showPage = function(page, tab) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('page-' + page).classList.add('active');
-  if (tab) tab.classList.add('active');
-  closeNotifPanel();
-  saveCurrentPage(page);
-  if (page === 'profile') renderProfilePage();
-  if (page === 'network') renderNetwork(netTab);
-  if (page === 'chat') renderChatList();
-  if (page === 'admin') renderAdmin();
-  if (page === 'pitch') renderMyPitches();
+function showPage(page,tab){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  if(tab) tab.classList.add('active');
+  closeNotifPanel(); saveCurrentPage(page);
+  if(page==='profile') renderProfilePage();
+  if(page==='network') renderNetwork(netTab);
+  if(page==='chat') renderChatList();
+  if(page==='admin') renderAdmin();
+  if(page==='pitch') renderMyPitches();
 }
+function saveCurrentPage(page){ try{localStorage.setItem('pb_page',page);}catch(e){} }
+function restoreCurrentPage(){ try{ const s=localStorage.getItem('pb_page'); if(s&&document.getElementById('page-'+s)){ const t=document.querySelector('[onclick*="showPage(''+s+''"]'); showPage(s,t); } }catch(e){} }
 
-// ============================================================
 // FEED
-// ============================================================
-window.selectTag = function(el, tag) {
-  document.querySelectorAll('.tag-pill').forEach(t => t.classList.remove('sel'));
-  el.classList.add('sel'); selectedTag = tag;
+function selectTag(el,tag){ document.querySelectorAll('.tag-pill').forEach(t=>t.classList.remove('sel')); el.classList.add('sel'); selectedTag=tag; }
+function previewMedia(input,type){ const file=input.files[0]; if(!file)return; const reader=new FileReader(); reader.onload=e=>{ const prev=document.getElementById('media-preview'); if(type==='image'){const img=document.createElement('img');img.src=e.target.result;img.className='media-thumb';prev.appendChild(img);}else{const vid=document.createElement('video');vid.src=e.target.result;vid.className='media-thumb';vid.controls=true;prev.appendChild(vid);} mediaFiles.push({type,url:e.target.result}); }; reader.readAsDataURL(file); }
+async function postIdea(){
+  const body=document.getElementById('post-text').value.trim();
+  if(!body){showToast('Please write something first');return;}
+  try{
+    const{error}=await sb.from('ideas').insert({user_id:currentUser.id,title:document.getElementById('post-title').value.trim(),body,funding_ask:document.getElementById('post-ask').value.trim()||null,category:selectedTag||'Tech',likes:0});
+    if(error){showToast('❌ '+error.message);return;}
+    document.getElementById('post-text').value=''; document.getElementById('post-title').value=''; document.getElementById('post-ask').value='';
+    document.getElementById('media-preview').innerHTML=''; mediaFiles=[]; selectedTag='';
+    document.querySelectorAll('.tag-pill').forEach(t=>t.classList.remove('sel'));
+    showToast('🚀 Posted!'); renderFeed();
+  }catch(e){showToast('❌ Failed to post');}
 }
-
-function previewMedia(input, type) {
-  const file = input.files[0]; if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    const prev = document.getElementById('media-preview');
-    const el = type === 'image' ? Object.assign(document.createElement('img'), { src: e.target.result, className: 'media-thumb' })
-      : Object.assign(document.createElement('video'), { src: e.target.result, className: 'media-thumb', controls: true });
-    prev.appendChild(el);
-    mediaFiles.push({ type, url: e.target.result });
-  };
-  reader.readAsDataURL(file);
+async function renderFeed(){
+  const feedEl=document.getElementById('ideas-feed');
+  feedEl.innerHTML='<div class="loading"><span class="spinner"></span>Loading feed...</div>';
+  try{
+    const{data:ideas}=await sb.from('ideas').select('*, profiles(full_name,role,avatar_color,avatar_url,avatar_emoji,profession)').order('created_at',{ascending:false});
+    if(!ideas||!ideas.length){feedEl.innerHTML='<div class="empty-state"><div class="empty-icon">🚀</div>No posts yet!</div>';return;}
+    feedEl.innerHTML=ideas.map(idea=>ideaCardHTML(idea)).join('');
+  }catch(e){feedEl.innerHTML='<div class="empty-state"><div class="empty-icon">⚠️</div>Could not load feed.</div>';}
 }
-
-window.postIdea = async function() {
-  const body = document.getElementById('post-text').value.trim();
-  if (!body) { showToast('⚠️ Please write something first'); return; }
-  const title = document.getElementById('post-title').value.trim();
-  const ask = document.getElementById('post-ask').value.trim();
-  const { error } = await sb.from('ideas').insert({
-    user_id: currentUser.id, title, body,
-    funding_ask: ask || null, category: selectedTag || 'Tech', likes: 0
-  });
-  if (error) { showToast('❌ Error: ' + error.message); return; }
-  document.getElementById('post-text').value = '';
-  document.getElementById('post-title').value = '';
-  document.getElementById('post-ask').value = '';
-  document.getElementById('media-preview').innerHTML = '';
-  mediaFiles = []; selectedTag = '';
-  document.querySelectorAll('.tag-pill').forEach(t => t.classList.remove('sel'));
-  showToast('🚀 Posted successfully!');
-  renderFeed();
+function getAvHTML(p,size){ size=size||42; const bg=(p&&p.avatar_color)?p.avatar_color:'#5b4fcf'; const ini=((p&&p.full_name)?p.full_name:'U').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2); if(p&&p.avatar_url)return '<img src="'+p.avatar_url+'" style="width:'+size+'px;height:'+size+'px;border-radius:50%;object-fit:cover;">'; if(p&&p.avatar_emoji)return '<span style="font-size:'+Math.round(size*0.5)+'px;">'+p.avatar_emoji+'</span>'; return ini; }
+function ideaCardHTML(idea){
+  const p=idea.profiles||{}, bg=p.avatar_color||'#5b4fcf';
+  const bc={AI:'badge-ai',EV:'badge-ev',Product:'badge-product',Tech:'badge-tech'}[idea.category]||'badge-tech';
+  const isInv=currentProfile&&(currentProfile.role==='investor'||currentProfile.role==='both');
+  const isOwn=idea.user_id===(currentUser&&currentUser.id);
+  const rm={entrepreneur:'Entrepreneur',investor:'Investor',both:'Entrepreneur & Investor'};
+  return '<div class="idea-card" id="icard-'+idea.id+'">'+
+    '<div class="card-head"><div class="card-av" style="background:'+bg+';">'+getAvHTML(p)+'</div>'+
+    '<div><div class="card-name">'+(p.full_name||'Anonymous')+'</div>'+
+    '<div class="card-sub">'+(p.profession||rm[p.role]||'Member')+(idea.category?' · <span class="badge '+bc+'">'+idea.category+'</span>':'')+'</div></div>'+
+    (idea.funding_ask?'<div class="card-ask" style="margin-left:auto;">💰 '+idea.funding_ask+'</div>':'')+
+    '</div>'+
+    (idea.title?'<div class="card-title">'+idea.title+'</div>':'')+
+    '<div class="card-body">'+idea.body+'</div>'+
+    (idea.funding_ask?'<div class="card-teaser">🔒 Full pitch visible after NDA</div>':'')+
+    '<div class="card-footer">'+
+    (isInv&&!isOwn&&idea.funding_ask?'<button class="card-btn card-btn-invest" onclick="openInvest(''+idea.id+'')">💼 Request Access</button>':'')+
+    '<button class="card-btn card-btn-action" onclick="likePost(''+idea.id+'',this)">❤️ '+(idea.likes||0)+'</button>'+
+    '<button class="card-btn card-btn-action" onclick="toggleComments(''+idea.id+'')">💬 Comment</button>'+
+    '<button class="card-btn card-btn-action" onclick="copyShareLink(''+idea.id+'')">↗ Share</button>'+
+    (isOwn?'<button class="card-btn card-btn-action" style="color:var(--red);border-color:var(--red);" onclick="deletePost(''+idea.id+'')">🗑</button>':'')+
+    '</div>'+
+    '<div class="comments-section" id="cs-'+idea.id+'">'+
+    '<div class="comment-input-row"><div class="comment-av">'+((currentProfile&&currentProfile.full_name)?currentProfile.full_name[0]:'U')+'</div>'+
+    '<input class="comment-input" placeholder="Write a comment..." id="ci-'+idea.id+'">'+
+    '<button class="comment-send" onclick="addComment(''+idea.id+'')">Send</button></div>'+
+    '<div id="cl-'+idea.id+'"></div></div></div>';
 }
+async function likePost(id,btn){ try{ const{data}=await sb.from('ideas').select('likes').eq('id',id).single(); const n=(data&&data.likes?data.likes:0)+1; await sb.from('ideas').update({likes:n}).eq('id',id); btn.textContent='❤️ '+n; btn.classList.add('liked'); }catch(e){} }
+function toggleComments(id){ const el=document.getElementById('cs-'+id); el.classList.toggle('open'); if(el.classList.contains('open'))loadComments(id); }
+async function loadComments(ideaId){ try{ const{data}=await sb.from('comments').select('*, profiles(full_name,avatar_color)').eq('idea_id',ideaId).order('created_at',{ascending:true}); const listEl=document.getElementById('cl-'+ideaId); if(!data||!data.length){listEl.innerHTML='<div style="font-size:13px;color:var(--muted);padding:8px 0;">No comments yet!</div>';return;} listEl.innerHTML=data.map(c=>'<div class="comment"><div class="comment-av" style="background:'+(c.profiles&&c.profiles.avatar_color?c.profiles.avatar_color:'#5b4fcf')+';">'+(c.profiles&&c.profiles.full_name?c.profiles.full_name[0]:'U')+'</div><div class="comment-bubble"><div class="comment-author">'+(c.profiles&&c.profiles.full_name?c.profiles.full_name:'User')+'</div>'+c.body+'</div></div>').join(''); }catch(e){} }
+async function addComment(ideaId){ const input=document.getElementById('ci-'+ideaId); const text=input.value.trim(); if(!text)return; try{ await sb.from('comments').insert({idea_id:ideaId,user_id:currentUser.id,body:text}); input.value=''; loadComments(ideaId); }catch(e){showToast('❌ Failed');} }
+async function deletePost(id){ if(!confirm('Delete this post?'))return; try{ await sb.from('ideas').delete().eq('id',id); const el=document.getElementById('icard-'+id); if(el)el.remove(); showToast('🗑 Post deleted'); }catch(e){showToast('❌ Failed');} }
+function copyShareLink(id){ const url=window.location.origin+window.location.pathname+'?post='+id; navigator.clipboard.writeText(url).then(()=>showToast('🔗 Link copied!')).catch(()=>showToast('🔗 Link copied!')); }
 
-async function renderFeed() {
-  const feedEl = document.getElementById('ideas-feed');
-  feedEl.innerHTML = '<div class="loading"><span class="spinner"></span>Loading feed...</div>';
-  const { data: ideas, error } = await sb
-    .from('ideas')
-    .select('*, profiles(full_name, role, avatar_color, avatar_url, avatar_emoji, profession)')
-    .order('created_at', { ascending: false });
-  if (error) { feedEl.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div>Could not load feed.</div>'; return; }
-  if (!ideas || ideas.length === 0) { feedEl.innerHTML = '<div class="empty-state"><div class="empty-icon">🚀</div>No posts yet. Be the first!</div>'; return; }
-  feedEl.innerHTML = ideas.map(idea => ideaCardHTML(idea)).join('');
-}
-
-function getAvHTML(profile, size = 42) {
-  const bg = profile?.avatar_color || '#5b4fcf';
-  const ini = (profile?.full_name || 'U').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
-  if (profile?.avatar_url) return `<img src="${profile.avatar_url}" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;">`;
-  if (profile?.avatar_emoji) return `<span style="font-size:${size * 0.5}px;">${profile.avatar_emoji}</span>`;
-  return ini;
-}
-
-function ideaCardHTML(idea) {
-  const p = idea.profiles || {};
-  const bg = p.avatar_color || '#5b4fcf';
-  const bc = { AI: 'badge-ai', EV: 'badge-ev', Product: 'badge-product', Tech: 'badge-tech' }[idea.category] || 'badge-tech';
-  const isInv = currentProfile && (currentProfile.role === 'investor' || currentProfile.role === 'both');
-  const isOwn = idea.user_id === currentUser?.id;
-  const rm = { entrepreneur: 'Entrepreneur', investor: 'Investor', both: 'Entrepreneur & Investor' };
-  return `<div class="idea-card" id="icard-${idea.id}">
-  <div class="card-head">
-    <div class="card-av" style="background:${bg};">${getAvHTML(p)}</div>
-    <div>
-      <div class="card-name">${p.full_name || 'Anonymous'}</div>
-      <div class="card-sub">${p.profession || rm[p.role] || 'Member'}${idea.category ? ` · <span class="badge ${bc}">${idea.category}</span>` : ''}</div>
-    </div>
-    ${idea.funding_ask ? `<div class="card-ask" style="margin-left:auto;">💰 ${idea.funding_ask}</div>` : ''}
-  </div>
-  ${idea.title ? `<div class="card-title">${idea.title}</div>` : ''}
-  <div class="card-body">${idea.body}</div>
-  ${idea.funding_ask ? `<div class="card-teaser">🔒 Full pitch visible after NDA agreement</div>` : ''}
-  <div class="card-footer">
-    ${isInv && !isOwn && idea.funding_ask ? `<button class="card-btn card-btn-invest" onclick="openInvest('${idea.id}')">💼 Request Access</button>` : ''}
-    <button class="card-btn card-btn-action" onclick="likePost('${idea.id}', this)">❤️ ${idea.likes || 0}</button>
-    <button class="card-btn card-btn-action" onclick="toggleComments('${idea.id}')">💬 Comment</button>
-    <button class="card-btn card-btn-action" onclick="showToast('🔗 Link copied!')">↗ Share</button>
-    ${isOwn ? `<button class="card-btn card-btn-action" style="color:var(--red);border-color:var(--red);" onclick="deletePost('${idea.id}')">🗑</button>` : ''}
-  </div>
-  <div class="comments-section" id="cs-${idea.id}">
-    <div class="comment-input-row">
-      <div class="comment-av">${(currentProfile?.full_name || 'U')[0]}</div>
-      <input class="comment-input" placeholder="Write a comment..." id="ci-${idea.id}">
-      <button class="comment-send" onclick="addComment('${idea.id}')">Send</button>
-    </div>
-    <div id="cl-${idea.id}"></div>
-  </div>
-</div>`;
-}
-
-window.likePost = async function(id, btn) {
-  const { data } = await sb.from('ideas').select('likes').eq('id', id).single();
-  const newLikes = (data?.likes || 0) + 1;
-  await sb.from('ideas').update({ likes: newLikes }).eq('id', id);
-  btn.textContent = `❤️ ${newLikes}`;
-  btn.classList.add('liked');
-}
-
-window.toggleComments = function(id) {
-  const el = document.getElementById('cs-' + id);
-  el.classList.toggle('open');
-  if (el.classList.contains('open')) loadComments(id);
-}
-
-async function loadComments(ideaId) {
-  const { data } = await sb.from('comments')
-    .select('*, profiles(full_name, avatar_color)')
-    .eq('idea_id', ideaId)
-    .order('created_at', { ascending: true });
-  const listEl = document.getElementById('cl-' + ideaId);
-  if (!data || data.length === 0) { listEl.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:8px 0;">No comments yet. Be first!</div>'; return; }
-  listEl.innerHTML = data.map(c => `
-  <div class="comment">
-    <div class="comment-av" style="background:${c.profiles?.avatar_color || '#5b4fcf'};">${(c.profiles?.full_name || 'U')[0]}</div>
-    <div class="comment-bubble"><div class="comment-author">${c.profiles?.full_name || 'User'}</div>${c.body}</div>
-  </div>`).join('');
-}
-
-window.addComment = async function(ideaId) {
-  const input = document.getElementById('ci-' + ideaId);
-  const text = input.value.trim(); if (!text) return;
-  await sb.from('comments').insert({ idea_id: ideaId, user_id: currentUser.id, body: text });
-  input.value = '';
-  loadComments(ideaId);
-}
-
-window.deletePost = async function(id) {
-  if (!confirm('Delete this post?')) return;
-  await sb.from('ideas').delete().eq('id', id);
-  document.getElementById('icard-' + id)?.remove();
-  showToast('🗑 Post deleted');
-}
-
-// ============================================================
-// NETWORK
-// ============================================================
-window.switchNetTab = function(el, tab) {
-  document.querySelectorAll('.net-tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active'); netTab = tab; renderNetwork(tab);
-}
-
-async function renderNetwork(tab) {
-  const gridEl = document.getElementById('network-grid');
-  gridEl.innerHTML = '<div class="loading"><span class="spinner"></span>Loading...</div>';
-  const { data: users } = await sb.from('profiles').select('*').neq('id', currentUser.id);
-  allUsers = users || [];
-  if (tab === 'suggestions') renderNetGrid(allUsers);
-  else if (tab === 'following') {
-    const { data: follows } = await sb.from('follows').select('following_id').eq('follower_id', currentUser.id);
-    const ids = (follows || []).map(f => f.following_id);
-    renderNetGrid(allUsers.filter(u => ids.includes(u.id)));
-  } else {
-    const { data: followers } = await sb.from('follows').select('follower_id').eq('following_id', currentUser.id);
-    const ids = (followers || []).map(f => f.follower_id);
-    renderNetGrid(allUsers.filter(u => ids.includes(u.id)));
-  }
-}
-
-async function renderNetGrid(users) {
-  const gridEl = document.getElementById('network-grid');
-  if (!users.length) { gridEl.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><div class="empty-icon">👥</div>No users found.</div>'; return; }
-  const { data: myFollows } = await sb.from('follows').select('following_id').eq('follower_id', currentUser.id);
-  const followingIds = (myFollows || []).map(f => f.following_id);
-  gridEl.innerHTML = users.map(u => {
-    const ini = (u.full_name || 'U').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
-    const isFollowing = followingIds.includes(u.id);
-    const rm = { entrepreneur: 'Entrepreneur', investor: 'Investor', both: 'Both' };
-    return `<div class="network-card">
-    <div class="net-av" style="background:${u.avatar_color || '#5b4fcf'};">${u.avatar_url ? `<img src="${u.avatar_url}">` : u.avatar_emoji || ini}</div>
-    <div class="net-name">${u.full_name || 'User'}</div>
-    <div class="net-role">${rm[u.role] || u.role}</div>
-    <button class="net-btn ${isFollowing ? 'following' : ''}" onclick="toggleFollow('${u.id}', this)">${isFollowing ? '✓ Following' : '+ Follow'}</button>
-  </div>`;
-  }).join('');
-}
-
-window.toggleFollow = async function(userId, btn) {
-  const isFollowing = btn.classList.contains('following');
-  if (isFollowing) {
-    await sb.from('follows').delete().eq('follower_id', currentUser.id).eq('following_id', userId);
-    btn.textContent = '+ Follow'; btn.classList.remove('following');
-  } else {
-    await sb.from('follows').insert({ follower_id: currentUser.id, following_id: userId });
-    btn.textContent = '✓ Following'; btn.classList.add('following');
-    // Add notification
-    await sb.from('notifications').insert({ user_id: userId, from_user_id: currentUser.id, type: 'follow', message: `${currentProfile.full_name} started following you` });
-    showToast('✅ Following!');
-  }
-}
-
-// ============================================================
-// SIDEBAR
-// ============================================================
-async function renderSidebar() {
-  const { data: users } = await sb.from('profiles').select('*').neq('id', currentUser.id).limit(3);
-  const el = document.getElementById('side-people');
-  if (!users || !users.length) { el.innerHTML = '<div style="font-size:13px;color:var(--muted);">No users yet.</div>'; return; }
-  el.innerHTML = users.map(u => {
-    const ini = (u.full_name || 'U').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
-    const rm = { entrepreneur: 'Entrepreneur', investor: 'Investor', both: 'Both' };
-    return `<div class="side-person">
-    <div class="side-av" style="background:${u.avatar_color || '#5b4fcf'};">${u.avatar_url ? `<img src="${u.avatar_url}">` : u.avatar_emoji || ini}</div>
-    <div><div class="side-name">${u.full_name || 'User'}</div><div class="side-role">${rm[u.role] || ''}</div></div>
-    <button class="side-btn" onclick="showToast('✅ Request sent!')">Connect</button>
-  </div>`;
-  }).join('');
-}
-
-// ============================================================
-// CHAT
-// ============================================================
-async function renderChatList() {
-  const el = document.getElementById('chat-list-items');
-  const { data: users } = await sb.from('profiles').select('*').neq('id', currentUser.id);
-  if (!users || !users.length) { el.innerHTML = '<div class="empty-state" style="padding:16px;font-size:13px;">No users to chat with yet.</div>'; return; }
-  el.innerHTML = users.map(u => {
-    const ini = (u.full_name || 'U').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
-    return `<div class="chat-item" id="chatitem-${u.id}" onclick="openChat('${u.id}','${u.full_name}','${u.avatar_color || '#5b4fcf'}','${u.avatar_url || ''}','${u.avatar_emoji || ''}')">
-    <div class="chat-av" style="background:${u.avatar_color || '#5b4fcf'};">${u.avatar_url ? `<img src="${u.avatar_url}">` : u.avatar_emoji || ini}</div>
-    <div><div class="chat-name">${u.full_name || 'User'}</div><div class="chat-preview">Click to start chatting</div></div>
-  </div>`;
-  }).join('');
-}
-
-window.openChat = async function(userId, name, color, avatarUrl, avatarEmoji) {
-  activeChat = userId;
-  document.querySelectorAll('.chat-item').forEach(el => el.classList.remove('active'));
-  document.getElementById('chatitem-' + userId)?.classList.add('active');
-  const ini = name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
-  const avHTML = avatarUrl ? `<img src="${avatarUrl}">` : avatarEmoji || ini;
-  document.getElementById('chat-window').innerHTML = `
-  <div class="chat-header">
-    <div class="chat-av" style="background:${color};width:36px;height:36px;">${avHTML}</div>
-    <div><div class="chat-header-name">${name}</div><div class="chat-header-status">● Active on PitchBridge</div></div>
-  </div>
-  <div class="chat-messages" id="chat-msgs"><div class="loading"><span class="spinner"></span>Loading...</div></div>
-  <div class="chat-input-bar">
-    <input class="chat-input" id="chat-input-field" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendMsg('${userId}')">
-    <button class="chat-send" onclick="sendMsg('${userId}')">➤</button>
-  </div>`;
-  await loadMessages(userId);
-  // Realtime subscription
-  sb.channel('messages-' + userId)
-    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
-      if ((payload.new.sender_id === userId && payload.new.receiver_id === currentUser.id) ||
-          (payload.new.sender_id === currentUser.id && payload.new.receiver_id === userId)) {
-        appendMessage(payload.new, payload.new.sender_id === currentUser.id);
-      }
-    }).subscribe();
-}
-
-async function loadMessages(userId) {
-  const { data: msgs } = await sb.from('messages')
-    .select('*')
-    .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${userId}),and(sender_id.eq.${userId},receiver_id.eq.${currentUser.id})`)
-    .order('created_at', { ascending: true });
-  const msgsEl = document.getElementById('chat-msgs');
-  if (!msgs || !msgs.length) { msgsEl.innerHTML = '<div class="empty-state"><div class="empty-icon">💬</div>Say hello!</div>'; return; }
-  msgsEl.innerHTML = msgs.map(m => msgHTML(m, m.sender_id === currentUser.id)).join('');
-  msgsEl.scrollTop = msgsEl.scrollHeight;
-}
-
-function msgHTML(msg, isMe) {
-  const time = new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  return `<div class="msg ${isMe ? 'me' : 'them'}"><div class="msg-bubble">${msg.body}</div><div class="msg-time">${time}</div></div>`;
-}
-
-function appendMessage(msg, isMe) {
-  const msgsEl = document.getElementById('chat-msgs');
-  if (!msgsEl) return;
-  const div = document.createElement('div');
-  div.innerHTML = msgHTML(msg, isMe);
-  msgsEl.appendChild(div.firstChild);
-  msgsEl.scrollTop = msgsEl.scrollHeight;
-}
-
-window.sendMsg = async function(userId) {
-  const input = document.getElementById('chat-input-field');
-  const text = input.value.trim(); if (!text) return;
-  input.value = '';
-  const { data, error } = await sb.from('messages').insert({ sender_id: currentUser.id, receiver_id: userId, body: text }).select().single();
-  if (error) { showToast('❌ Message failed'); return; }
-  appendMessage(data, true);
-}
-
-// ============================================================
-// PROFILE
-// ============================================================
-async function renderProfilePage() {
-  await loadProfile();
-  const p = currentProfile;
-  document.getElementById('p-name').textContent = p?.full_name || '';
-  document.getElementById('p-prof').textContent = p?.profession || 'Add your profession';
-  document.getElementById('p-bio').textContent = p?.bio || 'Add a summary about yourself...';
-  document.getElementById('edit-prof').value = p?.profession || '';
-  document.getElementById('edit-bio').value = p?.bio || '';
-  const rm = { entrepreneur: '💡 Entrepreneur', investor: '💼 Investor', both: '⚡ Entrepreneur & Investor' };
-  document.getElementById('p-role-pill').textContent = rm[p?.role] || '';
-  // Avatar
-  const bigAv = document.getElementById('profile-av-big');
-  if (p?.avatar_url) bigAv.innerHTML = `<img src="${p.avatar_url}">`;
-  else if (p?.avatar_emoji) { bigAv.innerHTML = `<span style="font-size:36px;">${p.avatar_emoji}</span>`; bigAv.style.background = p.avatar_color; }
-  else { bigAv.textContent = (p?.full_name || 'U').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2); bigAv.style.background = p?.avatar_color || '#5b4fcf'; }
-  // Stats
-  const { count: postCount } = await sb.from('ideas').select('*', { count: 'exact', head: true }).eq('user_id', currentUser.id);
-  const { count: followerCount } = await sb.from('follows').select('*', { count: 'exact', head: true }).eq('following_id', currentUser.id);
-  const { count: followingCount } = await sb.from('follows').select('*', { count: 'exact', head: true }).eq('follower_id', currentUser.id);
-  document.getElementById('ps-posts').textContent = postCount || 0;
-  document.getElementById('ps-followers').textContent = followerCount || 0;
-  document.getElementById('ps-following').textContent = followingCount || 0;
-  // Avatar grid
-  document.getElementById('avatar-grid').innerHTML = AVATARS.map((av, i) =>
-    `<div class="av-option ${p?.avatar_emoji === av.e ? 'sel' : ''}" style="background:${av.c};" onclick="selectAvatar('${av.e}','${av.c}')">${av.e}</div>`
-  ).join('');
-  // My posts
-  const { data: myPosts } = await sb.from('ideas').select('*, profiles(full_name,role,avatar_color,avatar_url,avatar_emoji,profession)').eq('user_id', currentUser.id).order('created_at', { ascending: false });
-  document.getElementById('my-posts').innerHTML = myPosts?.length
-    ? myPosts.map(p => ideaCardHTML(p)).join('')
-    : '<div class="empty-state"><div class="empty-icon">📝</div>No posts yet!</div>';
-}
-
-window.saveProfile = async function() {
-  const profession = document.getElementById('edit-prof').value.trim();
-  const bio = document.getElementById('edit-bio').value.trim();
-  await sb.from('profiles').update({ profession, bio }).eq('id', currentUser.id);
-  await loadProfile();
-  renderProfilePage();
-  showToast('✅ Profile saved!');
-}
-
-window.selectAvatar = async function(emoji, color) {
-  await sb.from('profiles').update({ avatar_emoji: emoji, avatar_color: color, avatar_url: null }).eq('id', currentUser.id);
-  await loadProfile();
-  updateNavAvatar();
-  renderProfilePage();
-  showToast('✅ Avatar updated!');
-}
-
-window.uploadPhoto = async function(input) {
-  const file = input.files[0]; if (!file) return;
-  showToast('⏳ Uploading photo...');
-  const ext = file.name.split('.').pop();
-  const path = `avatars/${currentUser.id}.${ext}`;
-  const { error: upErr } = await sb.storage.from('avatars').upload(path, file, { upsert: true });
-  if (upErr) { showToast('❌ Upload failed: ' + upErr.message); return; }
-  const { data: { publicUrl } } = sb.storage.from('avatars').getPublicUrl(path);
-  await sb.from('profiles').update({ avatar_url: publicUrl, avatar_emoji: null }).eq('id', currentUser.id);
-  await loadProfile();
-  updateNavAvatar();
-  renderProfilePage();
-  showToast('✅ Photo updated!');
-}
-
-// ============================================================
-// NOTIFICATIONS
-// ============================================================
-async function loadNotifications() {
-  const { data: notifs } = await sb.from('notifications').select('*, profiles!from_user_id(full_name)').eq('user_id', currentUser.id).order('created_at', { ascending: false }).limit(10);
-  const unread = (notifs || []).filter(n => !n.is_read).length;
-  const countEl = document.getElementById('notif-count');
-  countEl.textContent = unread;
-  countEl.classList.toggle('hidden', unread === 0);
-  const listEl = document.getElementById('notif-list');
-  if (!notifs || !notifs.length) { listEl.innerHTML = '<div class="empty-state"><div class="empty-icon">🔔</div>No notifications yet</div>'; return; }
-  const icons = { follow: '👤', like: '❤️', comment: '💬', connect: '💼' };
-  listEl.innerHTML = notifs.map(n => `
-  <div class="notif-item ${n.is_read ? '' : 'unread'}" onclick="markNotifRead('${n.id}', this)">
-    <div class="notif-icon" style="background:var(--accent-light);">${icons[n.type] || '🔔'}</div>
-    <div><div class="notif-text">${n.message}</div><div class="notif-time">${new Date(n.created_at).toLocaleString()}</div></div>
-  </div>`).join('');
-}
-
-window.markNotifRead = async function(id, el) {
-  await sb.from('notifications').update({ is_read: true }).eq('id', id);
-  el.classList.remove('unread');
-  updateNotifCount();
-}
-
-function updateNotifCount() {
-  const count = document.querySelectorAll('.notif-item.unread').length;
-  const el = document.getElementById('notif-count');
-  el.textContent = count; el.classList.toggle('hidden', count === 0);
-}
-
-window.clearNotifs = async function() {
-  await sb.from('notifications').update({ is_read: true }).eq('user_id', currentUser.id);
-  document.querySelectorAll('.notif-item').forEach(el => el.classList.remove('unread'));
-  updateNotifCount();
-}
-
-window.toggleNotif = function() { notifOpen = !notifOpen; document.getElementById('notif-panel').classList.toggle('open', notifOpen); }
-function closeNotifPanel() { notifOpen = false; document.getElementById('notif-panel').classList.remove('open'); }
-document.addEventListener('click', e => { if (notifOpen && !e.target.closest('.notif-panel') && !e.target.closest('.notif-btn')) closeNotifPanel(); });
-
-// ============================================================
-// ADMIN
-// ============================================================
-async function renderAdmin() {
-  const [{ count: postCount }, { count: userCount }, { data: pending }, { data: connects }] = await Promise.all([
-    sb.from('ideas').select('*', { count: 'exact', head: true }),
-    sb.from('profiles').select('*', { count: 'exact', head: true }),
-    sb.from('profiles').select('*').in('role', ['investor', 'both']).eq('is_verified', false),
-    sb.from('connect_requests').select('*, from:from_user_id(full_name), to:to_user_id(full_name)').eq('status', 'pending')
-  ]);
-  document.getElementById('a-posts').textContent = postCount || 0;
-  document.getElementById('a-users').textContent = userCount || 0;
-  document.getElementById('a-pending').textContent = pending?.length || 0;
-  document.getElementById('a-connects').textContent = connects?.length || 0;
-  const vEl = document.getElementById('admin-verif');
-  vEl.innerHTML = pending?.length ? pending.map(p => {
-    const ini = (p.full_name || '?')[0];
-    return `<div class="request-item">
-    <div style="width:36px;height:36px;border-radius:50%;background:${p.avatar_color||'#5b4fcf'};display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;flex-shrink:0;">${ini}</div>
-    <div style="flex:1;"><div class="req-name">${p.full_name}</div><div class="req-detail">${p.email} · ${p.role}</div></div>
-    <button class="req-approve" onclick="approveInvestor('${p.id}','${p.full_name}')">Approve</button>
-    <button class="req-deny" onclick="showToast('❌ Denied.')">Deny</button>
-  </div>`;
-  }).join('') : '<div class="empty-state"><div class="empty-icon">✅</div>No pending verifications.</div>';
-  const cEl = document.getElementById('admin-connects');
-  cEl.innerHTML = connects?.length ? connects.map(r => `
-  <div class="request-item">
-    <div style="width:36px;height:36px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;flex-shrink:0;">${(r.from?.full_name||'?')[0]}</div>
-    <div style="flex:1;"><div class="req-name">${r.from?.full_name} → ${r.to?.full_name}</div><div class="req-detail">Ready to schedule Zoom call</div></div>
-    <button class="req-approve" onclick="scheduleCall('${r.id}')">Schedule Call</button>
-  </div>`).join('') : '<div class="empty-state"><div class="empty-icon">📅</div>No pending requests.</div>';
-}
-
-window.approveInvestor = async function(id, name) {
-  await sb.from('profiles').update({ is_verified: true }).eq('id', id);
-  showToast('✅ ' + name + ' verified!'); renderAdmin();
-}
-window.scheduleCall = async function(id) {
-  await sb.from('connect_requests').update({ status: 'scheduled' }).eq('id', id);
-  showToast('📅 Zoom link sent to both parties!'); renderAdmin();
-}
-
-// ============================================================
-// INVEST / NDA
-// ============================================================
-window.openInvest = function(id) { currentIdeaId = id; document.getElementById('nda-check').checked = false; document.getElementById('invest-modal').classList.add('open'); }
-window.closeModal = function(id) { document.getElementById(id).classList.remove('open'); }
-window.confirmInvest = async function() {
-  if (!document.getElementById('nda-check').checked) { showToast('⚠️ Please agree to the NDA first'); return; }
-  await sb.from('nda_requests').insert({ idea_id: currentIdeaId, investor_id: currentUser.id, status: 'pending' });
-  await sb.from('connect_requests').insert({ from_user_id: currentUser.id, to_user_id: currentUser.id, status: 'pending' });
-  closeModal('invest-modal');
-  showToast('✅ Request sent! Admin will schedule your call within 24h.');
-}
-
-// ============================================================
-// TOAST
-// ============================================================
-let toastTimer;
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.remove('hidden');
-  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.add('hidden'), 3200);
-}
-
-// ============================================================
 // SEARCH
-// ============================================================
-window.doSearch = async function(query) {
-  const resultsEl = document.getElementById('search-results') || document.getElementById('net-search-results');
-  if (!query || query.length < 2) { resultsEl.classList.remove('open'); return; }
-  const { data: users } = await sb.from('profiles').select('*').ilike('full_name', '%' + query + '%').limit(8);
-  resultsEl.classList.add('open');
-  if (!users || !users.length) {
-    resultsEl.innerHTML = '<div style="padding:16px;font-size:13px;color:var(--muted);text-align:center;">No results found for "' + query + '"</div>';
-    return;
-  }
-  const rm = { entrepreneur: 'Entrepreneur', investor: 'Investor', both: 'Both' };
-  resultsEl.innerHTML = users.map(u => {
-    const ini = (u.full_name || 'U').split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
-    return '<div class="search-result-item" onclick="viewUserProfile('' + u.id + '')">' +
-      '<div class="search-result-av" style="background:' + (u.avatar_color||'#5b4fcf') + ';">' + (u.avatar_url ? '<img src="'+u.avatar_url+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">' : u.avatar_emoji || ini) + '</div>' +
-      '<div><div class="search-result-name">' + (u.full_name||'User') + '</div><div class="search-result-role">' + (rm[u.role]||u.role||'Member') + '</div></div>' +
-      '</div>';
-  }).join('');
-}
+async function doSearch(query){ const resultsEl=document.getElementById('search-results'); if(!query||query.length<2){if(resultsEl)resultsEl.classList.remove('open');return;} try{ const{data:users}=await sb.from('profiles').select('*').ilike('full_name','%'+query+'%').limit(8); if(!resultsEl)return; resultsEl.classList.add('open'); if(!users||!users.length){resultsEl.innerHTML='<div style="padding:16px;font-size:13px;color:var(--muted);text-align:center;">No results for "'+query+'"</div>';return;} const rm={entrepreneur:'Entrepreneur',investor:'Investor',both:'Both'}; resultsEl.innerHTML=users.map(u=>{ const ini=(u.full_name||'U').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2); const av=u.avatar_url?'<img src="'+u.avatar_url+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">':(u.avatar_emoji||ini); return '<div class="search-result-item" onclick="showToast('👤 Viewing '+(u.full_name||'User')+'')">'+'<div class="search-result-av" style="background:'+(u.avatar_color||'#5b4fcf')+';">'+av+'</div>'+'<div><div class="search-result-name">'+(u.full_name||'User')+'</div><div class="search-result-role">'+(rm[u.role]||'Member')+'</div></div></div>'; }).join(''); }catch(e){} }
+document.addEventListener('click',e=>{ if(!e.target.closest('.search-bar-wrap')) document.querySelectorAll('.search-results').forEach(el=>el.classList.remove('open')); });
 
-async function viewUserProfile(userId) {
-  document.querySelectorAll('.search-results').forEach(el => el.classList.remove('open'));
-  showToast('👤 Loading profile...');
-}
+// NETWORK
+function switchNetTab(el,tab){ document.querySelectorAll('.net-tab').forEach(t=>t.classList.remove('active')); el.classList.add('active'); netTab=tab; renderNetwork(tab); }
+async function renderNetwork(tab){ const gridEl=document.getElementById('network-grid'); gridEl.innerHTML='<div class="loading"><span class="spinner"></span>Loading...</div>'; try{ const{data:users}=await sb.from('profiles').select('*').neq('id',currentUser.id); const all=users||[]; if(tab==='suggestions'){renderNetGrid(all);return;} const col=tab==='following'?'follower_id':'following_id'; const ret=tab==='following'?'following_id':'follower_id'; const{data:follows}=await sb.from('follows').select(ret).eq(col,currentUser.id); const ids=(follows||[]).map(f=>f[ret]); renderNetGrid(all.filter(u=>ids.includes(u.id))); }catch(e){gridEl.innerHTML='<div class="empty-state">Could not load.</div>';} }
+async function renderNetGrid(users){ const gridEl=document.getElementById('network-grid'); if(!users.length){gridEl.innerHTML='<div class="empty-state" style="grid-column:1/-1;"><div class="empty-icon">👥</div>No users found.</div>';return;} try{ const{data:mf}=await sb.from('follows').select('following_id').eq('follower_id',currentUser.id); const fids=(mf||[]).map(f=>f.following_id); const rm={entrepreneur:'Entrepreneur',investor:'Investor',both:'Both'}; gridEl.innerHTML=users.map(u=>{ const ini=(u.full_name||'U').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2); const isF=fids.includes(u.id); const av=u.avatar_url?'<img src="'+u.avatar_url+'">':( u.avatar_emoji||ini); return '<div class="network-card"><div class="net-av" style="background:'+(u.avatar_color||'#5b4fcf')+';">'+av+'</div><div class="net-name">'+(u.full_name||'User')+'</div><div class="net-role">'+(rm[u.role]||u.role)+'</div><button class="net-btn '+(isF?'following':'')+'" onclick="toggleFollow(''+u.id+'',this)">'+(isF?'✓ Following':'+ Follow')+'</button></div>'; }).join(''); }catch(e){} }
+async function toggleFollow(userId,btn){ const isF=btn.classList.contains('following'); try{ if(isF){ await sb.from('follows').delete().eq('follower_id',currentUser.id).eq('following_id',userId); btn.textContent='+ Follow'; btn.classList.remove('following'); }else{ await sb.from('follows').insert({follower_id:currentUser.id,following_id:userId}); btn.textContent='✓ Following'; btn.classList.add('following'); await sb.from('notifications').insert({user_id:userId,from_user_id:currentUser.id,type:'follow',message:(currentProfile&&currentProfile.full_name?currentProfile.full_name:'Someone')+' started following you'}); showToast('✅ Following!'); } }catch(e){showToast('❌ Failed');} }
 
-// Close search on outside click
-document.addEventListener('click', e => {
-  if (!e.target.closest('.search-bar-wrap')) {
-    document.querySelectorAll('.search-results').forEach(el => el.classList.remove('open'));
-  }
-});
+// SIDEBAR
+async function renderSidebar(){ const{data:users}=await sb.from('profiles').select('*').neq('id',currentUser.id).limit(3); const el=document.getElementById('side-people'); if(!users||!users.length){el.innerHTML='<div style="font-size:13px;color:var(--muted);">No users yet.</div>';return;} const rm={entrepreneur:'Entrepreneur',investor:'Investor',both:'Both'}; el.innerHTML=users.map(u=>{ const ini=(u.full_name||'U').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2); const av=u.avatar_url?'<img src="'+u.avatar_url+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">':(u.avatar_emoji||ini); return '<div class="side-person"><div class="side-av" style="background:'+(u.avatar_color||'#5b4fcf')+';">'+av+'</div><div><div class="side-name">'+(u.full_name||'User')+'</div><div class="side-role">'+(rm[u.role]||'')+'</div></div><button class="side-btn" onclick="showToast('✅ Request sent!')">Connect</button></div>'; }).join(''); }
 
-// ============================================================
-// LOGOUT CONFIRMATION
-// ============================================================
-window.confirmLogout = function() {
-  document.getElementById('logout-modal').classList.add('open');
-}
+// CHAT
+async function renderChatList(){ const el=document.getElementById('chat-list-items'); try{ const{data:users}=await sb.from('profiles').select('*').neq('id',currentUser.id); if(!users||!users.length){el.innerHTML='<div class="empty-state" style="padding:16px;font-size:13px;">No users yet.</div>';return;} el.innerHTML=users.map(u=>{ const ini=(u.full_name||'U').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2); const av=u.avatar_url?'<img src="'+u.avatar_url+'">':(u.avatar_emoji||ini); return '<div class="chat-item" id="chatitem-'+u.id+'" onclick="openChat(''+u.id+'',''+u.full_name+'',''+u.avatar_color+'',''+u.avatar_url+'',''+u.avatar_emoji+'')"><div class="chat-av" style="background:'+(u.avatar_color||'#5b4fcf')+';">'+av+'</div><div><div class="chat-name">'+(u.full_name||'User')+'</div><div class="chat-preview">Click to chat</div></div></div>'; }).join(''); }catch(e){el.innerHTML='<div class="empty-state">Could not load.</div>';} }
+async function openChat(userId,name,color,avatarUrl,avatarEmoji){ activeChat=userId; document.querySelectorAll('.chat-item').forEach(el=>el.classList.remove('active')); const ci=document.getElementById('chatitem-'+userId); if(ci)ci.classList.add('active'); const ini=(name||'U').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2); const avHTML=avatarUrl&&avatarUrl!=='null'?'<img src="'+avatarUrl+'">':(avatarEmoji&&avatarEmoji!=='null'?avatarEmoji:ini); document.getElementById('chat-window').innerHTML='<div class="chat-header"><div class="chat-av" style="background:'+(color||'#5b4fcf')+';width:36px;height:36px;">'+avHTML+'</div><div><div class="chat-header-name">'+(name||'User')+'</div><div class="chat-header-status">● Active</div></div></div><div class="chat-messages" id="chat-msgs"><div class="loading"><span class="spinner"></span>Loading...</div></div><div class="chat-input-bar"><input class="chat-input" id="chat-input-field" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendMsg(''+userId+'')"><button class="chat-send" onclick="sendMsg(''+userId+'')">➤</button></div>'; await loadMessages(userId); }
+async function loadMessages(userId){ try{ const{data:msgs}=await sb.from('messages').select('*').or('and(sender_id.eq.'+currentUser.id+',receiver_id.eq.'+userId+'),and(sender_id.eq.'+userId+',receiver_id.eq.'+currentUser.id+')').order('created_at',{ascending:true}); const msgsEl=document.getElementById('chat-msgs'); if(!msgs||!msgs.length){msgsEl.innerHTML='<div class="empty-state"><div class="empty-icon">💬</div>Say hello!</div>';return;} msgsEl.innerHTML=msgs.map(m=>msgHTML(m,m.sender_id===currentUser.id)).join(''); msgsEl.scrollTop=msgsEl.scrollHeight; }catch(e){} }
+function msgHTML(msg,isMe){ const time=new Date(msg.created_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); return '<div class="msg '+(isMe?'me':'them')+'"><div class="msg-bubble">'+msg.body+'</div><div class="msg-time">'+time+'</div></div>'; }
+async function sendMsg(userId){ const input=document.getElementById('chat-input-field'); const text=input.value.trim(); if(!text)return; input.value=''; try{ const{data,error}=await sb.from('messages').insert({sender_id:currentUser.id,receiver_id:userId,body:text}).select().single(); if(error){showToast('❌ Message failed');return;} const msgsEl=document.getElementById('chat-msgs'); if(msgsEl){ const div=document.createElement('div'); div.innerHTML=msgHTML(data,true); msgsEl.appendChild(div.firstChild); msgsEl.scrollTop=msgsEl.scrollHeight; } }catch(e){showToast('❌ Failed');} }
 
-// ============================================================
-// PAGE PERSISTENCE (stay on same page on reload)
-// ============================================================
-function saveCurrentPage(page) {
-  localStorage.setItem('pb_current_page', page);
-}
+// PROFILE
+async function renderProfilePage(){ await loadProfile(); const p=currentProfile; document.getElementById('p-name').textContent=p?.full_name||''; document.getElementById('p-prof').textContent=p?.profession||'Add your profession'; document.getElementById('p-bio').textContent=p?.bio||'Add a summary...'; document.getElementById('edit-prof').value=p?.profession||''; document.getElementById('edit-bio').value=p?.bio||''; const rm={entrepreneur:'💡 Entrepreneur',investor:'💼 Investor',both:'⚡ Both'}; document.getElementById('p-role-pill').textContent=rm[p?.role]||''; const bigAv=document.getElementById('profile-av-big'); if(p?.avatar_url)bigAv.innerHTML='<img src="'+p.avatar_url+'">'; else if(p?.avatar_emoji){bigAv.innerHTML='<span style="font-size:36px;">'+p.avatar_emoji+'</span>';bigAv.style.background=p.avatar_color;} else{bigAv.textContent=(p?.full_name||'U').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);bigAv.style.background=p?.avatar_color||'#5b4fcf';} try{ const[{count:pc},{count:flrc},{count:flgc}]=await Promise.all([sb.from('ideas').select('*',{count:'exact',head:true}).eq('user_id',currentUser.id),sb.from('follows').select('*',{count:'exact',head:true}).eq('following_id',currentUser.id),sb.from('follows').select('*',{count:'exact',head:true}).eq('follower_id',currentUser.id)]); document.getElementById('ps-posts').textContent=pc||0; document.getElementById('ps-followers').textContent=flrc||0; document.getElementById('ps-following').textContent=flgc||0; }catch(e){} document.getElementById('avatar-grid').innerHTML=AVATARS.map((av,i)=>'<div class="av-option '+(p?.avatar_emoji===av.e?'sel':'')+'" style="background:'+av.c+';" onclick="selectAvatar(''+av.e+'',''+av.c+'')">'+av.e+'</div>').join(''); try{ const{data:myPosts}=await sb.from('ideas').select('*, profiles(full_name,role,avatar_color,avatar_url,avatar_emoji,profession)').eq('user_id',currentUser.id).order('created_at',{ascending:false}); document.getElementById('my-posts').innerHTML=myPosts&&myPosts.length?myPosts.map(p=>ideaCardHTML(p)).join(''):'<div class="empty-state"><div class="empty-icon">📝</div>No posts yet!</div>'; }catch(e){} }
+async function saveProfile(){ try{ await sb.from('profiles').update({profession:document.getElementById('edit-prof').value.trim(),bio:document.getElementById('edit-bio').value.trim()}).eq('id',currentUser.id); await loadProfile(); renderProfilePage(); showToast('✅ Profile saved!'); }catch(e){showToast('❌ Failed');} }
+async function selectAvatar(emoji,color){ try{ await sb.from('profiles').update({avatar_emoji:emoji,avatar_color:color,avatar_url:null}).eq('id',currentUser.id); await loadProfile(); updateNavAvatar(); renderProfilePage(); showToast('✅ Avatar updated!'); }catch(e){showToast('❌ Failed');} }
+async function uploadPhoto(input){ const file=input.files[0]; if(!file)return; showToast('⏳ Uploading...'); try{ const ext=file.name.split('.').pop(); const path='avatars/'+currentUser.id+'.'+ext; const{error:upErr}=await sb.storage.from('avatars').upload(path,file,{upsert:true}); if(upErr){showToast('❌ '+upErr.message);return;} const{data:{publicUrl}}=sb.storage.from('avatars').getPublicUrl(path); await sb.from('profiles').update({avatar_url:publicUrl,avatar_emoji:null}).eq('id',currentUser.id); await loadProfile(); updateNavAvatar(); renderProfilePage(); showToast('✅ Photo updated!'); }catch(e){showToast('❌ Upload failed');} }
 
-function restoreCurrentPage() {
-  const saved = localStorage.getItem('pb_current_page');
-  if (saved) {
-    const tab = document.querySelector('.nav-tab[onclick*="' + saved + '"]');
-    showPage(saved, tab);
-  }
-}
+// NOTIFICATIONS
+async function loadNotifications(){ try{ const{data:notifs}=await sb.from('notifications').select('*').eq('user_id',currentUser.id).order('created_at',{ascending:false}).limit(10); const unread=(notifs||[]).filter(n=>!n.is_read).length; const countEl=document.getElementById('notif-count'); countEl.textContent=unread; countEl.classList.toggle('hidden',unread===0); const listEl=document.getElementById('notif-list'); if(!notifs||!notifs.length){listEl.innerHTML='<div class="empty-state"><div class="empty-icon">🔔</div>No notifications</div>';return;} const icons={follow:'👤',like:'❤️',comment:'💬',connect:'💼'}; listEl.innerHTML=notifs.map(n=>'<div class="notif-item '+(n.is_read?'':'unread')+'" onclick="markNotifRead(''+n.id+'',this)"><div class="notif-icon" style="background:var(--accent-light);">'+(icons[n.type]||'🔔')+'</div><div><div class="notif-text">'+n.message+'</div><div class="notif-time">'+new Date(n.created_at).toLocaleString()+'</div></div></div>').join(''); }catch(e){} }
+async function markNotifRead(id,el){ try{await sb.from('notifications').update({is_read:true}).eq('id',id);}catch(e){} el.classList.remove('unread'); updateNotifCount(); }
+function updateNotifCount(){ const count=document.querySelectorAll('.notif-item.unread').length; const el=document.getElementById('notif-count'); el.textContent=count; el.classList.toggle('hidden',count===0); }
+async function clearNotifs(){ try{await sb.from('notifications').update({is_read:true}).eq('user_id',currentUser.id);}catch(e){} document.querySelectorAll('.notif-item').forEach(el=>el.classList.remove('unread')); updateNotifCount(); }
+function toggleNotif(){ notifOpen=!notifOpen; document.getElementById('notif-panel').classList.toggle('open',notifOpen); }
+function closeNotifPanel(){ notifOpen=false; document.getElementById('notif-panel').classList.remove('open'); }
+document.addEventListener('click',e=>{ if(notifOpen&&!e.target.closest('.notif-panel')&&!e.target.closest('.notif-btn'))closeNotifPanel(); });
 
-// ============================================================
 // PUSH NOTIFICATIONS
-// ============================================================
-function askNotificationPermission() {
-  if (!('Notification' in window)) return;
-  if (Notification.permission === 'default') {
-    document.getElementById('notif-banner').classList.remove('hidden');
-  }
-}
+function askNotificationPermission(){ if(!('Notification'in window))return; if(Notification.permission==='default') document.getElementById('notif-banner').classList.remove('hidden'); }
+function enableNotifications(){ document.getElementById('notif-banner').classList.add('hidden'); if('Notification'in window) Notification.requestPermission().then(p=>{ if(p==='granted')showToast('🔔 Notifications enabled!'); }); }
 
-window.enableNotifications = function() {
-  document.getElementById('notif-banner').classList.add('hidden');
-  if ('Notification' in window) {
-    Notification.requestPermission().then(permission => {
-      if (permission === 'granted') {
-        showToast('🔔 Notifications enabled!');
-        registerServiceWorker();
-      }
-    });
-  }
-}
+// INVEST / NDA
+function openInvest(id){ currentIdeaId=id; document.getElementById('nda-check').checked=false; document.getElementById('invest-modal').classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+async function confirmInvest(){ if(!document.getElementById('nda-check').checked){showToast('Please agree to the NDA first');return;} try{ await sb.from('nda_requests').insert({idea_id:currentIdeaId,investor_id:currentUser.id,status:'pending'}); closeModal('invest-modal'); showToast('✅ Request sent! Admin will schedule your call.'); }catch(e){showToast('❌ Failed');} }
 
-function registerServiceWorker() {
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js').catch(() => {});
-  }
-}
+// ADMIN
+async function renderAdmin(){ try{ const[{count:pc},{count:uc},{data:pending},{data:connects}]=await Promise.all([sb.from('ideas').select('*',{count:'exact',head:true}),sb.from('profiles').select('*',{count:'exact',head:true}),sb.from('profiles').select('*').in('role',['investor','both']).eq('is_verified',false),sb.from('connect_requests').select('*, from:from_user_id(full_name), to:to_user_id(full_name)').eq('status','pending')]); document.getElementById('a-posts').textContent=pc||0; document.getElementById('a-users').textContent=uc||0; document.getElementById('a-pending').textContent=(pending&&pending.length)||0; document.getElementById('a-connects').textContent=(connects&&connects.length)||0; const vEl=document.getElementById('admin-verif'); vEl.innerHTML=pending&&pending.length?pending.map(p=>'<div class="request-item"><div style="width:36px;height:36px;border-radius:50%;background:'+(p.avatar_color||'#5b4fcf')+';display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;flex-shrink:0;">'+(p.full_name||'?')[0]+'</div><div style="flex:1;"><div class="req-name">'+(p.full_name||'User')+'</div><div class="req-detail">'+(p.email||'')+'</div></div><button class="req-approve" onclick="approveInvestor(''+p.id+'',''+p.full_name+'')">Approve</button><button class="req-deny" onclick="showToast('❌ Denied')">Deny</button></div>').join(''):'<div class="empty-state"><div class="empty-icon">✅</div>No pending.</div>'; const cEl=document.getElementById('admin-connects'); cEl.innerHTML=connects&&connects.length?connects.map(r=>'<div class="request-item"><div style="width:36px;height:36px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;">'+((r.from&&r.from.full_name)?r.from.full_name[0]:'?')+'</div><div style="flex:1;"><div class="req-name">'+((r.from&&r.from.full_name)?r.from.full_name:'?')+' → '+((r.to&&r.to.full_name)?r.to.full_name:'?')+'</div><div class="req-detail">Ready to schedule</div></div><button class="req-approve" onclick="scheduleCall(''+r.id+'')">Schedule Call</button></div>').join(''):'<div class="empty-state"><div class="empty-icon">📅</div>No requests.</div>'; }catch(e){console.error(e);} }
+async function approveInvestor(id,name){ try{await sb.from('profiles').update({is_verified:true}).eq('id',id); showToast('✅ '+name+' verified!'); renderAdmin();}catch(e){showToast('❌ Failed');} }
+async function scheduleCall(id){ try{await sb.from('connect_requests').update({status:'scheduled'}).eq('id',id); showToast('📅 Zoom link sent!'); renderAdmin();}catch(e){showToast('❌ Failed');} }
 
-function sendPushNotification(title, body) {
-  if (Notification.permission === 'granted') {
-    new Notification(title, { body, icon: '/icon.png' });
-  }
-}
-
-// ============================================================
 // PITCH FORM
-// ============================================================
-let currentPitchStep = 0;
-
-window.openPitchForm = function() {
-  currentPitchStep = 0;
-  updatePitchStep(0);
-  document.getElementById('pitch-modal').classList.add('open');
+function openPitchForm(){ currentPitchStep=0; updatePitchStep(0); document.getElementById('pitch-modal').classList.add('open'); }
+function nextPitchStep(step){ currentPitchStep=step; updatePitchStep(step); }
+function updatePitchStep(step){ document.querySelectorAll('.pitch-step').forEach((el,i)=>el.classList.toggle('active',i===step)); document.querySelectorAll('.pitch-prog-dot').forEach((el,i)=>el.classList.toggle('done',i<=step)); }
+function showFileName(input){ const file=input.files[0]; if(file)document.getElementById('upload-file-name').textContent='✅ '+file.name; }
+async function submitPitch(){
+  const btn=document.getElementById('pitch-submit-btn'); btn.disabled=true; btn.textContent='Submitting...';
+  const d={user_id:currentUser.id,user_name:currentProfile?.full_name,user_email:currentUser.email,
+    problem:document.getElementById('pq1').value,target_customer:document.getElementById('pq2').value,market_size:document.getElementById('pq3').value,differentiation:document.getElementById('pq4').value,competitors:document.getElementById('pq5').value,
+    has_product:document.getElementById('pq6').value,users_count:document.getElementById('pq7').value,monthly_revenue:document.getElementById('pq8').value,growth_rate:document.getElementById('pq9').value,loi:document.getElementById('pq10').value,
+    funding_ask:document.getElementById('pq11').value,funding_use:document.getElementById('pq12').value,equity_offered:document.getElementById('pq13').value,prev_funding:document.getElementById('pq14').value,valuation:document.getElementById('pq15').value,
+    founders:document.getElementById('pq16').value,employees:document.getElementById('pq17').value,advisors:document.getElementById('pq18').value,business_model:document.getElementById('pq19').value,burn_rate:document.getElementById('pq20').value,runway:document.getElementById('pq21').value,profitable_when:document.getElementById('pq22').value,
+    status:'pending'};
+  try{ await sb.from('pitches').insert(d); await sendPitchEmails(d); closeModal('pitch-modal'); showToast('🚀 Pitch submitted! Check your email.'); renderMyPitches(); }catch(e){showToast('❌ Submission failed');}
+  btn.disabled=false; btn.textContent='Submit Pitch 🚀';
 }
+async function sendPitchEmails(data){
+  // ============================================================
+  // PASTE YOUR EMAILJS KEYS HERE
+  // Sign up free at emailjs.com
+  // ============================================================
+  const EMAILJS_SERVICE_ID = 'YOUR_EMAILJS_SERVICE_ID';
+  const EMAILJS_TEMPLATE_ID = 'YOUR_EMAILJS_TEMPLATE_ID';
+  const EMAILJS_PUBLIC_KEY = 'YOUR_EMAILJS_PUBLIC_KEY';
+  const COMPANY_EMAIL = 'YOUR_COMPANY_EMAIL_HERE';
+  // ============================================================
+  if(EMAILJS_SERVICE_ID==='YOUR_EMAILJS_SERVICE_ID'){console.log('EmailJS not configured yet.');return;}
+  const date=new Date().toLocaleString();
+  try{
+    await emailjs.send(EMAILJS_SERVICE_ID,EMAILJS_TEMPLATE_ID,{to_email:data.user_email,to_name:data.user_name,subject:'We received your pitch! 🚀 — PitchBridge',message:'Hey '+data.user_name+'!
 
-window.nextPitchStep = function(step) {
-  currentPitchStep = step;
-  updatePitchStep(step);
+Thank you for submitting your pitch to PitchBridge. 🎉
+
+We have successfully received your startup pitch and our team is currently reviewing it carefully.
+
+Here is what happens next:
+
+✅ Step 1 — Our team reviews your pitch (3-5 business days)
+✅ Step 2 — We match you with the right investors
+✅ Step 3 — We schedule a call between you and the investor
+✅ Step 4 — You pitch, we facilitate, deals get closed!
+
+We will keep you posted on every update.
+
+We believe in your idea. Lets make it happen! 💪
+
+Warm regards,
+Team PitchBridge'},EMAILJS_PUBLIC_KEY);
+    await emailjs.send(EMAILJS_SERVICE_ID,EMAILJS_TEMPLATE_ID,{to_email:COMPANY_EMAIL,to_name:'PitchBridge Team',subject:'🚨 New Pitch by '+data.user_name+' — PitchBridge',message:'Hi PitchBridge Team,
+
+New pitch submitted!
+
+════════════════════
+👤 SUBMITTED BY
+════════════════════
+Name:  '+data.user_name+'
+Email: '+data.user_email+'
+Date:  '+date+'
+
+════════════════════
+🏢 ABOUT THE BUSINESS
+════════════════════
+1. Problem:
+'+data.problem+'
+
+2. Target Customer:
+'+data.target_customer+'
+
+3. Market Size:
+'+data.market_size+'
+
+4. Differentiation:
+'+data.differentiation+'
+
+5. Competitors:
+'+data.competitors+'
+
+════════════════════
+📈 TRACTION
+════════════════════
+6. Has Product: '+data.has_product+'
+7. Users: '+data.users_count+'
+8. Revenue: '+data.monthly_revenue+'
+9. Growth: '+data.growth_rate+'
+10. LOI: '+data.loi+'
+
+════════════════════
+💰 FUNDING
+════════════════════
+11. Funding Ask: '+data.funding_ask+'
+12. Use of Funds: '+data.funding_use+'
+13. Equity: '+data.equity_offered+'
+14. Previous Funding: '+data.prev_funding+'
+15. Valuation: '+data.valuation+'
+
+════════════════════
+👥 TEAM
+════════════════════
+16. Founders: '+data.founders+'
+17. Employees: '+data.employees+'
+18. Advisors: '+data.advisors+'
+
+════════════════════
+📊 FINANCIALS
+════════════════════
+19. Business Model: '+data.business_model+'
+20. Burn Rate: '+data.burn_rate+'
+21. Runway: '+data.runway+'
+22. Profitable When: '+data.profitable_when+'
+
+════════════════════
+Login to Admin Dashboard to review.
+— PitchBridge System'},EMAILJS_PUBLIC_KEY);
+  }catch(e){console.error('Email failed:',e);}
 }
+async function renderMyPitches(){ const el=document.getElementById('my-pitches'); if(!el)return; try{ const{data:pitches}=await sb.from('pitches').select('*').eq('user_id',currentUser.id).order('created_at',{ascending:false}); if(!pitches||!pitches.length){el.innerHTML='<div class="empty-state"><div class="empty-icon">💡</div>No pitches yet. Click Submit New Pitch!</div>';return;} el.innerHTML=pitches.map(p=>'<div class="pitch-item"><div class="pitch-item-av">💡</div><div><div class="pitch-item-title">'+(p.funding_ask||'Startup Pitch')+'</div><div class="pitch-item-meta">Submitted '+new Date(p.created_at).toLocaleDateString()+' · '+(p.market_size||'')+'</div></div><div class="pitch-status pitch-status-'+(p.status||'pending')+'">'+(p.status==='reviewing'?'🔍 Reviewing':'⏳ Pending')+'</div></div>').join(''); }catch(e){el.innerHTML='<div class="empty-state">Could not load pitches.</div>';} }
 
-function updatePitchStep(step) {
-  document.querySelectorAll('.pitch-step').forEach((el, i) => {
-    el.classList.toggle('active', i === step);
-  });
-  document.querySelectorAll('.pitch-prog-dot').forEach((el, i) => {
-    el.classList.toggle('done', i <= step);
-  });
-}
-
-window.showFileName = function(input) {
-  const file = input.files[0];
-  if (file) document.getElementById('upload-file-name').textContent = '✅ ' + file.name;
-}
-
-window.submitPitch = async function() {
-  const btn = document.getElementById('pitch-submit-btn');
-  btn.disabled = true; btn.textContent = 'Submitting...';
-
-  const pitchData = {
-    problem: document.getElementById('pq1').value,
-    target_customer: document.getElementById('pq2').value,
-    market_size: document.getElementById('pq3').value,
-    differentiation: document.getElementById('pq4').value,
-    competitors: document.getElementById('pq5').value,
-    has_product: document.getElementById('pq6').value,
-    users_count: document.getElementById('pq7').value,
-    monthly_revenue: document.getElementById('pq8').value,
-    growth_rate: document.getElementById('pq9').value,
-    loi: document.getElementById('pq10').value,
-    funding_ask: document.getElementById('pq11').value,
-    funding_use: document.getElementById('pq12').value,
-    equity_offered: document.getElementById('pq13').value,
-    prev_funding: document.getElementById('pq14').value,
-    valuation: document.getElementById('pq15').value,
-    founders: document.getElementById('pq16').value,
-    employees: document.getElementById('pq17').value,
-    advisors: document.getElementById('pq18').value,
-    business_model: document.getElementById('pq19').value,
-    burn_rate: document.getElementById('pq20').value,
-    runway: document.getElementById('pq21').value,
-    profitable_when: document.getElementById('pq22').value,
-    user_id: currentUser.id,
-    user_email: currentUser.email,
-    user_name: currentProfile?.full_name,
-    status: 'pending'
-  };
-
-  // Save to Supabase
-  await sb.from('pitches').insert(pitchData);
-
-  // Send confirmation email via EmailJS
-  await sendPitchEmails(pitchData);
-
-  closeModal('pitch-modal');
-  btn.disabled = false; btn.textContent = 'Submit Pitch 🚀';
-  showToast('🚀 Pitch submitted! Check your email for confirmation.');
-  renderMyPitches();
-}
-
-async function sendPitchEmails(data) {
-  // ⚠️ Replace these with your EmailJS credentials
-  // Sign up free at emailjs.com → get Service ID, Template ID, Public Key
-  const EMAILJS_SERVICE_ID = 'service_b2gsl4o';
-  const EMAILJS_TEMPLATE_ID = 'template_o6eeqkk';
-  const EMAILJS_PUBLIC_KEY = 'DjGvoMavHPkHcV4XM';
-  const COMPANY_EMAIL = 'dennyfranklin2004@gmail.com';
-
-  if (EMAILJS_SERVICE_ID === 'service_b2gsl4o') {
-    console.log('EmailJS not configured yet. Pitch saved to database.');
-    return;
-  }
-
-  // Email to entrepreneur
-  await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-    to_email: data.user_email,
-    to_name: data.user_name,
-    subject: 'We received your pitch! 🚀',
-    message: 'Hey ' + data.user_name + '! We have received your pitch for "' + data.problem.slice(0,60) + '...". Our team is currently reviewing it and will get back to you very soon with updates. Thank you for choosing PitchBridge! Team PitchBridge'
-  }, EMAILJS_PUBLIC_KEY);
-
-  // Email to company
-  await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-    to_email: COMPANY_EMAIL,
-    to_name: 'PitchBridge Team',
-    subject: 'New Pitch Submitted by ' + data.user_name,
-    message: 'New pitch from: ' + data.user_name + ' (' + data.user_email + ')\n\n' +
-      'Problem: ' + data.problem + '\n' +
-      'Market Size: ' + data.market_size + '\n' +
-      'Funding Ask: ' + data.funding_ask + '\n' +
-      'Valuation: ' + data.valuation + '\n' +
-      'Revenue: ' + data.monthly_revenue + '\n' +
-      'Users: ' + data.users_count + '\n' +
-      'Equity: ' + data.equity_offered
-  }, EMAILJS_PUBLIC_KEY);
-}
-
-async function renderMyPitches() {
-  const el = document.getElementById('my-pitches');
-  if (!el) return;
-  const { data: pitches } = await sb.from('pitches').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
-  if (!pitches || !pitches.length) {
-    el.innerHTML = '<div class="empty-state"><div class="empty-icon">💡</div>No pitches submitted yet.<br>Click "Submit New Pitch" to get started!</div>';
-    return;
-  }
-  el.innerHTML = pitches.map(p => '<div class="pitch-item">' +
-    '<div class="pitch-item-av">💡</div>' +
-    '<div><div class="pitch-item-title">' + (p.funding_ask || 'Startup Pitch') + '</div>' +
-    '<div class="pitch-item-meta">Submitted ' + new Date(p.created_at).toLocaleDateString() + ' · ' + (p.market_size||'') + '</div></div>' +
-    '<div class="pitch-status pitch-status-' + (p.status||'pending') + '">' + (p.status === 'reviewing' ? '🔍 Reviewing' : '⏳ Pending') + '</div>' +
-    '</div>').join('');
-}
-
+// TOAST
+let toastTimer;
+function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.remove('hidden'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.add('hidden'),3200); }
 </script>
 </body>
 </html>
