@@ -1,13 +1,13 @@
-# PitchBridge V10
+# PitchBridge — Fresh Build
 
 ## Fix these 2 things in index.html:
 
-### 1. Supabase Keys (search: YOUR_SUPABASE_URL_HERE)
-const SUPABASE_URL = "your url here";
-const SUPABASE_ANON_KEY = "your key here";
+### 1. Supabase Keys
+Search: YOUR_SUPABASE_URL_HERE
+Replace with your real URL and anon key
 
-### 2. EmailJS Keys (search: YOUR_EMAILJS_SERVICE_ID)
-const EMAILJS_SERVICE_ID = "service_xxx";
-const EMAILJS_TEMPLATE_ID = "template_xxx";
-const EMAILJS_PUBLIC_KEY = "your key";
-const COMPANY_EMAIL = "your@email.com";
+### 2. EmailJS Keys
+Search: YOUR_EMAILJS_SERVICE_ID  
+Replace with your real keys and company email
+
+## Then upload to Netlify!
