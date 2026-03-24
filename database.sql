@@ -175,3 +175,29 @@ alter table pitches enable row level security;
 create policy "Users read own pitches" on pitches for select using (auth.uid()=user_id);
 create policy "Auth users submit pitches" on pitches for insert with check (auth.uid()=user_id);
 create policy "Admin update pitches" on pitches for update using (true);
+
+-- Add images and video columns to ideas table
+alter table ideas add column if not exists images text[];
+alter table ideas add column if not exists video_url text;
+
+-- Add pitches table
+create table if not exists pitches (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references profiles(id) on delete cascade,
+  user_name text, user_email text,
+  problem text, target_customer text, market_size text,
+  differentiation text, competitors text, has_product text,
+  users_count text, monthly_revenue text, growth_rate text, loi text,
+  funding_ask text, funding_use text, equity_offered text,
+  prev_funding text, valuation text, founders text,
+  employees text, advisors text, business_model text,
+  burn_rate text, runway text, profitable_when text,
+  status text default 'pending',
+  created_at timestamp with time zone default now()
+);
+alter table pitches enable row level security;
+create policy "Users read own pitches" on pitches for select using (auth.uid()=user_id);
+create policy "Auth users submit pitches" on pitches for insert with check (auth.uid()=user_id);
+
+-- Add is_read to messages
+alter table messages add column if not exists is_read boolean default false;

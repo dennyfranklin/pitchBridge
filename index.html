@@ -8,405 +8,392 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
-/* ============================================================
-   PITCHBRIDGE — FRESH BUILD
-   Clean, no crashes, all functions safe
-   ============================================================ */
 :root {
-  --bg: #f7f7fb;
-  --white: #ffffff;
-  --border: #e8e8f0;
-  --accent: #4f46e5;
-  --accent2: #7c3aed;
-  --gold: #f59e0b;
-  --green: #10b981;
-  --red: #ef4444;
-  --text: #0f0f1a;
-  --muted: #9090b0;
-  --card: #ffffff;
-  --nav-h: 64px;
-  --radius: 16px;
+  --bg:#f7f7fb;--white:#fff;--border:#e8e8f0;--accent:#4f46e5;--accent2:#7c3aed;
+  --gold:#f59e0b;--green:#10b981;--red:#ef4444;--text:#0f0f1a;--muted:#9090b0;
+  --card:#fff;--nav-h:64px;--r:16px;
 }
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Cabinet Grotesk', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-h1, h2, h3, .heading { font-family: 'Clash Display', sans-serif; }
-a { text-decoration: none; color: inherit; }
-input, textarea, select { font-family: 'Cabinet Grotesk', sans-serif; }
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Cabinet Grotesk',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+h1,h2,h3,.heading{font-family:'Clash Display',sans-serif;}
+input,textarea,select,button{font-family:'Cabinet Grotesk',sans-serif;}
 
 /* SCREENS */
-.screen { display: none; min-height: 100vh; }
-.screen.active { display: flex; }
+.screen{display:none;min-height:100vh;}
+.screen.active{display:flex;}
 
-/* ============================================================
-   LANDING
-   ============================================================ */
-#landing {
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 48px 24px;
-  background: #fafafa;
-  position: relative;
-  overflow: hidden;
-}
-.land-bg {
-  position: absolute; inset: 0;
-  background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(79,70,229,0.12) 0%, transparent 70%),
-              radial-gradient(ellipse 60% 50% at 80% 80%, rgba(245,158,11,0.08) 0%, transparent 60%);
-  pointer-events: none;
-}
-.land-logo { font-family: 'Clash Display', sans-serif; font-size: 22px; font-weight: 700; color: var(--accent); margin-bottom: 64px; animation: fadeUp .5s ease both; }
-.land-eyebrow { display: inline-flex; align-items: center; gap: 8px; background: rgba(79,70,229,0.08); border: 1px solid rgba(79,70,229,0.2); border-radius: 100px; padding: 6px 18px; font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 28px; animation: fadeUp .5s .1s ease both; }
-.land-h1 { font-family: 'Clash Display', sans-serif; font-size: clamp(48px, 8vw, 88px); font-weight: 700; line-height: 1.0; letter-spacing: -2px; margin-bottom: 24px; animation: fadeUp .5s .15s ease both; }
-.land-h1 span { background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-.land-sub { font-size: 18px; color: var(--muted); max-width: 500px; line-height: 1.7; margin-bottom: 48px; animation: fadeUp .5s .2s ease both; }
-.land-btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; animation: fadeUp .5s .25s ease both; }
-.land-stats { display: flex; gap: 56px; justify-content: center; margin-top: 80px; animation: fadeUp .5s .3s ease both; flex-wrap: wrap; }
-.land-stat-n { font-family: 'Clash Display', sans-serif; font-size: 36px; font-weight: 700; }
-.land-stat-n em { color: var(--accent); font-style: normal; }
-.land-stat-l { font-size: 13px; color: var(--muted); margin-top: 4px; }
+/* LANDING */
+#landing{flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:48px 24px;background:#fafafa;position:relative;overflow:hidden;}
+.land-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(79,70,229,.12) 0%,transparent 70%),radial-gradient(ellipse 60% 50% at 80% 80%,rgba(245,158,11,.08) 0%,transparent 60%);pointer-events:none;}
+.land-logo{font-family:'Clash Display',sans-serif;font-size:22px;font-weight:700;color:var(--accent);margin-bottom:64px;animation:fadeUp .5s ease both;}
+.land-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(79,70,229,.08);border:1px solid rgba(79,70,229,.2);border-radius:100px;padding:6px 18px;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:28px;animation:fadeUp .5s .1s ease both;}
+.land-h1{font-family:'Clash Display',sans-serif;font-size:clamp(48px,8vw,88px);font-weight:700;line-height:1.0;letter-spacing:-2px;margin-bottom:24px;animation:fadeUp .5s .15s ease both;}
+.land-h1 span{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.land-sub{font-size:18px;color:var(--muted);max-width:500px;line-height:1.7;margin-bottom:48px;animation:fadeUp .5s .2s ease both;}
+.land-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;animation:fadeUp .5s .25s ease both;}
+.land-stats{display:flex;gap:56px;justify-content:center;margin-top:80px;animation:fadeUp .5s .3s ease both;flex-wrap:wrap;}
+.stat-n{font-family:'Clash Display',sans-serif;font-size:36px;font-weight:700;}
+.stat-n em{color:var(--accent);font-style:normal;}
+.stat-l{font-size:13px;color:var(--muted);margin-top:4px;}
 
 /* BUTTONS */
-.btn { padding: 13px 28px; border-radius: 12px; font-family: 'Cabinet Grotesk', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; border: none; transition: all .2s; display: inline-flex; align-items: center; gap: 8px; }
-.btn-primary { background: var(--accent); color: #fff; }
-.btn-primary:hover { background: #4338ca; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(79,70,229,0.3); }
-.btn-primary:disabled { opacity: .5; cursor: not-allowed; transform: none; box-shadow: none; }
-.btn-outline { background: transparent; color: var(--text); border: 2px solid var(--border); }
-.btn-outline:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
-.btn-sm { padding: 8px 16px; font-size: 13px; border-radius: 10px; }
-.btn-full { width: 100%; justify-content: center; }
-.btn-google { background: var(--white); color: #333; border: 2px solid var(--border); width: 100%; padding: 13px; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; transition: all .2s; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px; font-family: 'Cabinet Grotesk', sans-serif; }
-.btn-google:hover { border-color: var(--accent); box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+.btn{padding:13px 28px;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;border:none;transition:all .2s;display:inline-flex;align-items:center;gap:8px;}
+.btn-primary{background:var(--accent);color:#fff;}
+.btn-primary:hover{background:#4338ca;transform:translateY(-2px);box-shadow:0 8px 24px rgba(79,70,229,.3);}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none;}
+.btn-outline{background:transparent;color:var(--text);border:2px solid var(--border);}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px);}
+.btn-sm{padding:8px 16px;font-size:13px;border-radius:10px;}
+.btn-full{width:100%;justify-content:center;}
+.btn-google{background:var(--white);color:#333;border:2px solid var(--border);width:100%;padding:13px;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:20px;}
+.btn-google:hover{border-color:var(--accent);box-shadow:0 4px 16px rgba(0,0,0,.08);}
 
-/* ============================================================
-   AUTH
-   ============================================================ */
-#auth {
-  align-items: center; justify-content: center;
-  padding: 24px;
-  background: #fafafa;
-  position: relative; overflow: hidden;
-}
-#auth::before {
-  content: ''; position: absolute; inset: 0;
-  background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(79,70,229,0.1) 0%, transparent 70%);
-  pointer-events: none;
-}
-.auth-box { background: var(--white); border: 1px solid var(--border); border-radius: 24px; padding: 44px 40px; width: 100%; max-width: 440px; box-shadow: 0 20px 60px rgba(0,0,0,0.08); animation: fadeUp .4s ease both; position: relative; z-index: 1; }
-.auth-logo { font-family: 'Clash Display', sans-serif; font-size: 20px; font-weight: 700; color: var(--accent); display: block; margin-bottom: 28px; }
-.auth-title { font-family: 'Clash Display', sans-serif; font-size: 26px; font-weight: 700; margin-bottom: 6px; }
-.auth-sub { color: var(--muted); font-size: 14px; margin-bottom: 28px; line-height: 1.6; }
-.divider { display: flex; align-items: center; gap: 12px; margin: 18px 0; color: var(--muted); font-size: 13px; }
-.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-.field { margin-bottom: 16px; }
-.field label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 7px; text-transform: uppercase; letter-spacing: 1px; }
-.field input, .field select, .field textarea { width: 100%; background: var(--bg); border: 2px solid var(--border); border-radius: 10px; padding: 12px 15px; color: var(--text); font-size: 14px; outline: none; transition: border-color .2s; }
-.field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent); background: #fff; }
-.field input::placeholder, .field textarea::placeholder { color: #c0c0d8; }
-.role-pills { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-.role-pill { background: var(--bg); border: 2px solid var(--border); border-radius: 12px; padding: 14px 8px; text-align: center; cursor: pointer; transition: all .2s; }
-.role-pill:hover { border-color: var(--accent); }
-.role-pill.active { border-color: var(--accent); background: rgba(79,70,229,0.06); }
-.role-pill-icon { font-size: 24px; margin-bottom: 6px; }
-.role-pill-name { font-size: 12px; font-weight: 700; }
-.form-err { color: var(--red); font-size: 13px; margin-bottom: 12px; min-height: 18px; }
-.auth-footer { text-align: center; margin-top: 18px; font-size: 14px; color: var(--muted); }
-.auth-footer a { color: var(--accent); cursor: pointer; font-weight: 700; }
+/* AUTH */
+#auth{align-items:center;justify-content:center;padding:24px;background:#fafafa;position:relative;overflow:hidden;}
+#auth::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(79,70,229,.1) 0%,transparent 70%);pointer-events:none;}
+.auth-box{background:var(--white);border:1px solid var(--border);border-radius:24px;padding:44px 40px;width:100%;max-width:440px;box-shadow:0 20px 60px rgba(0,0,0,.08);animation:fadeUp .4s ease both;position:relative;z-index:1;}
+.auth-logo{font-family:'Clash Display',sans-serif;font-size:20px;font-weight:700;color:var(--accent);display:block;margin-bottom:28px;}
+.auth-title{font-family:'Clash Display',sans-serif;font-size:26px;font-weight:700;margin-bottom:6px;}
+.auth-sub{color:var(--muted);font-size:14px;margin-bottom:28px;line-height:1.6;}
+.divider{display:flex;align-items:center;gap:12px;margin:18px 0;color:var(--muted);font-size:13px;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+.field{margin-bottom:16px;}
+.field label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:7px;text-transform:uppercase;letter-spacing:1px;}
+.field input,.field select,.field textarea{width:100%;background:var(--bg);border:2px solid var(--border);border-radius:10px;padding:12px 15px;color:var(--text);font-size:14px;outline:none;transition:border-color .2s;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent);background:#fff;}
+.field input::placeholder,.field textarea::placeholder{color:#c0c0d8;}
+.role-pills{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px;}
+.role-pill{background:var(--bg);border:2px solid var(--border);border-radius:12px;padding:14px 8px;text-align:center;cursor:pointer;transition:all .2s;}
+.role-pill:hover{border-color:var(--accent);}
+.role-pill.active{border-color:var(--accent);background:rgba(79,70,229,.06);}
+.role-pill-icon{font-size:24px;margin-bottom:6px;}
+.role-pill-name{font-size:12px;font-weight:700;}
+.form-err{color:var(--red);font-size:13px;margin-bottom:12px;min-height:18px;}
+.auth-footer{text-align:center;margin-top:18px;font-size:14px;color:var(--muted);}
+.auth-footer a{color:var(--accent);cursor:pointer;font-weight:700;}
 
-/* PERSONA SCREEN */
-#persona-screen { align-items: center; justify-content: center; padding: 24px; background: #fafafa; }
-.persona-box { background: var(--white); border: 1px solid var(--border); border-radius: 24px; padding: 44px 40px; width: 100%; max-width: 460px; box-shadow: 0 20px 60px rgba(0,0,0,0.08); animation: fadeUp .4s ease both; }
+/* PERSONA */
+#persona-screen{align-items:center;justify-content:center;padding:24px;background:#fafafa;}
+.persona-box{background:var(--white);border:1px solid var(--border);border-radius:24px;padding:44px 40px;width:100%;max-width:460px;box-shadow:0 20px 60px rgba(0,0,0,.08);animation:fadeUp .4s ease both;}
 
-/* ============================================================
-   APP
-   ============================================================ */
-#app { flex-direction: column; }
+/* USER PROFILE MODAL */
+.profile-modal-overlay{display:none;position:fixed;inset:0;background:rgba(15,15,26,.5);z-index:2000;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(8px);}
+.profile-modal-overlay.open{display:flex;}
+.profile-modal{background:var(--white);border-radius:22px;width:100%;max-width:480px;overflow:hidden;animation:fadeUp .3s ease both;box-shadow:0 24px 64px rgba(0,0,0,.15);}
+.pm-cover{height:100px;background:linear-gradient(120deg,var(--accent),var(--accent2),#ec4899);}
+.pm-body{padding:20px 24px 28px;position:relative;}
+.pm-av{width:80px;height:80px;border-radius:50%;border:4px solid var(--white);position:absolute;top:-40px;left:24px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:#fff;}
+.pm-av img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.pm-close{position:absolute;top:12px;right:12px;width:32px;height:32px;background:rgba(0,0,0,.3);border:none;color:#fff;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;}
+.pm-info{margin-top:48px;}
+.pm-name{font-family:'Clash Display',sans-serif;font-size:22px;font-weight:700;}
+.pm-profession{font-size:14px;color:var(--muted);margin-top:4px;}
+.pm-role-tag{display:inline-block;padding:4px 14px;border-radius:100px;font-size:12px;font-weight:700;background:rgba(79,70,229,.08);color:var(--accent);margin:8px 0;}
+.pm-bio{font-size:14px;color:#555570;line-height:1.6;margin-top:8px;}
+.pm-stats{display:flex;gap:28px;margin-top:16px;padding-top:16px;border-top:1px solid var(--border);}
+.pm-stat-n{font-family:'Clash Display',sans-serif;font-size:20px;font-weight:700;}
+.pm-stat-l{font-size:11px;color:var(--muted);margin-top:2px;}
+.pm-follow-btn{margin-top:16px;width:100%;}
 
-/* NAV */
-.nav { height: var(--nav-h); background: var(--white); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; position: sticky; top: 0; z-index: 200; }
-.nav-logo { font-family: 'Clash Display', sans-serif; font-size: 20px; font-weight: 700; color: var(--accent); }
-.nav-tabs { display: flex; gap: 2px; }
-.nav-tab { padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; background: transparent; color: var(--muted); transition: all .2s; font-family: 'Cabinet Grotesk', sans-serif; }
-.nav-tab:hover { color: var(--text); background: var(--bg); }
-.nav-tab.active { color: var(--accent); background: rgba(79,70,229,0.08); }
-.nav-right { display: flex; align-items: center; gap: 10px; }
-.nav-notif { position: relative; width: 40px; height: 40px; border-radius: 50%; background: var(--bg); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; transition: all .2s; }
-.nav-notif:hover { background: rgba(79,70,229,0.08); }
-.notif-badge { position: absolute; top: -2px; right: -2px; background: var(--red); color: #fff; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 2px solid var(--white); }
-.notif-badge.hidden { display: none; }
-.nav-av { width: 38px; height: 38px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; color: #fff; cursor: pointer; overflow: hidden; border: 2px solid rgba(79,70,229,0.2); flex-shrink: 0; }
-.nav-av img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-.btn-logout { padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 600; border: 2px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; transition: all .2s; font-family: 'Cabinet Grotesk', sans-serif; }
-.btn-logout:hover { border-color: var(--red); color: var(--red); }
+/* APP */
+#app{flex-direction:column;}
+.nav{height:var(--nav-h);background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:200;}
+.nav-logo{font-family:'Clash Display',sans-serif;font-size:20px;font-weight:700;color:var(--accent);cursor:pointer;}
+.nav-tabs{display:flex;gap:2px;}
+.nav-tab{padding:8px 16px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--muted);transition:all .2s;position:relative;}
+.nav-tab:hover{color:var(--text);background:var(--bg);}
+.nav-tab.active{color:var(--accent);background:rgba(79,70,229,.08);}
+.nav-tab-badge{position:absolute;top:2px;right:2px;background:var(--red);color:#fff;border-radius:50%;width:16px;height:16px;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid var(--white);}
+.nav-tab-badge.hidden{display:none;}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.nav-notif{position:relative;width:40px;height:40px;border-radius:50%;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;transition:all .2s;}
+.nav-notif:hover{background:rgba(79,70,229,.08);}
+.notif-badge{position:absolute;top:-2px;right:-2px;background:var(--red);color:#fff;border-radius:50%;width:18px;height:18px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid var(--white);}
+.notif-badge.hidden{display:none;}
+.nav-av{width:38px;height:38px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff;cursor:pointer;overflow:hidden;border:2px solid rgba(79,70,229,.2);flex-shrink:0;}
+.nav-av img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.btn-logout{padding:8px 16px;border-radius:10px;font-size:13px;font-weight:600;border:2px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .2s;}
+.btn-logout:hover{border-color:var(--red);color:var(--red);}
 
 /* LAYOUT */
-.app-layout { display: flex; flex: 1; max-width: 1140px; margin: 0 auto; width: 100%; padding: 24px 16px; gap: 24px; }
-.main-col { flex: 1; min-width: 0; }
-.side-col { width: 280px; flex-shrink: 0; }
-.page { display: none; }
-.page.active { display: block; }
+.app-layout{display:flex;flex:1;max-width:1140px;margin:0 auto;width:100%;padding:24px 16px;gap:24px;}
+.main-col{flex:1;min-width:0;}
+.side-col{width:280px;flex-shrink:0;}
+.page{display:none;}
+.page.active{display:block;}
 
 /* SEARCH */
-.search-wrap { position: relative; margin-bottom: 20px; }
-.search-input { width: 100%; background: var(--white); border: 2px solid var(--border); border-radius: 100px; padding: 11px 20px 11px 44px; font-size: 14px; color: var(--text); outline: none; transition: border-color .2s; font-family: 'Cabinet Grotesk', sans-serif; }
-.search-input:focus { border-color: var(--accent); }
-.search-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); font-size: 16px; pointer-events: none; }
-.search-dropdown { position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: 0 12px 40px rgba(0,0,0,0.1); display: none; z-index: 100; overflow: hidden; }
-.search-dropdown.open { display: block; }
-.search-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; cursor: pointer; transition: background .2s; border-bottom: 1px solid var(--border); }
-.search-item:last-child { border-bottom: none; }
-.search-item:hover { background: var(--bg); }
-.search-av { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; color: #fff; flex-shrink: 0; overflow: hidden; }
-.search-av img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-.search-name { font-size: 14px; font-weight: 600; }
-.search-role { font-size: 12px; color: var(--muted); }
-.search-empty { padding: 16px; text-align: center; font-size: 13px; color: var(--muted); }
+.search-wrap{position:relative;margin-bottom:20px;}
+.search-input{width:100%;background:var(--white);border:2px solid var(--border);border-radius:100px;padding:11px 20px 11px 44px;font-size:14px;color:var(--text);outline:none;transition:border-color .2s;}
+.search-input:focus{border-color:var(--accent);}
+.search-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none;}
+.search-dropdown{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--white);border:1px solid var(--border);border-radius:var(--r);box-shadow:0 12px 40px rgba(0,0,0,.1);display:none;z-index:100;overflow:hidden;}
+.search-dropdown.open{display:block;}
+.search-item{display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;transition:background .2s;border-bottom:1px solid var(--border);}
+.search-item:last-child{border-bottom:none;}
+.search-item:hover{background:var(--bg);}
+.search-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff;flex-shrink:0;overflow:hidden;}
+.search-av img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.search-name{font-size:14px;font-weight:600;}
+.search-role{font-size:12px;color:var(--muted);}
+.search-empty{padding:16px;text-align:center;font-size:13px;color:var(--muted);}
 
 /* POST BOX */
-.post-box { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; }
-.post-row { display: flex; gap: 12px; align-items: flex-start; }
-.post-av { width: 40px; height: 40px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; color: #fff; flex-shrink: 0; overflow: hidden; }
-.post-av img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-.post-textarea { flex: 1; resize: none; height: 80px; border: 2px solid var(--border); border-radius: 12px; padding: 12px 15px; background: var(--bg); font-size: 14px; color: var(--text); outline: none; transition: border-color .2s; }
-.post-textarea:focus { border-color: var(--accent); background: var(--white); }
-.post-fields { margin-top: 12px; display: flex; gap: 12px; }
-.post-fields input { flex: 1; border: 2px solid var(--border); border-radius: 10px; padding: 10px 14px; background: var(--bg); font-size: 13px; color: var(--text); outline: none; transition: border-color .2s; }
-.post-fields input:focus { border-color: var(--accent); }
-.post-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
-.tag { padding: 6px 14px; border-radius: 100px; font-size: 12px; font-weight: 700; border: 2px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; transition: all .2s; }
-.tag:hover, .tag.active { border-color: var(--accent); color: var(--accent); background: rgba(79,70,229,0.06); }
-.post-actions { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
-.media-btns { display: flex; gap: 8px; }
-.media-btn { padding: 8px 14px; border-radius: 10px; font-size: 12px; font-weight: 600; border: 2px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; transition: all .2s; font-family: 'Cabinet Grotesk', sans-serif; }
-.media-btn:hover { border-color: var(--accent); color: var(--accent); }
-.media-preview { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
-.media-thumb { width: 80px; height: 80px; border-radius: 10px; object-fit: cover; border: 1px solid var(--border); }
+.post-box{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:20px;}
+.post-row{display:flex;gap:12px;align-items:flex-start;}
+.post-av{width:40px;height:40px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff;flex-shrink:0;overflow:hidden;}
+.post-av img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.post-textarea{flex:1;resize:none;height:80px;border:2px solid var(--border);border-radius:12px;padding:12px 15px;background:var(--bg);font-size:14px;color:var(--text);outline:none;transition:border-color .2s;}
+.post-textarea:focus{border-color:var(--accent);background:var(--white);}
+.post-fields{margin-top:12px;display:flex;gap:12px;}
+.post-fields input{flex:1;border:2px solid var(--border);border-radius:10px;padding:10px 14px;background:var(--bg);font-size:13px;color:var(--text);outline:none;transition:border-color .2s;}
+.post-fields input:focus{border-color:var(--accent);}
+.post-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;}
+.tag{padding:5px 12px;border-radius:100px;font-size:12px;font-weight:700;border:2px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .2s;}
+.tag:hover,.tag.active{border-color:var(--accent);color:var(--accent);background:rgba(79,70,229,.06);}
+.post-actions{display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
+.media-btns{display:flex;gap:8px;}
+.media-btn{padding:8px 14px;border-radius:10px;font-size:12px;font-weight:600;border:2px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .2s;}
+.media-btn:hover{border-color:var(--accent);color:var(--accent);}
+.media-preview{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+.media-thumb{width:100px;height:80px;border-radius:10px;object-fit:cover;border:1px solid var(--border);}
+.media-thumb-video{width:100%;max-width:400px;border-radius:12px;border:1px solid var(--border);margin-top:8px;}
 
 /* IDEA CARD */
-.idea-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; margin-bottom: 16px; transition: all .25s; animation: fadeUp .4s ease both; }
-.idea-card:hover { border-color: rgba(79,70,229,0.3); box-shadow: 0 8px 28px rgba(79,70,229,0.08); transform: translateY(-2px); }
-.card-head { display: flex; gap: 12px; align-items: center; margin-bottom: 14px; }
-.card-av { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; color: #fff; flex-shrink: 0; overflow: hidden; }
-.card-av img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-.card-name { font-weight: 700; font-size: 15px; }
-.card-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
-.badge { padding: 2px 10px; border-radius: 100px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .3px; display: inline-block; }
-.badge-ai { background: rgba(245,158,11,.12); color: #d97706; }
-.badge-ev { background: rgba(16,185,129,.12); color: #059669; }
-.badge-tech { background: rgba(79,70,229,.1); color: var(--accent); }
-.badge-product { background: rgba(239,68,68,.1); color: var(--red); }
-.card-title { font-family: 'Clash Display', sans-serif; font-size: 18px; font-weight: 600; margin-bottom: 8px; }
-.card-body { font-size: 14px; color: #555570; line-height: 1.65; margin-bottom: 14px; }
-.card-media { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
-.card-media img, .card-media video { width: 120px; height: 90px; border-radius: 10px; object-fit: cover; border: 1px solid var(--border); }
-.card-nda { background: rgba(79,70,229,0.04); border: 1px dashed rgba(79,70,229,0.25); border-radius: 10px; padding: 12px 15px; font-size: 13px; color: var(--muted); margin-bottom: 14px; }
-.card-footer { display: flex; gap: 8px; align-items: center; padding-top: 14px; border-top: 1px solid var(--border); flex-wrap: wrap; }
-.card-action { padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; border: 2px solid var(--border); background: transparent; color: var(--muted); transition: all .2s; font-family: 'Cabinet Grotesk', sans-serif; }
-.card-action:hover { border-color: var(--accent); color: var(--accent); }
-.card-action.liked { border-color: var(--red); color: var(--red); }
-.card-action-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
-.card-action-primary:hover { background: #4338ca; }
-.card-action-danger { border-color: transparent; }
-.card-action-danger:hover { border-color: var(--red); color: var(--red); }
-.card-ask { margin-left: auto; font-size: 13px; font-weight: 700; color: var(--gold); }
+.idea-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:22px;margin-bottom:16px;transition:all .25s;animation:fadeUp .4s ease both;}
+.idea-card:hover{border-color:rgba(79,70,229,.3);box-shadow:0 8px 28px rgba(79,70,229,.08);transform:translateY(-2px);}
+.card-head{display:flex;gap:12px;align-items:center;margin-bottom:14px;}
+.card-av{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:#fff;flex-shrink:0;overflow:hidden;cursor:pointer;transition:transform .2s;}
+.card-av:hover{transform:scale(1.08);}
+.card-av img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.card-name{font-weight:700;font-size:15px;cursor:pointer;color:var(--text);}
+.card-name:hover{color:var(--accent);}
+.card-meta{font-size:12px;color:var(--muted);margin-top:2px;}
+.badge{padding:2px 10px;border-radius:100px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;display:inline-block;}
+.badge-ai{background:rgba(245,158,11,.12);color:#d97706;}
+.badge-ev{background:rgba(16,185,129,.12);color:#059669;}
+.badge-tech{background:rgba(79,70,229,.1);color:var(--accent);}
+.badge-product{background:rgba(239,68,68,.1);color:var(--red);}
+.badge-health{background:rgba(16,185,129,.1);color:#059669;}
+.badge-fintech{background:rgba(245,158,11,.1);color:#d97706;}
+.badge-edu{background:rgba(79,70,229,.1);color:var(--accent);}
+.badge-social{background:rgba(236,72,153,.1);color:#db2777;}
+.badge-saas{background:rgba(124,58,237,.1);color:var(--accent2);}
+.card-title{font-family:'Clash Display',sans-serif;font-size:18px;font-weight:600;margin-bottom:8px;}
+.card-body{font-size:14px;color:#555570;line-height:1.65;margin-bottom:14px;}
+.card-media{margin-bottom:14px;}
+.card-img{width:100%;max-width:100%;border-radius:12px;object-fit:cover;max-height:300px;border:1px solid var(--border);}
+.card-img-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.card-img-grid img{width:100%;height:160px;border-radius:10px;object-fit:cover;border:1px solid var(--border);}
+.card-video{width:100%;border-radius:12px;border:1px solid var(--border);max-height:300px;}
+.card-nda{background:rgba(79,70,229,.04);border:1px dashed rgba(79,70,229,.25);border-radius:10px;padding:12px 15px;font-size:13px;color:var(--muted);margin-bottom:14px;}
+.card-footer{display:flex;gap:8px;align-items:center;padding-top:14px;border-top:1px solid var(--border);flex-wrap:wrap;}
+.card-action{padding:8px 16px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;border:2px solid var(--border);background:transparent;color:var(--muted);transition:all .2s;}
+.card-action:hover{border-color:var(--accent);color:var(--accent);}
+.card-action.liked{border-color:var(--red);color:var(--red);}
+.card-action-primary{background:var(--accent);color:#fff;border-color:var(--accent);}
+.card-action-primary:hover{background:#4338ca;}
+.card-action-danger:hover{border-color:var(--red);color:var(--red);}
+.card-ask{margin-left:auto;font-size:13px;font-weight:700;color:var(--gold);}
 
 /* COMMENTS */
-.comments { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); display: none; }
-.comments.open { display: block; }
-.comment-input-row { display: flex; gap: 10px; align-items: center; margin-bottom: 14px; }
-.comment-field { flex: 1; border: 2px solid var(--border); border-radius: 100px; padding: 9px 18px; font-size: 13px; color: var(--text); outline: none; transition: border-color .2s; font-family: 'Cabinet Grotesk', sans-serif; background: var(--bg); }
-.comment-field:focus { border-color: var(--accent); }
-.comment-send { padding: 9px 18px; border-radius: 100px; background: var(--accent); color: #fff; border: none; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Cabinet Grotesk', sans-serif; }
-.comment-item { display: flex; gap: 10px; margin-bottom: 12px; animation: fadeUp .3s ease both; }
-.comment-av { width: 32px; height: 32px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0; }
-.comment-bubble { background: var(--bg); border-radius: 12px; padding: 10px 14px; font-size: 13px; line-height: 1.55; }
-.comment-author { font-weight: 700; font-size: 12px; color: var(--accent); margin-bottom: 3px; }
+.comments{margin-top:14px;padding-top:14px;border-top:1px solid var(--border);display:none;}
+.comments.open{display:block;}
+.comment-input-row{display:flex;gap:10px;align-items:center;margin-bottom:14px;}
+.comment-field{flex:1;border:2px solid var(--border);border-radius:100px;padding:9px 18px;font-size:13px;color:var(--text);outline:none;transition:border-color .2s;background:var(--bg);}
+.comment-field:focus{border-color:var(--accent);}
+.comment-send{padding:9px 18px;border-radius:100px;background:var(--accent);color:#fff;border:none;font-size:13px;font-weight:700;cursor:pointer;}
+.comment-item{display:flex;gap:10px;margin-bottom:12px;animation:fadeUp .3s ease both;}
+.comment-av{width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;cursor:pointer;}
+.comment-bubble{background:var(--bg);border-radius:12px;padding:10px 14px;font-size:13px;line-height:1.55;}
+.comment-author{font-weight:700;font-size:12px;color:var(--accent);margin-bottom:3px;cursor:pointer;}
+.comment-author:hover{text-decoration:underline;}
 
 /* SIDEBAR */
-.side-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; }
-.side-card-title { font-family: 'Clash Display', sans-serif; font-size: 13px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; }
-.side-person { display: flex; gap: 10px; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--border); }
-.side-person:last-child { border-bottom: none; }
-.side-av { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; color: #fff; flex-shrink: 0; overflow: hidden; }
-.side-av img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-.side-name { font-size: 13px; font-weight: 700; }
-.side-role { font-size: 11px; color: var(--muted); margin-top: 1px; }
-.side-connect { margin-left: auto; padding: 4px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; background: rgba(79,70,229,0.08); color: var(--accent); border: none; cursor: pointer; font-family: 'Cabinet Grotesk', sans-serif; }
-.side-connect:hover { background: var(--accent); color: #fff; }
-.trend-tag { display: inline-block; padding: 6px 13px; border-radius: 100px; font-size: 12px; font-weight: 600; background: var(--bg); color: var(--muted); border: 1px solid var(--border); cursor: pointer; margin: 3px; transition: all .2s; }
-.trend-tag:hover { border-color: var(--accent); color: var(--accent); }
-.how-steps { font-size: 13px; color: var(--muted); line-height: 2.0; }
+.side-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:16px;}
+.side-card-title{font-family:'Clash Display',sans-serif;font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;}
+.side-person{display:flex;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);}
+.side-person:last-child{border-bottom:none;}
+.side-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff;flex-shrink:0;overflow:hidden;cursor:pointer;}
+.side-av img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.side-name{font-size:13px;font-weight:700;cursor:pointer;}
+.side-name:hover{color:var(--accent);}
+.side-role{font-size:11px;color:var(--muted);margin-top:1px;}
+.side-connect{margin-left:auto;padding:4px 12px;border-radius:8px;font-size:11px;font-weight:700;background:rgba(79,70,229,.08);color:var(--accent);border:none;cursor:pointer;}
+.side-connect:hover{background:var(--accent);color:#fff;}
+.trend-tag{display:inline-block;padding:6px 13px;border-radius:100px;font-size:12px;font-weight:600;background:var(--bg);color:var(--muted);border:1px solid var(--border);cursor:pointer;margin:3px;transition:all .2s;}
+.trend-tag:hover{border-color:var(--accent);color:var(--accent);}
+.how-steps{font-size:13px;color:var(--muted);line-height:2.0;}
 
-/* PROFILE */
-.profile-cover { height: 140px; background: linear-gradient(120deg, var(--accent), var(--accent2), #ec4899); border-radius: var(--radius) var(--radius) 0 0; }
-.profile-card { background: var(--white); border: 1px solid var(--border); border-radius: 0 0 var(--radius) var(--radius); padding: 20px 24px 28px; margin-bottom: 20px; position: relative; }
-.profile-av-wrap { position: absolute; top: -52px; left: 24px; }
-.profile-av-lg { width: 96px; height: 96px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 34px; font-weight: 700; color: #fff; border: 4px solid var(--white); overflow: hidden; cursor: pointer; }
-.profile-av-lg img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-.profile-edit-btn { position: absolute; bottom: 2px; right: 2px; width: 28px; height: 28px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; cursor: pointer; border: 2px solid var(--white); }
-.profile-info { margin-top: 52px; }
-.profile-name { font-family: 'Clash Display', sans-serif; font-size: 24px; font-weight: 700; }
-.profile-profession { font-size: 14px; color: var(--muted); margin: 4px 0; }
-.profile-role-tag { display: inline-block; padding: 4px 14px; border-radius: 100px; font-size: 12px; font-weight: 700; background: rgba(79,70,229,0.08); color: var(--accent); margin: 6px 0; }
-.profile-bio { font-size: 14px; color: #555570; line-height: 1.6; margin: 8px 0; }
-.profile-stats { display: flex; gap: 32px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
-.pstat-n { font-family: 'Clash Display', sans-serif; font-size: 22px; font-weight: 700; }
-.pstat-l { font-size: 12px; color: var(--muted); margin-top: 2px; }
-.edit-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; margin-bottom: 18px; }
-.edit-card-title { font-family: 'Clash Display', sans-serif; font-size: 16px; font-weight: 600; margin-bottom: 16px; }
-.av-picker { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
-.av-opt { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; cursor: pointer; border: 3px solid transparent; transition: all .2s; }
-.av-opt:hover { transform: scale(1.1); }
-.av-opt.active { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,70,229,0.2); }
+/* PROFILE PAGE */
+.profile-cover{height:140px;background:linear-gradient(120deg,var(--accent),var(--accent2),#ec4899);border-radius:var(--r) var(--r) 0 0;}
+.profile-card{background:var(--white);border:1px solid var(--border);border-radius:0 0 var(--r) var(--r);padding:20px 24px 28px;margin-bottom:20px;position:relative;}
+.profile-av-wrap{position:absolute;top:-52px;left:24px;}
+.profile-av-lg{width:96px;height:96px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:700;color:#fff;border:4px solid var(--white);overflow:hidden;cursor:pointer;}
+.profile-av-lg img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.profile-edit-btn{position:absolute;bottom:2px;right:2px;width:28px;height:28px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;border:2px solid var(--white);}
+.profile-info{margin-top:52px;}
+.profile-name{font-family:'Clash Display',sans-serif;font-size:24px;font-weight:700;}
+.profile-profession{font-size:14px;color:var(--muted);margin:4px 0;}
+.profile-role-tag{display:inline-block;padding:4px 14px;border-radius:100px;font-size:12px;font-weight:700;background:rgba(79,70,229,.08);color:var(--accent);margin:6px 0;}
+.profile-bio{font-size:14px;color:#555570;line-height:1.6;margin:8px 0;}
+.profile-stats{display:flex;gap:32px;margin-top:16px;padding-top:16px;border-top:1px solid var(--border);}
+.pstat-n{font-family:'Clash Display',sans-serif;font-size:22px;font-weight:700;}
+.pstat-l{font-size:12px;color:var(--muted);margin-top:2px;}
+.edit-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:22px;margin-bottom:18px;}
+.edit-card-title{font-family:'Clash Display',sans-serif;font-size:16px;font-weight:600;margin-bottom:16px;}
+.av-picker{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+.av-opt{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;border:3px solid transparent;transition:all .2s;}
+.av-opt:hover{transform:scale(1.1);}
+.av-opt.active{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,70,229,.2);}
 
 /* NETWORK */
-.net-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
-.net-tab { padding: 9px 20px; border-radius: 100px; font-size: 13px; font-weight: 700; cursor: pointer; border: 2px solid var(--border); background: transparent; color: var(--muted); transition: all .2s; font-family: 'Cabinet Grotesk', sans-serif; }
-.net-tab:hover { border-color: var(--accent); color: var(--accent); }
-.net-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
-.net-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
-.net-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; text-align: center; transition: all .2s; }
-.net-card:hover { border-color: rgba(79,70,229,0.3); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(79,70,229,0.08); }
-.net-av { width: 64px; height: 64px; border-radius: 50%; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; color: #fff; overflow: hidden; }
-.net-av img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-.net-name { font-family: 'Clash Display', sans-serif; font-size: 15px; font-weight: 600; margin-bottom: 4px; }
-.net-role { font-size: 12px; color: var(--muted); margin-bottom: 14px; }
-.net-follow-btn { width: 100%; padding: 9px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; border: 2px solid var(--border); background: transparent; color: var(--accent); transition: all .2s; font-family: 'Cabinet Grotesk', sans-serif; }
-.net-follow-btn:hover, .net-follow-btn.following { background: var(--accent); color: #fff; border-color: var(--accent); }
+.net-tabs{display:flex;gap:8px;margin-bottom:20px;}
+.net-tab{padding:9px 20px;border-radius:100px;font-size:13px;font-weight:700;cursor:pointer;border:2px solid var(--border);background:transparent;color:var(--muted);transition:all .2s;}
+.net-tab:hover{border-color:var(--accent);color:var(--accent);}
+.net-tab.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+.net-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;}
+.net-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:22px;text-align:center;transition:all .2s;}
+.net-card:hover{border-color:rgba(79,70,229,.3);transform:translateY(-2px);box-shadow:0 8px 24px rgba(79,70,229,.08);}
+.net-av{width:64px;height:64px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#fff;overflow:hidden;cursor:pointer;transition:transform .2s;}
+.net-av:hover{transform:scale(1.08);}
+.net-av img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.net-name{font-family:'Clash Display',sans-serif;font-size:15px;font-weight:600;margin-bottom:4px;cursor:pointer;}
+.net-name:hover{color:var(--accent);}
+.net-role{font-size:12px;color:var(--muted);margin-bottom:14px;}
+.net-follow-btn{width:100%;padding:9px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;border:2px solid var(--border);background:transparent;color:var(--accent);transition:all .2s;}
+.net-follow-btn:hover,.net-follow-btn.following{background:var(--accent);color:#fff;border-color:var(--accent);}
 
 /* CHAT */
-.chat-layout { display: flex; height: calc(100vh - var(--nav-h) - 48px); background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
-.chat-sidebar { width: 260px; border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; }
-.chat-sidebar-header { padding: 18px; border-bottom: 1px solid var(--border); font-family: 'Clash Display', sans-serif; font-size: 16px; font-weight: 600; }
-.chat-search { padding: 12px 14px; border-bottom: 1px solid var(--border); }
-.chat-search input { width: 100%; border: 2px solid var(--border); border-radius: 100px; padding: 8px 14px; font-size: 13px; outline: none; background: var(--bg); font-family: 'Cabinet Grotesk', sans-serif; }
-.chat-list-items { flex: 1; overflow-y: auto; }
-.chat-person { display: flex; gap: 10px; align-items: center; padding: 14px; cursor: pointer; transition: background .2s; border-bottom: 1px solid var(--border); }
-.chat-person:hover, .chat-person.active { background: rgba(79,70,229,0.05); }
-.chat-person-av { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; color: #fff; flex-shrink: 0; overflow: hidden; }
-.chat-person-av img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-.chat-person-name { font-size: 14px; font-weight: 600; }
-.chat-person-preview { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; }
-.chat-window { flex: 1; display: flex; flex-direction: column; }
-.chat-window-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
-.chat-window-name { font-weight: 700; font-size: 15px; }
-.chat-window-status { font-size: 12px; color: var(--green); }
-.chat-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
-.msg { max-width: 70%; animation: fadeUp .3s ease both; }
-.msg.me { align-self: flex-end; }
-.msg.them { align-self: flex-start; }
-.msg-bubble { padding: 12px 16px; border-radius: 18px; font-size: 14px; line-height: 1.5; }
-.msg.me .msg-bubble { background: var(--accent); color: #fff; border-radius: 18px 18px 4px 18px; }
-.msg.them .msg-bubble { background: var(--bg); color: var(--text); border-radius: 18px 18px 18px 4px; }
-.msg-time { font-size: 11px; color: var(--muted); margin-top: 5px; }
-.msg.me .msg-time { text-align: right; }
-.chat-input-area { padding: 14px 16px; border-top: 1px solid var(--border); display: flex; gap: 10px; align-items: center; }
-.chat-input { flex: 1; border: 2px solid var(--border); border-radius: 100px; padding: 11px 18px; font-size: 14px; outline: none; transition: border-color .2s; font-family: 'Cabinet Grotesk', sans-serif; background: var(--bg); }
-.chat-input:focus { border-color: var(--accent); background: var(--white); }
-.chat-send-btn { width: 42px; height: 42px; border-radius: 50%; background: var(--accent); border: none; color: #fff; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background .2s; }
-.chat-send-btn:hover { background: #4338ca; }
-.chat-placeholder { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: var(--muted); }
+.chat-layout{display:flex;height:calc(100vh - var(--nav-h) - 48px);background:var(--white);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+.chat-sidebar{width:260px;border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;}
+.chat-sidebar-header{padding:18px;border-bottom:1px solid var(--border);font-family:'Clash Display',sans-serif;font-size:16px;font-weight:600;}
+.chat-list-items{flex:1;overflow-y:auto;}
+.chat-person{display:flex;gap:10px;align-items:center;padding:14px;cursor:pointer;transition:background .2s;border-bottom:1px solid var(--border);position:relative;}
+.chat-person:hover,.chat-person.active{background:rgba(79,70,229,.05);}
+.chat-person-av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff;flex-shrink:0;overflow:hidden;}
+.chat-person-av img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.chat-person-name{font-size:14px;font-weight:600;}
+.chat-person-preview{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px;}
+.chat-unread-dot{width:8px;height:8px;background:var(--accent);border-radius:50%;margin-left:auto;flex-shrink:0;}
+.chat-window{flex:1;display:flex;flex-direction:column;}
+.chat-window-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;}
+.chat-window-name{font-weight:700;font-size:15px;cursor:pointer;}
+.chat-window-name:hover{color:var(--accent);}
+.chat-window-status{font-size:12px;color:var(--green);}
+.chat-messages{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px;}
+.msg{max-width:70%;animation:fadeUp .3s ease both;}
+.msg.me{align-self:flex-end;}
+.msg.them{align-self:flex-start;}
+.msg-bubble{padding:12px 16px;border-radius:18px;font-size:14px;line-height:1.5;}
+.msg.me .msg-bubble{background:var(--accent);color:#fff;border-radius:18px 18px 4px 18px;}
+.msg.them .msg-bubble{background:var(--bg);color:var(--text);border-radius:18px 18px 18px 4px;}
+.msg-time{font-size:11px;color:var(--muted);margin-top:5px;}
+.msg.me .msg-time{text-align:right;}
+.chat-input-area{padding:14px 16px;border-top:1px solid var(--border);display:flex;gap:10px;align-items:center;}
+.chat-input{flex:1;border:2px solid var(--border);border-radius:100px;padding:11px 18px;font-size:14px;outline:none;transition:border-color .2s;background:var(--bg);}
+.chat-input:focus{border-color:var(--accent);background:var(--white);}
+.chat-send-btn{width:42px;height:42px;border-radius:50%;background:var(--accent);border:none;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.chat-send-btn:hover{background:#4338ca;}
+.chat-placeholder{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--muted);}
 
 /* PITCH */
-.pitch-hero { background: linear-gradient(135deg, var(--accent), var(--accent2)); border-radius: var(--radius); padding: 32px; margin-bottom: 22px; color: #fff; }
-.pitch-hero-title { font-family: 'Clash Display', sans-serif; font-size: 28px; font-weight: 700; margin-bottom: 8px; }
-.pitch-hero-sub { font-size: 15px; opacity: .85; line-height: 1.6; margin-bottom: 20px; }
-.pitch-submissions { display: flex; flex-direction: column; gap: 14px; }
-.pitch-item { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; display: flex; gap: 14px; align-items: center; }
-.pitch-item-icon { width: 48px; height: 48px; border-radius: 12px; background: rgba(79,70,229,0.08); display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
-.pitch-item-title { font-family: 'Clash Display', sans-serif; font-size: 15px; font-weight: 600; margin-bottom: 4px; }
-.pitch-item-meta { font-size: 12px; color: var(--muted); }
-.pitch-status { margin-left: auto; padding: 5px 14px; border-radius: 100px; font-size: 11px; font-weight: 700; flex-shrink: 0; }
-.pitch-status.pending { background: rgba(245,158,11,.12); color: #d97706; }
-.pitch-status.reviewing { background: rgba(79,70,229,.1); color: var(--accent); }
+.pitch-hero{background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:var(--r);padding:32px;margin-bottom:22px;color:#fff;}
+.pitch-hero-title{font-family:'Clash Display',sans-serif;font-size:28px;font-weight:700;margin-bottom:8px;}
+.pitch-hero-sub{font-size:15px;opacity:.85;line-height:1.6;margin-bottom:20px;}
+.pitch-submissions{display:flex;flex-direction:column;gap:14px;}
+.pitch-item{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:20px;display:flex;gap:14px;align-items:center;}
+.pitch-item-icon{width:48px;height:48px;border-radius:12px;background:rgba(79,70,229,.08);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.pitch-item-title{font-family:'Clash Display',sans-serif;font-size:15px;font-weight:600;margin-bottom:4px;}
+.pitch-item-meta{font-size:12px;color:var(--muted);}
+.pitch-status{margin-left:auto;padding:5px 14px;border-radius:100px;font-size:11px;font-weight:700;flex-shrink:0;}
+.pitch-status.pending{background:rgba(245,158,11,.12);color:#d97706;}
+.pitch-status.reviewing{background:rgba(79,70,229,.1);color:var(--accent);}
 
-/* NOTIFICATIONS PANEL */
-.notif-panel { position: fixed; top: calc(var(--nav-h) + 8px); right: 16px; width: 330px; background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: 0 16px 48px rgba(0,0,0,0.12); z-index: 500; display: none; animation: fadeUp .3s ease both; overflow: hidden; }
-.notif-panel.open { display: block; }
-.notif-panel-header { padding: 16px 18px; border-bottom: 1px solid var(--border); font-family: 'Clash Display', sans-serif; font-size: 16px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
-.notif-clear { font-size: 12px; color: var(--accent); cursor: pointer; font-weight: 600; font-family: 'Cabinet Grotesk', sans-serif; }
-.notif-item { display: flex; gap: 12px; align-items: flex-start; padding: 14px 18px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background .2s; }
-.notif-item:hover { background: var(--bg); }
-.notif-item.unread { background: rgba(79,70,229,0.03); }
-.notif-icon { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
-.notif-text { font-size: 13px; line-height: 1.5; }
-.notif-text strong { color: var(--accent); }
-.notif-time { font-size: 11px; color: var(--muted); margin-top: 3px; }
+/* NOTIF PANEL */
+.notif-panel{position:fixed;top:calc(var(--nav-h) + 8px);right:16px;width:330px;background:var(--white);border:1px solid var(--border);border-radius:var(--r);box-shadow:0 16px 48px rgba(0,0,0,.12);z-index:500;display:none;animation:fadeUp .3s ease both;overflow:hidden;}
+.notif-panel.open{display:block;}
+.notif-panel-header{padding:16px 18px;border-bottom:1px solid var(--border);font-family:'Clash Display',sans-serif;font-size:16px;font-weight:600;display:flex;justify-content:space-between;align-items:center;}
+.notif-clear{font-size:12px;color:var(--accent);cursor:pointer;font-weight:600;}
+.notif-item{display:flex;gap:12px;align-items:flex-start;padding:14px 18px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .2s;}
+.notif-item:hover{background:var(--bg);}
+.notif-item.unread{background:rgba(79,70,229,.03);}
+.notif-icon{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.notif-text{font-size:13px;line-height:1.5;}
+.notif-text strong{color:var(--accent);}
+.notif-time{font-size:11px;color:var(--muted);margin-top:3px;}
 
 /* MODALS */
-.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15,15,26,.45); z-index: 1000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(8px); }
-.modal-overlay.open { display: flex; }
-.modal { background: var(--white); border: 1px solid var(--border); border-radius: 22px; padding: 36px; width: 100%; max-width: 500px; animation: fadeUp .3s ease both; box-shadow: 0 24px 64px rgba(0,0,0,0.15); }
-.modal-close { float: right; background: var(--bg); border: none; color: var(--muted); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
-.modal-title { font-family: 'Clash Display', sans-serif; font-size: 22px; font-weight: 700; margin-bottom: 8px; }
-.modal-sub { color: var(--muted); font-size: 14px; margin-bottom: 24px; line-height: 1.6; }
-.nda-text { background: rgba(79,70,229,0.04); border: 1px solid rgba(79,70,229,0.15); border-radius: 12px; padding: 16px; font-size: 13px; color: #555570; line-height: 1.7; margin-bottom: 20px; }
-.nda-check { display: flex; gap: 10px; align-items: center; cursor: pointer; font-size: 14px; color: var(--text); margin-bottom: 22px; }
-.nda-check input { width: auto; margin: 0; cursor: pointer; }
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(15,15,26,.45);z-index:1000;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(8px);}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--white);border:1px solid var(--border);border-radius:22px;padding:36px;width:100%;max-width:500px;animation:fadeUp .3s ease both;box-shadow:0 24px 64px rgba(0,0,0,.15);}
+.modal-close{float:right;background:var(--bg);border:none;color:var(--muted);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;}
+.modal-title{font-family:'Clash Display',sans-serif;font-size:22px;font-weight:700;margin-bottom:8px;}
+.modal-sub{color:var(--muted);font-size:14px;margin-bottom:24px;line-height:1.6;}
+.nda-text{background:rgba(79,70,229,.04);border:1px solid rgba(79,70,229,.15);border-radius:12px;padding:16px;font-size:13px;color:#555570;line-height:1.7;margin-bottom:20px;}
+.nda-check{display:flex;gap:10px;align-items:center;cursor:pointer;font-size:14px;color:var(--text);margin-bottom:22px;}
+.nda-check input{width:auto;margin:0;cursor:pointer;}
 
 /* PITCH FORM MODAL */
-.pitch-modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15,15,26,.45); z-index: 1000; align-items: flex-start; justify-content: center; padding: 24px; backdrop-filter: blur(8px); overflow-y: auto; }
-.pitch-modal-overlay.open { display: flex; }
-.pitch-modal { background: var(--white); border: 1px solid var(--border); border-radius: 22px; padding: 36px; width: 100%; max-width: 600px; margin: auto; animation: fadeUp .3s ease both; box-shadow: 0 24px 64px rgba(0,0,0,0.15); }
-.pitch-progress { display: flex; gap: 6px; margin-bottom: 28px; }
-.pitch-dot { flex: 1; height: 4px; border-radius: 100px; background: var(--border); transition: background .3s; }
-.pitch-dot.done { background: var(--accent); }
-.pitch-step { display: none; }
-.pitch-step.active { display: block; }
-.pitch-section { font-family: 'Clash Display', sans-serif; font-size: 17px; font-weight: 600; color: var(--accent); margin-bottom: 18px; }
-.pitch-q { margin-bottom: 16px; }
-.pitch-q label { display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 7px; }
-.pitch-q input, .pitch-q textarea, .pitch-q select { width: 100%; border: 2px solid var(--border); border-radius: 10px; padding: 11px 14px; font-size: 14px; color: var(--text); outline: none; transition: border-color .2s; background: var(--bg); font-family: 'Cabinet Grotesk', sans-serif; }
-.pitch-q input:focus, .pitch-q textarea:focus, .pitch-q select:focus { border-color: var(--accent); background: var(--white); }
-.pitch-q textarea { height: 80px; resize: none; }
-.pitch-nav { display: flex; justify-content: space-between; margin-top: 24px; }
-.upload-zone { border: 2px dashed var(--border); border-radius: 12px; padding: 32px; text-align: center; cursor: pointer; transition: all .2s; background: var(--bg); }
-.upload-zone:hover { border-color: var(--accent); background: rgba(79,70,229,0.03); }
-.upload-zone-icon { font-size: 36px; margin-bottom: 10px; }
-.upload-zone-text { font-size: 13px; color: var(--muted); }
-.upload-file-name { font-size: 13px; color: var(--green); font-weight: 600; margin-top: 10px; }
-.pitch-info-box { background: rgba(79,70,229,0.05); border-radius: 12px; padding: 16px; font-size: 13px; color: var(--accent); line-height: 1.8; margin-top: 16px; border: 1px solid rgba(79,70,229,0.12); }
+.pitch-modal-overlay{display:none;position:fixed;inset:0;background:rgba(15,15,26,.45);z-index:1000;align-items:flex-start;justify-content:center;padding:24px;backdrop-filter:blur(8px);overflow-y:auto;}
+.pitch-modal-overlay.open{display:flex;}
+.pitch-modal{background:var(--white);border:1px solid var(--border);border-radius:22px;padding:36px;width:100%;max-width:600px;margin:auto;animation:fadeUp .3s ease both;box-shadow:0 24px 64px rgba(0,0,0,.15);}
+.pitch-progress{display:flex;gap:6px;margin-bottom:28px;}
+.pitch-dot{flex:1;height:4px;border-radius:100px;background:var(--border);transition:background .3s;}
+.pitch-dot.done{background:var(--accent);}
+.pitch-step{display:none;}
+.pitch-step.active{display:block;}
+.pitch-section{font-family:'Clash Display',sans-serif;font-size:17px;font-weight:600;color:var(--accent);margin-bottom:18px;}
+.pitch-q{margin-bottom:16px;}
+.pitch-q label{display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:7px;}
+.pitch-q input,.pitch-q textarea,.pitch-q select{width:100%;border:2px solid var(--border);border-radius:10px;padding:11px 14px;font-size:14px;color:var(--text);outline:none;transition:border-color .2s;background:var(--bg);}
+.pitch-q input:focus,.pitch-q textarea:focus,.pitch-q select:focus{border-color:var(--accent);background:var(--white);}
+.pitch-q textarea{height:80px;resize:none;}
+.pitch-nav{display:flex;justify-content:space-between;margin-top:24px;}
+.upload-zone{border:2px dashed var(--border);border-radius:12px;padding:32px;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg);}
+.upload-zone:hover{border-color:var(--accent);background:rgba(79,70,229,.03);}
+.upload-zone-icon{font-size:36px;margin-bottom:10px;}
+.upload-zone-text{font-size:13px;color:var(--muted);}
+.upload-file-name{font-size:13px;color:var(--green);font-weight:600;margin-top:10px;}
+.pitch-info-box{background:rgba(79,70,229,.05);border-radius:12px;padding:16px;font-size:13px;color:var(--accent);line-height:1.8;margin-top:16px;border:1px solid rgba(79,70,229,.12);}
 
 /* ADMIN */
-.admin-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
-.admin-stat { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
-.admin-stat-n { font-family: 'Clash Display', sans-serif; font-size: 32px; font-weight: 700; color: var(--accent); }
-.admin-stat-l { font-size: 13px; color: var(--muted); margin-top: 4px; }
-.admin-section-title { font-family: 'Clash Display', sans-serif; font-size: 17px; font-weight: 600; margin-bottom: 14px; }
-.admin-request { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; margin-bottom: 12px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-.req-av { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; color: #fff; flex-shrink: 0; }
-.req-name { font-weight: 700; font-size: 14px; }
-.req-detail { font-size: 12px; color: var(--muted); margin-top: 3px; }
-.req-approve { padding: 8px 16px; border-radius: 10px; background: var(--green); color: #fff; border: none; font-weight: 700; font-size: 13px; cursor: pointer; font-family: 'Cabinet Grotesk', sans-serif; }
-.req-deny { padding: 8px 16px; border-radius: 10px; background: var(--white); color: var(--red); border: 2px solid var(--red); font-weight: 700; font-size: 13px; cursor: pointer; margin-left: 6px; font-family: 'Cabinet Grotesk', sans-serif; }
+.admin-stats{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
+.admin-stat{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:20px;}
+.admin-stat-n{font-family:'Clash Display',sans-serif;font-size:32px;font-weight:700;color:var(--accent);}
+.admin-stat-l{font-size:13px;color:var(--muted);margin-top:4px;}
+.admin-section-title{font-family:'Clash Display',sans-serif;font-size:17px;font-weight:600;margin-bottom:14px;}
+.admin-request{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-bottom:12px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.req-av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:#fff;flex-shrink:0;}
+.req-name{font-weight:700;font-size:14px;}
+.req-detail{font-size:12px;color:var(--muted);margin-top:3px;}
+.req-approve{padding:8px 16px;border-radius:10px;background:var(--green);color:#fff;border:none;font-weight:700;font-size:13px;cursor:pointer;}
+.req-deny{padding:8px 16px;border-radius:10px;background:var(--white);color:var(--red);border:2px solid var(--red);font-weight:700;font-size:13px;cursor:pointer;margin-left:6px;}
 
 /* NOTIF BANNER */
-.notif-banner { position: fixed; top: 0; left: 0; right: 0; background: var(--accent); color: #fff; padding: 14px 24px; z-index: 9999; display: none; align-items: center; justify-content: space-between; font-size: 14px; font-weight: 500; animation: slideDown .4s ease; }
-.notif-banner.show { display: flex; }
-.notif-banner-btns { display: flex; gap: 10px; }
-.notif-allow { padding: 7px 18px; border-radius: 8px; background: #fff; color: var(--accent); border: none; font-weight: 700; font-size: 13px; cursor: pointer; font-family: 'Cabinet Grotesk', sans-serif; }
-.notif-deny { padding: 7px 18px; border-radius: 8px; background: rgba(255,255,255,.2); color: #fff; border: none; font-weight: 700; font-size: 13px; cursor: pointer; font-family: 'Cabinet Grotesk', sans-serif; }
+.notif-banner{position:fixed;top:0;left:0;right:0;background:var(--accent);color:#fff;padding:14px 24px;z-index:9999;display:none;align-items:center;justify-content:space-between;font-size:14px;font-weight:500;animation:slideDown .4s ease;}
+.notif-banner.show{display:flex;}
+.notif-banner-btns{display:flex;gap:10px;}
+.notif-allow{padding:7px 18px;border-radius:8px;background:#fff;color:var(--accent);border:none;font-weight:700;font-size:13px;cursor:pointer;}
+.notif-deny{padding:7px 18px;border-radius:8px;background:rgba(255,255,255,.2);color:#fff;border:none;font-weight:700;font-size:13px;cursor:pointer;}
 
 /* MISC */
-.page-title { font-family: 'Clash Display', sans-serif; font-size: 24px; font-weight: 700; margin-bottom: 20px; }
-.loading { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 14px; padding: 24px 0; }
-.spinner { width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; display: inline-block; }
-.empty { text-align: center; padding: 48px 20px; color: var(--muted); }
-.empty-icon { font-size: 44px; margin-bottom: 12px; }
-.toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); background: var(--text); color: #fff; border-radius: 100px; padding: 13px 26px; font-size: 14px; font-weight: 600; z-index: 9999; white-space: nowrap; box-shadow: 0 8px 32px rgba(0,0,0,.2); animation: fadeUp .3s ease; display: none; }
-.toast.show { display: block; }
+.page-title{font-family:'Clash Display',sans-serif;font-size:24px;font-weight:700;margin-bottom:20px;}
+.loading{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:14px;padding:24px 0;}
+.spinner{width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;display:inline-block;}
+.empty{text-align:center;padding:48px 20px;color:var(--muted);}
+.empty-icon{font-size:44px;margin-bottom:12px;}
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--text);color:#fff;border-radius:100px;padding:13px 26px;font-size:14px;font-weight:600;z-index:9999;white-space:nowrap;box-shadow:0 8px 32px rgba(0,0,0,.2);animation:fadeUp .3s ease;display:none;}
+.toast.show{display:block;}
 
-@keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes spin { to { transform: rotate(360deg); } }
-@keyframes slideDown { from { transform: translateY(-100%); } to { transform: translateY(0); } }
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+@keyframes spin{to{transform:rotate(360deg);}}
+@keyframes slideDown{from{transform:translateY(-100%);}to{transform:translateY(0);}}
 </style>
 </head>
 <body>
 
-<!-- ============================================================
-     LANDING
-     ============================================================ -->
+<!-- LANDING -->
 <div id="landing" class="screen active" style="display:flex;">
   <div class="land-bg"></div>
   <div class="land-logo">PitchBridge</div>
@@ -418,20 +405,16 @@ input, textarea, select { font-family: 'Cabinet Grotesk', sans-serif; }
     <button class="btn btn-outline" id="btn-sign-in">Sign In</button>
   </div>
   <div class="land-stats">
-    <div><div class="land-stat-n">2.4<em>K</em></div><div class="land-stat-l">Ideas Posted</div></div>
-    <div><div class="land-stat-n">$48<em>M</em></div><div class="land-stat-l">Deals Closed</div></div>
-    <div><div class="land-stat-n">380<em>+</em></div><div class="land-stat-l">Active Investors</div></div>
+    <div><div class="stat-n">2.4<em>K</em></div><div class="stat-l">Ideas Posted</div></div>
+    <div><div class="stat-n">$48<em>M</em></div><div class="stat-l">Deals Closed</div></div>
+    <div><div class="stat-n">380<em>+</em></div><div class="stat-l">Active Investors</div></div>
   </div>
 </div>
 
-<!-- ============================================================
-     AUTH
-     ============================================================ -->
+<!-- AUTH -->
 <div id="auth" class="screen" style="display:none;">
   <div class="auth-box">
     <span class="auth-logo">PitchBridge</span>
-
-    <!-- SIGNUP -->
     <div id="signup-view">
       <div class="auth-title">Create account</div>
       <div class="auth-sub">Takes less than 60 seconds ⚡</div>
@@ -445,7 +428,7 @@ input, textarea, select { font-family: 'Cabinet Grotesk', sans-serif; }
       <div class="field"><label>Password</label><input type="password" id="su-pass" placeholder="Min 6 characters" autocomplete="new-password"></div>
       <div class="field">
         <label>I am a... <span style="color:var(--red);font-size:10px;text-transform:none;letter-spacing:0;">(locked after signup)</span></label>
-        <div class="role-pills">
+        <div class="role-pills" id="su-role-pills">
           <div class="role-pill" data-role="entrepreneur"><div class="role-pill-icon">💡</div><div class="role-pill-name">Entrepreneur</div></div>
           <div class="role-pill" data-role="investor"><div class="role-pill-icon">💼</div><div class="role-pill-name">Investor</div></div>
           <div class="role-pill" data-role="both"><div class="role-pill-icon">⚡</div><div class="role-pill-name">Both</div></div>
@@ -455,8 +438,6 @@ input, textarea, select { font-family: 'Cabinet Grotesk', sans-serif; }
       <button class="btn btn-primary btn-full" id="su-btn">Create Account →</button>
       <div class="auth-footer">Already have an account? <a id="goto-login">Sign in</a></div>
     </div>
-
-    <!-- LOGIN -->
     <div id="login-view" style="display:none;">
       <div class="auth-title">Welcome back!</div>
       <div class="auth-sub">Sign in to continue</div>
@@ -474,42 +455,36 @@ input, textarea, select { font-family: 'Cabinet Grotesk', sans-serif; }
   </div>
 </div>
 
-<!-- ============================================================
-     PERSONA SCREEN
-     ============================================================ -->
+<!-- PERSONA SCREEN -->
 <div id="persona-screen" class="screen" style="display:none;">
   <div class="persona-box">
     <span class="auth-logo">PitchBridge</span>
     <div style="display:flex;align-items:center;gap:14px;margin-bottom:24px;">
-      <div id="persona-av" style="width:58px;height:58px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff;overflow:hidden;border:3px solid rgba(79,70,229,0.2);flex-shrink:0;"></div>
+      <div id="persona-av" style="width:58px;height:58px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff;overflow:hidden;border:3px solid rgba(79,70,229,.2);flex-shrink:0;"></div>
       <div>
         <div id="persona-greeting" style="font-family:'Clash Display',sans-serif;font-size:22px;font-weight:700;"></div>
-        <div id="persona-email" style="font-size:13px;color:var(--muted);margin-top:3px;"></div>
+        <div id="persona-email-display" style="font-size:13px;color:var(--muted);margin-top:3px;"></div>
       </div>
     </div>
     <div class="auth-title" style="font-size:20px;">One last step!</div>
     <div class="auth-sub">How will you use PitchBridge? <span style="color:var(--red);font-size:12px;">(cannot be changed later)</span></div>
-    <div class="role-pills">
-      <div class="role-pill" data-role="entrepreneur" id="persona-entrepreneur"><div class="role-pill-icon">💡</div><div class="role-pill-name">Entrepreneur</div><div style="font-size:10px;color:var(--muted);margin-top:4px;">I have ideas</div></div>
-      <div class="role-pill" data-role="investor" id="persona-investor"><div class="role-pill-icon">💼</div><div class="role-pill-name">Investor</div><div style="font-size:10px;color:var(--muted);margin-top:4px;">I fund ideas</div></div>
-      <div class="role-pill" data-role="both" id="persona-both"><div class="role-pill-icon">⚡</div><div class="role-pill-name">Both</div><div style="font-size:10px;color:var(--muted);margin-top:4px;">I do both</div></div>
+    <div class="role-pills" id="persona-role-pills">
+      <div class="role-pill" data-role="entrepreneur"><div class="role-pill-icon">💡</div><div class="role-pill-name">Entrepreneur</div><div style="font-size:10px;color:var(--muted);margin-top:4px;">I have ideas</div></div>
+      <div class="role-pill" data-role="investor"><div class="role-pill-icon">💼</div><div class="role-pill-name">Investor</div><div style="font-size:10px;color:var(--muted);margin-top:4px;">I fund ideas</div></div>
+      <div class="role-pill" data-role="both"><div class="role-pill-icon">⚡</div><div class="role-pill-name">Both</div><div style="font-size:10px;color:var(--muted);margin-top:4px;">I do both</div></div>
     </div>
     <button class="btn btn-primary btn-full" id="persona-btn">Enter PitchBridge →</button>
   </div>
 </div>
 
-<!-- ============================================================
-     APP
-     ============================================================ -->
+<!-- APP -->
 <div id="app" class="screen" style="display:none;">
-
-  <!-- NAV -->
   <nav class="nav">
-    <div class="nav-logo">PitchBridge</div>
+    <div class="nav-logo" id="nav-logo-btn">PitchBridge</div>
     <div class="nav-tabs">
       <button class="nav-tab active" data-page="feed">🏠 Home</button>
       <button class="nav-tab" data-page="network">🌐 Network</button>
-      <button class="nav-tab" data-page="chat">💬 Chat</button>
+      <button class="nav-tab" data-page="chat">💬 Chat <div class="nav-tab-badge hidden" id="msg-badge">0</div></button>
       <button class="nav-tab" data-page="pitch">💡 Pitch</button>
       <button class="nav-tab" data-page="profile">👤 Profile</button>
       <button class="nav-tab" data-page="admin" id="admin-tab" style="display:none;">🛡 Admin</button>
@@ -521,7 +496,7 @@ input, textarea, select { font-family: 'Cabinet Grotesk', sans-serif; }
     </div>
   </nav>
 
-  <!-- NOTIFICATION BANNER -->
+  <!-- NOTIF BANNER -->
   <div class="notif-banner" id="notif-banner">
     <span>🔔 Enable notifications to stay updated on connections and messages</span>
     <div class="notif-banner-btns">
@@ -530,7 +505,7 @@ input, textarea, select { font-family: 'Cabinet Grotesk', sans-serif; }
     </div>
   </div>
 
-  <!-- NOTIFICATIONS PANEL -->
+  <!-- NOTIF PANEL -->
   <div class="notif-panel" id="notif-panel">
     <div class="notif-panel-header">Notifications <span class="notif-clear" id="notif-clear-btn">Mark all read</span></div>
     <div id="notif-list"><div class="empty"><div class="empty-icon">🔔</div>No notifications yet</div></div>
@@ -539,7 +514,7 @@ input, textarea, select { font-family: 'Cabinet Grotesk', sans-serif; }
   <div class="app-layout">
     <div class="main-col">
 
-      <!-- HOME FEED -->
+      <!-- FEED -->
       <div class="page active" id="page-feed">
         <div class="search-wrap">
           <span class="search-icon">🔍</span>
@@ -558,14 +533,20 @@ input, textarea, select { font-family: 'Cabinet Grotesk', sans-serif; }
           <div class="post-tags">
             <div class="tag" data-tag="AI">🤖 AI</div>
             <div class="tag" data-tag="EV">⚡ EV</div>
-            <div class="tag" data-tag="Product">📦 Product</div>
             <div class="tag" data-tag="Tech">💻 Tech</div>
+            <div class="tag" data-tag="Product">📦 Product</div>
+            <div class="tag" data-tag="HealthTech">🏥 HealthTech</div>
+            <div class="tag" data-tag="Fintech">💳 Fintech</div>
+            <div class="tag" data-tag="EdTech">📚 EdTech</div>
+            <div class="tag" data-tag="SaaS">☁️ SaaS</div>
+            <div class="tag" data-tag="Social">📱 Social</div>
+            <div class="tag" data-tag="CleanTech">🌱 CleanTech</div>
           </div>
           <div class="post-actions">
             <div class="media-btns">
               <button class="media-btn" id="photo-btn">📷 Photo</button>
               <button class="media-btn" id="video-btn">🎥 Video</button>
-              <input type="file" id="photo-input" accept="image/*" style="display:none">
+              <input type="file" id="photo-input" accept="image/*" multiple style="display:none">
               <input type="file" id="video-input" accept="video/*" style="display:none">
             </div>
             <button class="btn btn-primary btn-sm" id="post-btn">Post 🚀</button>
@@ -596,7 +577,6 @@ input, textarea, select { font-family: 'Cabinet Grotesk', sans-serif; }
         <div class="chat-layout">
           <div class="chat-sidebar">
             <div class="chat-sidebar-header">💬 Messages</div>
-            <div class="chat-search"><input type="text" placeholder="Search conversations..."></div>
             <div class="chat-list-items" id="chat-list"></div>
           </div>
           <div class="chat-window" id="chat-window">
@@ -640,7 +620,7 @@ input, textarea, select { font-family: 'Cabinet Grotesk', sans-serif; }
         <div class="edit-card">
           <div class="edit-card-title">✏️ Edit Profile</div>
           <div class="field"><label>Profession</label><input type="text" id="edit-profession" placeholder="e.g. Founder & CEO"></div>
-          <div class="field"><label>About Me</label><textarea id="edit-bio-input" placeholder="Tell people about yourself..." style="height:80px;resize:none;width:100%;border:2px solid var(--border);border-radius:10px;padding:12px 15px;background:var(--bg);font-size:14px;outline:none;font-family:'Cabinet Grotesk',sans-serif;"></textarea></div>
+          <div class="field"><label>About Me</label><textarea id="edit-bio-input" placeholder="Tell people about yourself..." style="height:80px;resize:none;width:100%;border:2px solid var(--border);border-radius:10px;padding:12px 15px;background:var(--bg);font-size:14px;outline:none;"></textarea></div>
           <button class="btn btn-primary btn-sm" id="save-profile-btn">Save Changes</button>
         </div>
         <div class="edit-card">
@@ -676,14 +656,15 @@ input, textarea, select { font-family: 'Cabinet Grotesk', sans-serif; }
         <div id="side-people"><div class="loading" style="font-size:13px;padding:8px 0;">Loading...</div></div>
       </div>
       <div class="side-card">
-        <div class="side-card-title">Trending Topics</div>
+        <div class="side-card-title">Trending Industries</div>
         <div>
           <span class="trend-tag">🤖 AI</span><span class="trend-tag">⚡ EV</span>
-          <span class="trend-tag">📦 Product</span><span class="trend-tag">💻 Tech</span>
-          <span class="trend-tag">🌱 CleanTech</span>
+          <span class="trend-tag">🏥 HealthTech</span><span class="trend-tag">💳 Fintech</span>
+          <span class="trend-tag">📚 EdTech</span><span class="trend-tag">☁️ SaaS</span>
+          <span class="trend-tag">🌱 CleanTech</span><span class="trend-tag">📱 Social</span>
         </div>
       </div>
-      <div class="side-card" style="background:rgba(79,70,229,0.03);border-color:rgba(79,70,229,0.15);">
+      <div class="side-card" style="background:rgba(79,70,229,.03);border-color:rgba(79,70,229,.15);">
         <div class="side-card-title">💡 How It Works</div>
         <div class="how-steps">1. Post your idea<br>2. Investor requests access<br>3. Sign NDA → full pitch<br>4. Zoom call scheduled<br>5. Deal closed 🎉</div>
       </div>
@@ -691,16 +672,35 @@ input, textarea, select { font-family: 'Cabinet Grotesk', sans-serif; }
   </div>
 </div>
 
-<!-- ============================================================
-     MODALS
-     ============================================================ -->
+<!-- USER PROFILE MODAL -->
+<div class="profile-modal-overlay" id="user-profile-modal">
+  <div class="profile-modal">
+    <div class="pm-cover" id="pm-cover"></div>
+    <div class="pm-body">
+      <button class="pm-close" id="pm-close-btn">✕</button>
+      <div class="pm-av" id="pm-av" style="background:var(--accent);">?</div>
+      <div class="pm-info">
+        <div class="pm-name" id="pm-name">Loading...</div>
+        <div class="pm-profession" id="pm-profession"></div>
+        <div class="pm-role-tag" id="pm-role-tag"></div>
+        <div class="pm-bio" id="pm-bio"></div>
+        <div class="pm-stats">
+          <div><div class="pm-stat-n" id="pm-posts">0</div><div class="pm-stat-l">Posts</div></div>
+          <div><div class="pm-stat-n" id="pm-followers">0</div><div class="pm-stat-l">Followers</div></div>
+          <div><div class="pm-stat-n" id="pm-following">0</div><div class="pm-stat-l">Following</div></div>
+        </div>
+        <button class="btn btn-primary pm-follow-btn" id="pm-follow-btn">+ Follow</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- LOGOUT CONFIRM -->
 <div class="modal-overlay" id="logout-modal">
   <div class="modal" style="max-width:380px;text-align:center;">
     <div style="font-size:52px;margin-bottom:16px;">👋</div>
     <div class="modal-title">Leaving so soon?</div>
-    <div class="modal-sub">Are you sure you want to logout?</div>
+    <div class="modal-sub">Are you sure you want to logout of PitchBridge?</div>
     <div style="display:flex;gap:12px;justify-content:center;">
       <button class="btn btn-outline" id="logout-cancel-btn">Cancel</button>
       <button class="btn btn-primary" id="logout-confirm-btn">Yes, Logout</button>
@@ -708,7 +708,7 @@ input, textarea, select { font-family: 'Cabinet Grotesk', sans-serif; }
   </div>
 </div>
 
-<!-- NDA / INVEST -->
+<!-- NDA MODAL -->
 <div class="modal-overlay" id="invest-modal">
   <div class="modal">
     <button class="modal-close" id="invest-modal-close">✕</button>
@@ -725,25 +725,20 @@ input, textarea, select { font-family: 'Cabinet Grotesk', sans-serif; }
   <div class="pitch-modal">
     <button class="modal-close" id="pitch-modal-close" style="float:right;">✕</button>
     <div class="modal-title">💡 Submit Your Pitch</div>
-    <div class="modal-sub">Fill in all sections. This goes directly to the PitchBridge team.</div>
+    <div class="modal-sub">Fill in all sections carefully. Goes directly to PitchBridge team.</div>
     <div class="pitch-progress">
-      <div class="pitch-dot done" id="pd0"></div>
-      <div class="pitch-dot" id="pd1"></div>
-      <div class="pitch-dot" id="pd2"></div>
-      <div class="pitch-dot" id="pd3"></div>
-      <div class="pitch-dot" id="pd4"></div>
+      <div class="pitch-dot done" id="pd0"></div><div class="pitch-dot" id="pd1"></div>
+      <div class="pitch-dot" id="pd2"></div><div class="pitch-dot" id="pd3"></div><div class="pitch-dot" id="pd4"></div>
     </div>
-    <!-- Step 0 -->
     <div class="pitch-step active" id="ps0">
       <div class="pitch-section">🏢 About Your Business</div>
-      <div class="pitch-q"><label>1. What problem does your startup solve?</label><textarea id="pq1" placeholder="Describe the problem clearly..."></textarea></div>
-      <div class="pitch-q"><label>2. Who is your target customer?</label><input type="text" id="pq2" placeholder="e.g. Small business owners in India"></div>
+      <div class="pitch-q"><label>1. What problem does your startup solve? *</label><textarea id="pq1" placeholder="Describe the problem clearly..."></textarea></div>
+      <div class="pitch-q"><label>2. Who is your target customer? *</label><input type="text" id="pq2" placeholder="e.g. Small business owners in India"></div>
       <div class="pitch-q"><label>3. How big is the market?</label><input type="text" id="pq3" placeholder="e.g. ₹500 crore market"></div>
       <div class="pitch-q"><label>4. What makes you different from competitors?</label><textarea id="pq4" placeholder="Your unique advantage..."></textarea></div>
       <div class="pitch-q"><label>5. Who are your main competitors?</label><input type="text" id="pq5" placeholder="e.g. Zerodha, Groww"></div>
       <div class="pitch-nav"><div></div><button class="btn btn-primary" data-next="1">Next →</button></div>
     </div>
-    <!-- Step 1 -->
     <div class="pitch-step" id="ps1">
       <div class="pitch-section">📈 About Traction</div>
       <div class="pitch-q"><label>6. Do you have a working product?</label><select id="pq6"><option>Yes, fully working product</option><option>Yes, MVP/prototype</option><option>No, idea stage</option></select></div>
@@ -753,29 +748,26 @@ input, textarea, select { font-family: 'Cabinet Grotesk', sans-serif; }
       <div class="pitch-q"><label>10. Do you have any LOIs or pilot customers?</label><textarea id="pq10" placeholder="Describe any LOIs, pilots..."></textarea></div>
       <div class="pitch-nav"><button class="btn btn-outline" data-prev="0">← Back</button><button class="btn btn-primary" data-next="2">Next →</button></div>
     </div>
-    <!-- Step 2 -->
     <div class="pitch-step" id="ps2">
       <div class="pitch-section">💰 About Funding</div>
-      <div class="pitch-q"><label>11. How much funding are you seeking?</label><input type="text" id="pq11" placeholder="e.g. ₹1 Crore"></div>
+      <div class="pitch-q"><label>11. How much funding are you seeking? *</label><input type="text" id="pq11" placeholder="e.g. ₹1 Crore"></div>
       <div class="pitch-q"><label>12. What will the funding be used for?</label><textarea id="pq12" placeholder="e.g. 40% marketing, 30% hiring..."></textarea></div>
       <div class="pitch-q"><label>13. What equity are you offering?</label><input type="text" id="pq13" placeholder="e.g. 10% equity"></div>
       <div class="pitch-q"><label>14. Have you raised funding before?</label><input type="text" id="pq14" placeholder="e.g. Yes, ₹20L from angel or No"></div>
       <div class="pitch-q"><label>15. What is your company valuation?</label><input type="text" id="pq15" placeholder="e.g. ₹10 Crore"></div>
       <div class="pitch-nav"><button class="btn btn-outline" data-prev="1">← Back</button><button class="btn btn-primary" data-next="3">Next →</button></div>
     </div>
-    <!-- Step 3 -->
     <div class="pitch-step" id="ps3">
       <div class="pitch-section">👥 Team & Financials</div>
-      <div class="pitch-q"><label>16. Who are the founders?</label><textarea id="pq16" placeholder="Names, experience, LinkedIn..."></textarea></div>
+      <div class="pitch-q"><label>16. Who are the founders? *</label><textarea id="pq16" placeholder="Names, experience, LinkedIn..."></textarea></div>
       <div class="pitch-q"><label>17. How many full time employees?</label><input type="text" id="pq17" placeholder="e.g. 5 full time, 2 part time"></div>
       <div class="pitch-q"><label>18. Do you have any advisors?</label><input type="text" id="pq18" placeholder="Names and background..."></div>
       <div class="pitch-q"><label>19. What is your business model?</label><textarea id="pq19" placeholder="How do you make money?"></textarea></div>
       <div class="pitch-q"><label>20. Monthly burn rate?</label><input type="text" id="pq20" placeholder="e.g. ₹2L/month"></div>
-      <div class="pitch-q"><label>21. How long will funding last?</label><input type="text" id="pq21" placeholder="e.g. 18 months"></div>
+      <div class="pitch-q"><label>21. How long will funding last? (runway)</label><input type="text" id="pq21" placeholder="e.g. 18 months"></div>
       <div class="pitch-q"><label>22. When do you expect to be profitable?</label><input type="text" id="pq22" placeholder="e.g. 24 months from funding"></div>
       <div class="pitch-nav"><button class="btn btn-outline" data-prev="2">← Back</button><button class="btn btn-primary" data-next="4">Next →</button></div>
     </div>
-    <!-- Step 4 -->
     <div class="pitch-step" id="ps4">
       <div class="pitch-section">📎 Upload Pitch Deck</div>
       <div class="upload-zone" id="upload-zone">
@@ -786,41 +778,45 @@ input, textarea, select { font-family: 'Cabinet Grotesk', sans-serif; }
       <input type="file" id="pitch-deck-input" accept=".pdf,.ppt,.pptx,.doc,.docx" style="display:none">
       <div class="pitch-info-box">
         <b>📧 What happens after you submit:</b><br>
-        1. You receive a confirmation email instantly<br>
-        2. Our team receives your full pitch details<br>
-        3. We review within 3-5 business days<br>
-        4. We connect you with matching investors
+        ✅ You receive a confirmation email instantly<br>
+        ✅ Our team receives your full pitch details<br>
+        ✅ We review within 3-5 business days<br>
+        ✅ We connect you with matching investors
       </div>
       <div class="pitch-nav"><button class="btn btn-outline" data-prev="3">← Back</button><button class="btn btn-primary" id="pitch-submit-btn">Submit Pitch 🚀</button></div>
     </div>
   </div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<!-- ============================================================
-     JAVASCRIPT — ALL FUNCTIONS DEFINED BEFORE SUPABASE INIT
-     ============================================================ -->
 <script>
 'use strict';
 
 // ============================================================
-// STATE
+// SUPABASE CONFIG — Replace with your real keys!
 // ============================================================
+const SUPABASE_URL = 'YOUR_SUPABASE_URL_HERE';
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY_HERE';
+// ============================================================
+
+// ============================================================
+// EMAILJS CONFIG — Replace with your real keys!
+// ============================================================
+const EJS_SERVICE = 'YOUR_EMAILJS_SERVICE_ID';
+const EJS_TEMPLATE = 'YOUR_EMAILJS_TEMPLATE_ID';
+const EJS_KEY = 'YOUR_EMAILJS_PUBLIC_KEY';
+const COMPANY_EMAIL = 'YOUR_COMPANY_EMAIL_HERE';
+// ============================================================
+
+// STATE
 let _sb = null;
-let _user = null;
-let _profile = null;
-let _selectedRole = '';
-let _selectedTag = '';
-let _mediaFiles = [];
-let _currentIdeaId = null;
-let _notifOpen = false;
-let _activeChat = null;
-let _netTab = 'suggestions';
-let _pitchStep = 0;
-let _pendingGoogleUser = null;
-let _toastTimer = null;
+let _user = null, _profile = null;
+let _role = '', _tag = '', _mediaFiles = [];
+let _ideaId = null, _notifOpen = false;
+let _activeChat = null, _netTab = 'suggestions';
+let _pitchStep = 0, _pendingGU = null;
+let _toastTimer = null, _viewingUserId = null;
 
 const COLORS = ['#4f46e5','#7c3aed','#db2777','#059669','#d97706','#0284c7','#dc2626','#0891b2'];
 const AVATARS = [
@@ -828,16 +824,18 @@ const AVATARS = [
   {e:'👨‍💻',c:'#d97706'},{e:'👩‍🔬',c:'#7c3aed'},{e:'🦸',c:'#0284c7'},
   {e:'🧙',c:'#d97706'},{e:'🧑‍🎨',c:'#db2777'},{e:'🤴',c:'#059669'},
 ];
+const ROLE_MAP = {entrepreneur:'Entrepreneur',investor:'Investor',both:'Both'};
+const ROLE_BADGE = {entrepreneur:'💡 Entrepreneur',investor:'💼 Investor',both:'⚡ Both'};
+const BADGE_MAP = {AI:'badge-ai',EV:'badge-ev',Tech:'badge-tech',Product:'badge-product',HealthTech:'badge-health',Fintech:'badge-fintech',EdTech:'badge-edu',SaaS:'badge-saas',Social:'badge-social',CleanTech:'badge-ev'};
 
 // ============================================================
 // UTILITIES
 // ============================================================
 function toast(msg) {
   const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
+  el.textContent = msg; el.classList.add('show');
   clearTimeout(_toastTimer);
-  _toastTimer = setTimeout(() => el.classList.remove('show'), 3200);
+  _toastTimer = setTimeout(() => el.classList.remove('show'), 3500);
 }
 
 function showScreen(id) {
@@ -845,18 +843,18 @@ function showScreen(id) {
     const el = document.getElementById(s);
     if (el) el.style.display = 'none';
   });
-  const target = document.getElementById(id);
-  if (target) target.style.display = id === 'app' ? 'flex' : 'flex';
+  const t = document.getElementById(id);
+  if (t) t.style.display = 'flex';
 }
 
-function getIni(name) {
-  return (name || 'U').split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
-}
+function getIni(name) { return (name||'U').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2); }
 
-function avHTML(p, size) {
+function avBg(p) { return (p&&p.avatar_color) ? p.avatar_color : '#4f46e5'; }
+
+function avInner(p, size) {
   size = size || 42;
-  if (p && p.avatar_url) return '<img src="' + p.avatar_url + '" style="width:' + size + 'px;height:' + size + 'px;object-fit:cover;border-radius:50%;">';
-  if (p && p.avatar_emoji) return '<span style="font-size:' + Math.round(size * 0.48) + 'px;">' + p.avatar_emoji + '</span>';
+  if (p && p.avatar_url) return '<img src="'+p.avatar_url+'" style="width:'+size+'px;height:'+size+'px;object-fit:cover;border-radius:50%;">';
+  if (p && p.avatar_emoji) return '<span style="font-size:'+Math.round(size*.45)+'px;">'+p.avatar_emoji+'</span>';
   return getIni(p && p.full_name);
 }
 
@@ -866,24 +864,21 @@ function avHTML(p, size) {
 function goToPage(page) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-  const pageEl = document.getElementById('page-' + page);
-  const tabEl = document.querySelector('.nav-tab[data-page="' + page + '"]');
-  if (pageEl) pageEl.classList.add('active');
-  if (tabEl) tabEl.classList.add('active');
+  const pg = document.getElementById('page-'+page);
+  const tb = document.querySelector('.nav-tab[data-page="'+page+'"]');
+  if (pg) pg.classList.add('active');
+  if (tb) tb.classList.add('active');
   closeNotifPanel();
   try { localStorage.setItem('pb_page', page); } catch(e) {}
-  if (page === 'profile') loadProfilePage();
-  if (page === 'network') loadNetwork(_netTab);
-  if (page === 'chat') loadChatList();
-  if (page === 'admin') loadAdmin();
-  if (page === 'pitch') loadMyPitches();
+  if (page==='profile') loadProfilePage();
+  if (page==='network') loadNetwork(_netTab);
+  if (page==='chat') loadChatList();
+  if (page==='admin') loadAdmin();
+  if (page==='pitch') loadMyPitches();
 }
 
 function restorePage() {
-  try {
-    const saved = localStorage.getItem('pb_page');
-    if (saved && document.getElementById('page-' + saved)) goToPage(saved);
-  } catch(e) {}
+  try { const s=localStorage.getItem('pb_page'); if(s&&document.getElementById('page-'+s)) goToPage(s); } catch(e) {}
 }
 
 // ============================================================
@@ -894,7 +889,6 @@ function showSignup() {
   document.getElementById('signup-view').style.display = 'block';
   document.getElementById('login-view').style.display = 'none';
 }
-
 function showLogin() {
   showScreen('auth');
   document.getElementById('signup-view').style.display = 'none';
@@ -902,119 +896,96 @@ function showLogin() {
 }
 
 // ============================================================
-// ROLE SELECTION
-// ============================================================
-function initRolePills(containerSelector, callback) {
-  document.querySelectorAll(containerSelector + ' .role-pill').forEach(pill => {
-    pill.addEventListener('click', () => {
-      document.querySelectorAll(containerSelector + ' .role-pill').forEach(p => p.classList.remove('active'));
-      pill.classList.add('active');
-      if (callback) callback(pill.dataset.role);
-    });
-  });
-}
-
-// ============================================================
 // GOOGLE SIGN IN
 // ============================================================
-async function signInWithGoogle() {
+async function googleSignIn() {
   if (!_sb) { toast('⚠️ App not ready. Check your Supabase keys.'); return; }
   try {
     const { error } = await _sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin } });
-    if (error) toast('❌ ' + error.message);
+    if (error) toast('❌ '+error.message);
   } catch(e) { toast('❌ Google sign in failed'); }
 }
 
 // ============================================================
-// EMAIL SIGNUP
+// SIGNUP
 // ============================================================
 async function doSignup() {
   if (!_sb) { toast('⚠️ App not ready'); return; }
   const name = document.getElementById('su-name').value.trim();
   const email = document.getElementById('su-email').value.trim();
   const pass = document.getElementById('su-pass').value;
-  const errEl = document.getElementById('su-err');
+  const err = document.getElementById('su-err');
   const btn = document.getElementById('su-btn');
-  errEl.textContent = '';
-  if (!name || !email || !pass) { errEl.textContent = 'Please fill in all fields.'; return; }
-  if (!_selectedRole) { errEl.textContent = 'Please select your role.'; return; }
-  if (pass.length < 6) { errEl.textContent = 'Password must be at least 6 characters.'; return; }
+  err.textContent = '';
+  if (!name||!email||!pass) { err.textContent = 'Please fill in all fields.'; return; }
+  if (!_role) { err.textContent = 'Please select your role.'; return; }
+  if (pass.length<6) { err.textContent = 'Password must be at least 6 characters.'; return; }
   btn.disabled = true; btn.textContent = 'Creating account...';
   try {
     const { data, error } = await _sb.auth.signUp({ email, password: pass });
-    if (error) { errEl.textContent = error.message; btn.disabled = false; btn.textContent = 'Create Account →'; return; }
-    if (!data.user) { errEl.textContent = 'Signup failed. Try again.'; btn.disabled = false; btn.textContent = 'Create Account →'; return; }
+    if (error) { err.textContent = error.message; btn.disabled=false; btn.textContent='Create Account →'; return; }
+    if (!data.user) { err.textContent = 'Signup failed.'; btn.disabled=false; btn.textContent='Create Account →'; return; }
     _user = data.user;
-    const color = COLORS[Math.floor(Math.random() * COLORS.length)];
-    await _sb.from('profiles').insert({ id: _user.id, full_name: name, email, role: _selectedRole, is_admin: false, is_verified: false, avatar_color: color });
+    const color = COLORS[Math.floor(Math.random()*COLORS.length)];
+    await _sb.from('profiles').insert({ id:_user.id, full_name:name, email, role:_role, is_admin:false, is_verified:false, avatar_color:color });
     await loadProfile();
     enterApp();
-  } catch(e) {
-    errEl.textContent = 'Something went wrong. Try again.';
-    btn.disabled = false; btn.textContent = 'Create Account →';
-  }
+  } catch(e) { err.textContent='Something went wrong.'; btn.disabled=false; btn.textContent='Create Account →'; }
 }
 
 // ============================================================
-// EMAIL LOGIN
+// LOGIN
 // ============================================================
 async function doLogin() {
   if (!_sb) { toast('⚠️ App not ready'); return; }
   const email = document.getElementById('li-email').value.trim();
   const pass = document.getElementById('li-pass').value;
-  const errEl = document.getElementById('li-err');
+  const err = document.getElementById('li-err');
   const btn = document.getElementById('li-btn');
-  errEl.textContent = '';
-  if (!email || !pass) { errEl.textContent = 'Please enter your email and password.'; return; }
-  btn.disabled = true; btn.textContent = 'Signing in...';
+  err.textContent = '';
+  if (!email||!pass) { err.textContent = 'Please enter your email and password.'; return; }
+  btn.disabled=true; btn.textContent='Signing in...';
   try {
     const { data, error } = await _sb.auth.signInWithPassword({ email, password: pass });
-    if (error) { errEl.textContent = error.message; btn.disabled = false; btn.textContent = 'Sign In →'; return; }
+    if (error) { err.textContent=error.message; btn.disabled=false; btn.textContent='Sign In →'; return; }
     _user = data.user;
     await loadProfile();
     if (_profile) enterApp(); else showPersonaScreen(_user);
-  } catch(e) {
-    errEl.textContent = 'Something went wrong.';
-    btn.disabled = false; btn.textContent = 'Sign In →';
-  }
+  } catch(e) { err.textContent='Something went wrong.'; btn.disabled=false; btn.textContent='Sign In →'; }
 }
 
 // ============================================================
 // LOGOUT
 // ============================================================
-function confirmLogout() {
-  document.getElementById('logout-modal').classList.add('open');
-}
+function askLogout() { document.getElementById('logout-modal').classList.add('open'); }
 async function doLogout() {
   if (_sb) await _sb.auth.signOut();
-  _user = null; _profile = null;
+  _user=null; _profile=null;
   document.getElementById('logout-modal').classList.remove('open');
   showScreen('landing');
   toast('👋 Logged out successfully!');
 }
 
 // ============================================================
-// PROFILE LOADING
+// LOAD PROFILE
 // ============================================================
 async function loadProfile() {
-  try {
-    const { data } = await _sb.from('profiles').select('*').eq('id', _user.id).single();
-    _profile = data;
-  } catch(e) { _profile = null; }
+  try { const {data}=await _sb.from('profiles').select('*').eq('id',_user.id).single(); _profile=data; }
+  catch(e) { _profile=null; }
 }
 
 // ============================================================
 // PERSONA SCREEN
 // ============================================================
 function showPersonaScreen(user) {
-  _pendingGoogleUser = user;
+  _pendingGU = user;
   const name = user.user_metadata?.full_name || user.user_metadata?.name || user.email.split('@')[0];
-  const photo = user.user_metadata?.avatar_url || user.user_metadata?.picture || null;
-  document.getElementById('persona-greeting').textContent = 'Hi, ' + name.split(' ')[0] + '! 👋';
-  document.getElementById('persona-email').textContent = user.email;
-  const avEl = document.getElementById('persona-av');
-  if (photo) avEl.innerHTML = '<img src="' + photo + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
-  else { avEl.textContent = name[0].toUpperCase(); }
+  const photo = user.user_metadata?.avatar_url || null;
+  document.getElementById('persona-greeting').textContent = 'Hi, '+name.split(' ')[0]+'! 👋';
+  document.getElementById('persona-email-display').textContent = user.email;
+  const av = document.getElementById('persona-av');
+  if (photo) av.innerHTML = '<img src="'+photo+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+  else av.textContent = name[0].toUpperCase();
   showScreen('persona-screen');
 }
 
@@ -1024,32 +995,28 @@ function showPersonaScreen(user) {
 function enterApp() {
   showScreen('app');
   updateNavAv();
-  if (_profile && _profile.is_admin) document.getElementById('admin-tab').style.display = 'inline-block';
-  if (_profile && _profile.role === 'investor') { const pb = document.getElementById('post-box'); if(pb) pb.style.display = 'none'; }
-  loadFeed();
-  loadSidebar();
-  loadNotifications();
+  if (_profile && _profile.is_admin) document.getElementById('admin-tab').style.display='inline-block';
+  if (_profile && _profile.role==='investor') { const pb=document.getElementById('post-box'); if(pb) pb.style.display='none'; }
+  loadFeed(); loadSidebar(); loadNotifs(); loadUnreadMsgCount();
   restorePage();
-  setTimeout(checkNotifPermission, 2000);
-  toast('👋 Welcome, ' + (_profile ? _profile.full_name.split(' ')[0] : 'there') + '!');
+  setTimeout(checkNotifPerm, 2500);
+  toast('👋 Welcome, '+(_profile?_profile.full_name.split(' ')[0]:'there')+'!');
 }
 
 function updateNavAv() {
-  const el = document.getElementById('nav-av');
-  const pAv = document.getElementById('post-av');
+  const el=document.getElementById('nav-av'), pAv=document.getElementById('post-av');
   if (!el) return;
-  const color = (_profile && _profile.avatar_color) ? _profile.avatar_color : '#4f46e5';
-  const ini = getIni(_profile && _profile.full_name);
-  if (_profile && _profile.avatar_url) {
-    el.innerHTML = '<img src="' + _profile.avatar_url + '">';
-    if (pAv) pAv.innerHTML = '<img src="' + _profile.avatar_url + '">';
-  } else if (_profile && _profile.avatar_emoji) {
-    el.innerHTML = '<span style="font-size:18px;">' + _profile.avatar_emoji + '</span>';
-    el.style.background = color;
-    if (pAv) { pAv.innerHTML = '<span style="font-size:16px;">' + _profile.avatar_emoji + '</span>'; pAv.style.background = color; }
+  const color = avBg(_profile);
+  const ini = getIni(_profile&&_profile.full_name);
+  if (_profile&&_profile.avatar_url) {
+    el.innerHTML='<img src="'+_profile.avatar_url+'">';
+    if(pAv) pAv.innerHTML='<img src="'+_profile.avatar_url+'">';
+  } else if (_profile&&_profile.avatar_emoji) {
+    el.innerHTML='<span style="font-size:18px;">'+_profile.avatar_emoji+'</span>'; el.style.background=color;
+    if(pAv){pAv.innerHTML='<span style="font-size:16px;">'+_profile.avatar_emoji+'</span>';pAv.style.background=color;}
   } else {
-    el.textContent = ini; el.style.background = color;
-    if (pAv) { pAv.textContent = ini; pAv.style.background = color; }
+    el.textContent=ini; el.style.background=color;
+    if(pAv){pAv.textContent=ini;pAv.style.background=color;}
   }
 }
 
@@ -1057,156 +1024,246 @@ function updateNavAv() {
 // FEED
 // ============================================================
 async function loadFeed() {
-  const el = document.getElementById('feed-list');
-  el.innerHTML = '<div class="loading"><span class="spinner"></span>Loading feed...</div>';
+  const el=document.getElementById('feed-list');
+  el.innerHTML='<div class="loading"><span class="spinner"></span>Loading feed...</div>';
   try {
-    const { data: ideas } = await _sb.from('ideas')
-      .select('*, profiles(full_name,role,avatar_color,avatar_url,avatar_emoji,profession)')
-      .order('created_at', { ascending: false });
-    if (!ideas || !ideas.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">🚀</div>No posts yet. Be the first!</div>'; return; }
+    const {data:ideas}=await _sb.from('ideas').select('*, profiles(full_name,role,avatar_color,avatar_url,avatar_emoji,profession)').order('created_at',{ascending:false});
+    if (!ideas||!ideas.length) { el.innerHTML='<div class="empty"><div class="empty-icon">🚀</div>No posts yet. Be the first!</div>'; return; }
     el.innerHTML = ideas.map(ideaCard).join('');
-  } catch(e) { el.innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div>Could not load feed.</div>'; }
+  } catch(e) { el.innerHTML='<div class="empty"><div class="empty-icon">⚠️</div>Could not load feed.</div>'; }
 }
 
 function ideaCard(idea) {
-  const p = idea.profiles || {};
-  const bg = p.avatar_color || '#4f46e5';
-  const bc = {AI:'badge-ai',EV:'badge-ev',Product:'badge-product',Tech:'badge-tech'}[idea.category] || 'badge-tech';
-  const isInv = _profile && (_profile.role === 'investor' || _profile.role === 'both');
-  const isOwn = _user && idea.user_id === _user.id;
-  const rm = {entrepreneur:'Entrepreneur',investor:'Investor',both:'Entrepreneur & Investor'};
-  return '<div class="idea-card" id="ic-' + idea.id + '">' +
+  const p=idea.profiles||{}, bg=avBg(p);
+  const bc=BADGE_MAP[idea.category]||'badge-tech';
+  const isInv=_profile&&(_profile.role==='investor'||_profile.role==='both');
+  const isOwn=_user&&idea.user_id===_user.id;
+  const rm={entrepreneur:'Entrepreneur',investor:'Investor',both:'Entrepreneur & Investor'};
+
+  // Media HTML
+  let mediaHTML = '';
+  if (idea.images && idea.images.length > 0) {
+    if (idea.images.length === 1) {
+      mediaHTML = '<div class="card-media"><img class="card-img" src="'+idea.images[0]+'" loading="lazy"></div>';
+    } else {
+      mediaHTML = '<div class="card-img-grid">' + idea.images.map(img => '<img src="'+img+'" loading="lazy">').join('') + '</div>';
+    }
+  }
+  if (idea.video_url) {
+    mediaHTML += '<div class="card-media"><video class="card-video" src="'+idea.video_url+'" controls preload="metadata"></video></div>';
+  }
+
+  return '<div class="idea-card" id="ic-'+idea.id+'">' +
     '<div class="card-head">' +
-    '<div class="card-av" style="background:' + bg + ';">' + avHTML(p) + '</div>' +
+    '<div class="card-av" style="background:'+bg+';" onclick="viewUser(\''+idea.user_id+'\')">'+avInner(p)+'</div>' +
     '<div style="flex:1;">' +
-    '<div class="card-name">' + (p.full_name||'Anonymous') + '</div>' +
-    '<div class="card-meta">' + (p.profession||rm[p.role]||'Member') + (idea.category?' · <span class="badge ' + bc + '">' + idea.category + '</span>':'') + '</div>' +
+    '<div class="card-name" onclick="viewUser(\''+idea.user_id+'\')">'+( p.full_name||'Anonymous')+'</div>' +
+    '<div class="card-meta">'+(p.profession||rm[p.role]||'Member')+(idea.category?' · <span class="badge '+bc+'">'+idea.category+'</span>':'')+'</div>' +
     '</div>' +
-    (idea.funding_ask ? '<div class="card-ask">💰 ' + idea.funding_ask + '</div>' : '') +
+    (idea.funding_ask?'<div class="card-ask">💰 '+idea.funding_ask+'</div>':'') +
     '</div>' +
-    (idea.title ? '<div class="card-title">' + idea.title + '</div>' : '') +
-    '<div class="card-body">' + idea.body + '</div>' +
-    (idea.funding_ask ? '<div class="card-nda">🔒 Full pitch visible after NDA agreement</div>' : '') +
+    (idea.title?'<div class="card-title">'+idea.title+'</div>':'') +
+    '<div class="card-body">'+idea.body+'</div>' +
+    mediaHTML +
+    (idea.funding_ask?'<div class="card-nda">🔒 Full pitch visible after NDA agreement</div>':'') +
     '<div class="card-footer">' +
-    (isInv && !isOwn && idea.funding_ask ? '<button class="card-action card-action-primary" onclick="openInvest(\'' + idea.id + '\')">💼 Request Access</button>' : '') +
-    '<button class="card-action" id="like-' + idea.id + '" onclick="likeIdea(\'' + idea.id + '\')">❤️ ' + (idea.likes||0) + '</button>' +
-    '<button class="card-action" onclick="toggleComments(\'' + idea.id + '\')">💬 Comment</button>' +
-    '<button class="card-action" onclick="copyLink(\'' + idea.id + '\')">↗ Share</button>' +
-    (isOwn ? '<button class="card-action card-action-danger" onclick="deleteIdea(\'' + idea.id + '\')">🗑</button>' : '') +
+    (isInv&&!isOwn&&idea.funding_ask?'<button class="card-action card-action-primary" onclick="openInvest(\''+idea.id+'\')">💼 Request Access</button>':'') +
+    '<button class="card-action" id="like-'+idea.id+'" onclick="likeIdea(\''+idea.id+'\')">❤️ '+(idea.likes||0)+'</button>' +
+    '<button class="card-action" onclick="toggleComments(\''+idea.id+'\')">💬 Comment</button>' +
+    '<button class="card-action" onclick="copyLink(\''+idea.id+'\')">↗ Share</button>' +
+    (isOwn?'<button class="card-action card-action-danger" onclick="deleteIdea(\''+idea.id+'\')">🗑</button>':'') +
     '</div>' +
-    '<div class="comments" id="cm-' + idea.id + '">' +
+    '<div class="comments" id="cm-'+idea.id+'">' +
     '<div class="comment-input-row">' +
-    '<div class="comment-av" style="background:' + ((_profile&&_profile.avatar_color)||'#4f46e5') + ';">' + getIni(_profile&&_profile.full_name) + '</div>' +
-    '<input class="comment-field" id="cf-' + idea.id + '" placeholder="Write a comment...">' +
-    '<button class="comment-send" onclick="postComment(\'' + idea.id + '\')">Send</button>' +
-    '</div><div id="cl-' + idea.id + '"></div></div>' +
+    '<div class="comment-av" style="background:'+avBg(_profile)+';">'+getIni(_profile&&_profile.full_name)+'</div>' +
+    '<input class="comment-field" id="cf-'+idea.id+'" placeholder="Write a comment...">' +
+    '<button class="comment-send" onclick="postComment(\''+idea.id+'\')">Send</button>' +
+    '</div><div id="cl-'+idea.id+'"></div></div>' +
     '</div>';
 }
 
 async function postIdea() {
-  const body = document.getElementById('post-text').value.trim();
+  const body=document.getElementById('post-text').value.trim();
   if (!body) { toast('⚠️ Please write something first'); return; }
-  const btn = document.getElementById('post-btn');
-  btn.disabled = true; btn.textContent = 'Posting...';
+  const btn=document.getElementById('post-btn');
+  btn.disabled=true; btn.textContent='Posting...';
   try {
+    // Upload images to Supabase storage
+    const imageUrls = [];
+    let videoUrl = null;
+    for (const mf of _mediaFiles) {
+      if (mf.type === 'image') imageUrls.push(mf.url);
+      if (mf.type === 'video') videoUrl = mf.url;
+    }
     await _sb.from('ideas').insert({
-      user_id: _user.id,
-      title: document.getElementById('post-title').value.trim(),
+      user_id:_user.id,
+      title:document.getElementById('post-title').value.trim(),
       body,
-      funding_ask: document.getElementById('post-ask').value.trim() || null,
-      category: _selectedTag || 'Tech',
-      likes: 0
+      funding_ask:document.getElementById('post-ask').value.trim()||null,
+      category:_tag||'Tech', likes:0,
+      images:imageUrls.length?imageUrls:null,
+      video_url:videoUrl
     });
-    document.getElementById('post-text').value = '';
-    document.getElementById('post-title').value = '';
-    document.getElementById('post-ask').value = '';
-    document.getElementById('media-preview').innerHTML = '';
-    _mediaFiles = []; _selectedTag = '';
-    document.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
-    toast('🚀 Posted!');
-    loadFeed();
+    document.getElementById('post-text').value='';
+    document.getElementById('post-title').value='';
+    document.getElementById('post-ask').value='';
+    document.getElementById('media-preview').innerHTML='';
+    _mediaFiles=[]; _tag='';
+    document.querySelectorAll('.tag').forEach(t=>t.classList.remove('active'));
+    toast('🚀 Posted!'); loadFeed();
   } catch(e) { toast('❌ Failed to post'); }
-  btn.disabled = false; btn.textContent = 'Post 🚀';
+  btn.disabled=false; btn.textContent='Post 🚀';
 }
 
 async function likeIdea(id) {
   try {
-    const { data } = await _sb.from('ideas').select('likes').eq('id', id).single();
-    const n = ((data && data.likes) ? data.likes : 0) + 1;
-    await _sb.from('ideas').update({ likes: n }).eq('id', id);
-    const btn = document.getElementById('like-' + id);
-    if (btn) { btn.textContent = '❤️ ' + n; btn.classList.add('liked'); }
+    const {data}=await _sb.from('ideas').select('likes').eq('id',id).single();
+    const n=((data&&data.likes)?data.likes:0)+1;
+    await _sb.from('ideas').update({likes:n}).eq('id',id);
+    const btn=document.getElementById('like-'+id);
+    if(btn){btn.textContent='❤️ '+n; btn.classList.add('liked');}
   } catch(e) {}
 }
 
 function toggleComments(id) {
-  const el = document.getElementById('cm-' + id);
-  if (!el) return;
+  const el=document.getElementById('cm-'+id);
+  if(!el) return;
   el.classList.toggle('open');
-  if (el.classList.contains('open')) loadComments(id);
+  if(el.classList.contains('open')) loadComments(id);
 }
 
 async function loadComments(id) {
   try {
-    const { data } = await _sb.from('comments')
-      .select('*, profiles(full_name,avatar_color)')
-      .eq('idea_id', id)
-      .order('created_at', { ascending: true });
-    const el = document.getElementById('cl-' + id);
-    if (!el) return;
-    if (!data || !data.length) { el.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:8px 0;">No comments yet!</div>'; return; }
-    el.innerHTML = data.map(c =>
+    const {data}=await _sb.from('comments').select('*, profiles(id,full_name,avatar_color)').eq('idea_id',id).order('created_at',{ascending:true});
+    const el=document.getElementById('cl-'+id);
+    if(!el) return;
+    if(!data||!data.length){el.innerHTML='<div style="font-size:13px;color:var(--muted);padding:8px 0;">No comments yet!</div>';return;}
+    el.innerHTML=data.map(c=>
       '<div class="comment-item">' +
-      '<div class="comment-av" style="background:' + (c.profiles&&c.profiles.avatar_color?c.profiles.avatar_color:'#4f46e5') + ';">' + getIni(c.profiles&&c.profiles.full_name) + '</div>' +
-      '<div class="comment-bubble"><div class="comment-author">' + (c.profiles&&c.profiles.full_name?c.profiles.full_name:'User') + '</div>' + c.body + '</div>' +
+      '<div class="comment-av" style="background:'+(c.profiles&&c.profiles.avatar_color?c.profiles.avatar_color:'#4f46e5')+'" onclick="viewUser(\''+(c.profiles&&c.profiles.id?c.profiles.id:'')+'\')">'+getIni(c.profiles&&c.profiles.full_name)+'</div>' +
+      '<div class="comment-bubble"><div class="comment-author" onclick="viewUser(\''+(c.profiles&&c.profiles.id?c.profiles.id:'')+'\')">'+( c.profiles&&c.profiles.full_name?c.profiles.full_name:'User')+'</div>'+c.body+'</div>' +
       '</div>'
     ).join('');
   } catch(e) {}
 }
 
 async function postComment(id) {
-  const input = document.getElementById('cf-' + id);
-  const text = input.value.trim();
-  if (!text) return;
+  const input=document.getElementById('cf-'+id);
+  const text=input.value.trim(); if(!text) return;
   try {
-    await _sb.from('comments').insert({ idea_id: id, user_id: _user.id, body: text });
-    input.value = '';
-    loadComments(id);
-  } catch(e) { toast('❌ Failed'); }
+    await _sb.from('comments').insert({idea_id:id,user_id:_user.id,body:text});
+    input.value=''; loadComments(id);
+  } catch(e) {toast('❌ Failed');}
 }
 
 async function deleteIdea(id) {
-  if (!confirm('Delete this post?')) return;
+  if(!confirm('Delete this post?')) return;
   try {
-    await _sb.from('ideas').delete().eq('id', id);
-    const el = document.getElementById('ic-' + id);
-    if (el) el.remove();
+    await _sb.from('ideas').delete().eq('id',id);
+    const el=document.getElementById('ic-'+id); if(el) el.remove();
     toast('🗑 Post deleted');
-  } catch(e) { toast('❌ Failed'); }
+  } catch(e) {toast('❌ Failed');}
 }
 
 function copyLink(id) {
-  const url = window.location.origin + window.location.pathname + '?post=' + id;
-  navigator.clipboard.writeText(url).then(() => toast('🔗 Link copied!')).catch(() => toast('🔗 Link copied!'));
+  const url=window.location.origin+window.location.pathname+'?post='+id;
+  navigator.clipboard.writeText(url).then(()=>toast('🔗 Link copied! Share it anywhere.')).catch(()=>toast('🔗 Link copied!'));
+}
+
+function previewMedia(input, type) {
+  const files=input.files; if(!files||!files.length) return;
+  const prev=document.getElementById('media-preview');
+  Array.from(files).forEach(file => {
+    const reader=new FileReader();
+    reader.onload=e=>{
+      if(type==='image'){
+        const img=document.createElement('img'); img.src=e.target.result; img.className='media-thumb'; prev.appendChild(img);
+      } else {
+        const vid=document.createElement('video'); vid.src=e.target.result; vid.className='media-thumb-video'; vid.controls=true; prev.appendChild(vid);
+      }
+      _mediaFiles.push({type,url:e.target.result});
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// ============================================================
+// USER PROFILE MODAL
+// ============================================================
+async function viewUser(uid) {
+  if (!uid) return;
+  _viewingUserId = uid;
+  document.getElementById('user-profile-modal').classList.add('open');
+  document.getElementById('pm-name').textContent = 'Loading...';
+  document.getElementById('pm-bio').textContent = '';
+  document.getElementById('pm-profession').textContent = '';
+  document.getElementById('pm-role-tag').textContent = '';
+  try {
+    const {data:u}=await _sb.from('profiles').select('*').eq('id',uid).single();
+    if (!u) return;
+    const bg = avBg(u);
+    document.getElementById('pm-cover').style.background = 'linear-gradient(120deg,'+bg+','+bg+'99)';
+    const avEl=document.getElementById('pm-av'); avEl.style.background=bg;
+    if(u.avatar_url) avEl.innerHTML='<img src="'+u.avatar_url+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+    else if(u.avatar_emoji) avEl.innerHTML='<span style="font-size:30px;">'+u.avatar_emoji+'</span>';
+    else avEl.textContent=getIni(u.full_name);
+    document.getElementById('pm-name').textContent=u.full_name||'User';
+    document.getElementById('pm-profession').textContent=u.profession||'';
+    document.getElementById('pm-role-tag').textContent=ROLE_BADGE[u.role]||'';
+    document.getElementById('pm-bio').textContent=u.bio||'';
+    // Stats
+    const [{count:pc},{count:flrc},{count:flgc}]=await Promise.all([
+      _sb.from('ideas').select('*',{count:'exact',head:true}).eq('user_id',uid),
+      _sb.from('follows').select('*',{count:'exact',head:true}).eq('following_id',uid),
+      _sb.from('follows').select('*',{count:'exact',head:true}).eq('follower_id',uid),
+    ]);
+    document.getElementById('pm-posts').textContent=pc||0;
+    document.getElementById('pm-followers').textContent=flrc||0;
+    document.getElementById('pm-following').textContent=flgc||0;
+    // Follow button
+    const {data:myF}=await _sb.from('follows').select('id').eq('follower_id',_user.id).eq('following_id',uid).maybeSingle();
+    const followBtn=document.getElementById('pm-follow-btn');
+    if(uid===_user.id){followBtn.style.display='none';}
+    else{
+      followBtn.style.display='block';
+      followBtn.textContent=myF?'✓ Following':'+ Follow';
+      followBtn.className='btn '+(myF?'btn-outline':'btn-primary')+' pm-follow-btn';
+      followBtn.onclick=()=>pmToggleFollow(uid,myF?true:false,followBtn);
+    }
+  } catch(e) {toast('❌ Could not load profile');}
+}
+
+async function pmToggleFollow(uid, isF, btn) {
+  try {
+    if(isF){
+      await _sb.from('follows').delete().eq('follower_id',_user.id).eq('following_id',uid);
+      btn.textContent='+ Follow'; btn.className='btn btn-primary pm-follow-btn';
+      toast('Unfollowed');
+    } else {
+      await _sb.from('follows').insert({follower_id:_user.id,following_id:uid});
+      btn.textContent='✓ Following'; btn.className='btn btn-outline pm-follow-btn';
+      await _sb.from('notifications').insert({user_id:uid,from_user_id:_user.id,type:'follow',message:(_profile?_profile.full_name:'Someone')+' started following you'});
+      toast('✅ Following!');
+    }
+  } catch(e) {toast('❌ Failed');}
 }
 
 // ============================================================
 // SEARCH
 // ============================================================
 async function doSearch(query, resultsId) {
-  const resultsEl = document.getElementById(resultsId);
-  if (!resultsEl) return;
-  if (!query || query.length < 2) { resultsEl.classList.remove('open'); return; }
+  const el=document.getElementById(resultsId);
+  if(!el) return;
+  if(!query||query.length<2){el.classList.remove('open');return;}
   try {
-    const { data: users } = await _sb.from('profiles').select('*').ilike('full_name', '%' + query + '%').limit(8);
-    resultsEl.classList.add('open');
-    if (!users || !users.length) { resultsEl.innerHTML = '<div class="search-empty">No results for "' + query + '"</div>'; return; }
-    const rm = {entrepreneur:'Entrepreneur',investor:'Investor',both:'Both'};
-    resultsEl.innerHTML = users.map(u => {
-      const av = u.avatar_url ? '<img src="' + u.avatar_url + '">' : (u.avatar_emoji || getIni(u.full_name));
-      return '<div class="search-item">' +
-        '<div class="search-av" style="background:' + (u.avatar_color||'#4f46e5') + ';">' + av + '</div>' +
-        '<div><div class="search-name">' + (u.full_name||'User') + '</div><div class="search-role">' + (rm[u.role]||'Member') + '</div></div>' +
+    const {data:users}=await _sb.from('profiles').select('*').ilike('full_name','%'+query+'%').limit(8);
+    el.classList.add('open');
+    if(!users||!users.length){el.innerHTML='<div class="search-empty">No results found for "'+query+'"</div>';return;}
+    el.innerHTML=users.map(u=>{
+      const av=u.avatar_url?'<img src="'+u.avatar_url+'">':(u.avatar_emoji||getIni(u.full_name));
+      return '<div class="search-item" onclick="viewUser(\''+u.id+'\')">' +
+        '<div class="search-av" style="background:'+(u.avatar_color||'#4f46e5')+';">'+av+'</div>' +
+        '<div><div class="search-name">'+(u.full_name||'User')+'</div><div class="search-role">'+(ROLE_MAP[u.role]||'Member')+'</div></div>' +
         '</div>';
     }).join('');
   } catch(e) {}
@@ -1216,71 +1273,68 @@ async function doSearch(query, resultsId) {
 // NETWORK
 // ============================================================
 async function loadNetwork(tab) {
-  _netTab = tab;
-  const el = document.getElementById('net-grid');
-  el.innerHTML = '<div class="loading"><span class="spinner"></span>Loading...</div>';
+  _netTab=tab;
+  const el=document.getElementById('net-grid');
+  el.innerHTML='<div class="loading"><span class="spinner"></span>Loading...</div>';
   try {
-    const { data: users } = await _sb.from('profiles').select('*').neq('id', _user.id);
-    const all = users || [];
-    if (tab === 'suggestions') { renderNetGrid(all); return; }
-    const isFollowing = tab === 'following';
-    const col = isFollowing ? 'follower_id' : 'following_id';
-    const ret = isFollowing ? 'following_id' : 'follower_id';
-    const { data: follows } = await _sb.from('follows').select(ret).eq(col, _user.id);
-    const ids = (follows||[]).map(f => f[ret]);
-    renderNetGrid(all.filter(u => ids.includes(u.id)));
-  } catch(e) { document.getElementById('net-grid').innerHTML = '<div class="empty">Could not load.</div>'; }
+    const {data:users}=await _sb.from('profiles').select('*').neq('id',_user.id);
+    const all=users||[];
+    if(tab==='suggestions'){renderNetGrid(all);return;}
+    const isF=tab==='following';
+    const col=isF?'follower_id':'following_id', ret=isF?'following_id':'follower_id';
+    const {data:follows}=await _sb.from('follows').select(ret).eq(col,_user.id);
+    const ids=(follows||[]).map(f=>f[ret]);
+    renderNetGrid(all.filter(u=>ids.includes(u.id)));
+  } catch(e){document.getElementById('net-grid').innerHTML='<div class="empty">Could not load.</div>';}
 }
 
 async function renderNetGrid(users) {
-  const el = document.getElementById('net-grid');
-  if (!users.length) { el.innerHTML = '<div class="empty" style="grid-column:1/-1;"><div class="empty-icon">👥</div>No users found.</div>'; return; }
+  const el=document.getElementById('net-grid');
+  if(!users.length){el.innerHTML='<div class="empty" style="grid-column:1/-1;"><div class="empty-icon">👥</div>No users found.</div>';return;}
   try {
-    const { data: mf } = await _sb.from('follows').select('following_id').eq('follower_id', _user.id);
-    const fids = (mf||[]).map(f => f.following_id);
-    const rm = {entrepreneur:'Entrepreneur',investor:'Investor',both:'Both'};
-    el.innerHTML = users.map(u => {
-      const isF = fids.includes(u.id);
-      const av = u.avatar_url ? '<img src="' + u.avatar_url + '">' : (u.avatar_emoji || getIni(u.full_name));
+    const {data:mf}=await _sb.from('follows').select('following_id').eq('follower_id',_user.id);
+    const fids=(mf||[]).map(f=>f.following_id);
+    el.innerHTML=users.map(u=>{
+      const isF=fids.includes(u.id);
+      const av=u.avatar_url?'<img src="'+u.avatar_url+'">':(u.avatar_emoji||getIni(u.full_name));
       return '<div class="net-card">' +
-        '<div class="net-av" style="background:' + (u.avatar_color||'#4f46e5') + ';">' + av + '</div>' +
-        '<div class="net-name">' + (u.full_name||'User') + '</div>' +
-        '<div class="net-role">' + (rm[u.role]||u.role) + '</div>' +
-        '<button class="net-follow-btn ' + (isF?'following':'') + '" onclick="toggleFollow(\'' + u.id + '\',this)">' + (isF?'✓ Following':'+ Follow') + '</button>' +
+        '<div class="net-av" style="background:'+(u.avatar_color||'#4f46e5')+'" onclick="viewUser(\''+u.id+'\')">'+av+'</div>' +
+        '<div class="net-name" onclick="viewUser(\''+u.id+'\')">'+( u.full_name||'User')+'</div>' +
+        '<div class="net-role">'+(ROLE_MAP[u.role]||u.role)+'</div>' +
+        '<button class="net-follow-btn '+(isF?'following':'')+'" onclick="toggleFollow(\''+u.id+'\',this)">'+(isF?'✓ Following':'+ Follow')+'</button>' +
         '</div>';
     }).join('');
   } catch(e) {}
 }
 
 async function toggleFollow(uid, btn) {
-  const isF = btn.classList.contains('following');
+  const isF=btn.classList.contains('following');
   try {
-    if (isF) {
-      await _sb.from('follows').delete().eq('follower_id', _user.id).eq('following_id', uid);
-      btn.textContent = '+ Follow'; btn.classList.remove('following');
+    if(isF){
+      await _sb.from('follows').delete().eq('follower_id',_user.id).eq('following_id',uid);
+      btn.textContent='+ Follow'; btn.classList.remove('following');
     } else {
-      await _sb.from('follows').insert({ follower_id: _user.id, following_id: uid });
-      btn.textContent = '✓ Following'; btn.classList.add('following');
-      await _sb.from('notifications').insert({ user_id: uid, from_user_id: _user.id, type: 'follow', message: (_profile?_profile.full_name:'Someone') + ' started following you' });
+      await _sb.from('follows').insert({follower_id:_user.id,following_id:uid});
+      btn.textContent='✓ Following'; btn.classList.add('following');
+      await _sb.from('notifications').insert({user_id:uid,from_user_id:_user.id,type:'follow',message:(_profile?_profile.full_name:'Someone')+' started following you'});
       toast('✅ Following!');
     }
-  } catch(e) { toast('❌ Failed'); }
+  } catch(e){toast('❌ Failed');}
 }
 
 // ============================================================
 // SIDEBAR
 // ============================================================
 async function loadSidebar() {
-  const el = document.getElementById('side-people');
+  const el=document.getElementById('side-people');
   try {
-    const { data: users } = await _sb.from('profiles').select('*').neq('id', _user.id).limit(4);
-    if (!users || !users.length) { el.innerHTML = '<div style="font-size:13px;color:var(--muted);">No users yet.</div>'; return; }
-    const rm = {entrepreneur:'Entrepreneur',investor:'Investor',both:'Both'};
-    el.innerHTML = users.map(u => {
-      const av = u.avatar_url ? '<img src="' + u.avatar_url + '">' : (u.avatar_emoji || getIni(u.full_name));
+    const {data:users}=await _sb.from('profiles').select('*').neq('id',_user.id).limit(4);
+    if(!users||!users.length){el.innerHTML='<div style="font-size:13px;color:var(--muted);">No users yet.</div>';return;}
+    el.innerHTML=users.map(u=>{
+      const av=u.avatar_url?'<img src="'+u.avatar_url+'">':(u.avatar_emoji||getIni(u.full_name));
       return '<div class="side-person">' +
-        '<div class="side-av" style="background:' + (u.avatar_color||'#4f46e5') + ';">' + av + '</div>' +
-        '<div><div class="side-name">' + (u.full_name||'User') + '</div><div class="side-role">' + (rm[u.role]||'Member') + '</div></div>' +
+        '<div class="side-av" style="background:'+(u.avatar_color||'#4f46e5')+'" onclick="viewUser(\''+u.id+'\')">'+av+'</div>' +
+        '<div><div class="side-name" onclick="viewUser(\''+u.id+'\')">'+( u.full_name||'User')+'</div><div class="side-role">'+(ROLE_MAP[u.role]||'Member')+'</div></div>' +
         '<button class="side-connect" onclick="toast(\'✅ Request sent!\')">Connect</button>' +
         '</div>';
     }).join('');
@@ -1291,77 +1345,80 @@ async function loadSidebar() {
 // CHAT
 // ============================================================
 async function loadChatList() {
-  const el = document.getElementById('chat-list');
+  const el=document.getElementById('chat-list');
   try {
-    const { data: users } = await _sb.from('profiles').select('*').neq('id', _user.id);
-    if (!users || !users.length) { el.innerHTML = '<div class="empty" style="padding:16px;font-size:13px;">No users yet.</div>'; return; }
-    el.innerHTML = users.map(u => {
-      const av = u.avatar_url ? '<img src="' + u.avatar_url + '">' : (u.avatar_emoji || getIni(u.full_name));
-      return '<div class="chat-person" id="cp-' + u.id + '" onclick="openChat(\'' + u.id + '\')">' +
-        '<div class="chat-person-av" style="background:' + (u.avatar_color||'#4f46e5') + ';">' + av + '</div>' +
-        '<div><div class="chat-person-name">' + (u.full_name||'User') + '</div><div class="chat-person-preview">Click to chat</div></div>' +
+    const {data:users}=await _sb.from('profiles').select('*').neq('id',_user.id);
+    if(!users||!users.length){el.innerHTML='<div class="empty" style="padding:16px;font-size:13px;">No users yet.</div>';return;}
+    el.innerHTML=users.map(u=>{
+      const av=u.avatar_url?'<img src="'+u.avatar_url+'">':(u.avatar_emoji||getIni(u.full_name));
+      return '<div class="chat-person" id="cp-'+u.id+'" onclick="openChat(\''+u.id+'\')">' +
+        '<div class="chat-person-av" style="background:'+(u.avatar_color||'#4f46e5')+'">'+av+'</div>' +
+        '<div><div class="chat-person-name">'+( u.full_name||'User')+'</div><div class="chat-person-preview">Click to chat</div></div>' +
         '</div>';
     }).join('');
   } catch(e) {}
 }
 
 async function openChat(uid) {
-  _activeChat = uid;
-  document.querySelectorAll('.chat-person').forEach(el => el.classList.remove('active'));
-  const cp = document.getElementById('cp-' + uid);
-  if (cp) cp.classList.add('active');
-  // Get user info
-  const { data: u } = await _sb.from('profiles').select('*').eq('id', uid).single();
-  if (!u) return;
-  const av = u.avatar_url ? '<img src="' + u.avatar_url + '">' : (u.avatar_emoji || getIni(u.full_name));
-  const cw = document.getElementById('chat-window');
-  cw.innerHTML =
-    '<div class="chat-window-header">' +
-    '<div class="chat-person-av" style="background:' + (u.avatar_color||'#4f46e5') + ';width:38px;height:38px;">' + av + '</div>' +
-    '<div><div class="chat-window-name">' + (u.full_name||'User') + '</div><div class="chat-window-status">● Active</div></div>' +
-    '</div>' +
-    '<div class="chat-messages" id="chat-msgs"><div class="loading"><span class="spinner"></span>Loading...</div></div>' +
-    '<div class="chat-input-area">' +
-    '<input class="chat-input" id="chat-input" placeholder="Type a message..." onkeydown="if(event.key===\'Enter\')sendMsg(\'' + uid + '\')">' +
-    '<button class="chat-send-btn" onclick="sendMsg(\'' + uid + '\')">➤</button>' +
-    '</div>';
-  loadMessages(uid);
-}
-
-async function loadMessages(uid) {
-  const el = document.getElementById('chat-msgs');
-  if (!el) return;
+  _activeChat=uid;
+  document.querySelectorAll('.chat-person').forEach(el=>el.classList.remove('active'));
+  const cp=document.getElementById('cp-'+uid); if(cp) cp.classList.add('active');
   try {
-    const { data: msgs } = await _sb.from('messages').select('*')
-      .or('and(sender_id.eq.' + _user.id + ',receiver_id.eq.' + uid + '),and(sender_id.eq.' + uid + ',receiver_id.eq.' + _user.id + ')')
-      .order('created_at', { ascending: true });
-    if (!msgs || !msgs.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">💬</div>Say hello!</div>'; return; }
-    el.innerHTML = msgs.map(m => msgBubble(m, m.sender_id === _user.id)).join('');
-    el.scrollTop = el.scrollHeight;
+    const {data:u}=await _sb.from('profiles').select('*').eq('id',uid).single();
+    if(!u) return;
+    const av=u.avatar_url?'<img src="'+u.avatar_url+'">':(u.avatar_emoji||getIni(u.full_name));
+    document.getElementById('chat-window').innerHTML=
+      '<div class="chat-window-header">' +
+      '<div class="chat-person-av" style="background:'+(u.avatar_color||'#4f46e5')+';width:38px;height:38px;">'+av+'</div>' +
+      '<div><div class="chat-window-name" onclick="viewUser(\''+uid+'\')">'+( u.full_name||'User')+'</div><div class="chat-window-status">● Active on PitchBridge</div></div>' +
+      '</div>' +
+      '<div class="chat-messages" id="chat-msgs"><div class="loading"><span class="spinner"></span>Loading...</div></div>' +
+      '<div class="chat-input-area">' +
+      '<input class="chat-input" id="chat-input" placeholder="Type a message..." onkeydown="if(event.key===\'Enter\')sendMsg(\''+uid+'\')">' +
+      '<button class="chat-send-btn" onclick="sendMsg(\''+uid+'\')">➤</button>' +
+      '</div>';
+    loadMessages(uid);
   } catch(e) {}
 }
 
-function msgBubble(msg, isMe) {
-  const time = new Date(msg.created_at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-  return '<div class="msg ' + (isMe?'me':'them') + '"><div class="msg-bubble">' + msg.body + '</div><div class="msg-time">' + time + '</div></div>';
+async function loadMessages(uid) {
+  const el=document.getElementById('chat-msgs'); if(!el) return;
+  try {
+    const {data:msgs}=await _sb.from('messages').select('*')
+      .or('and(sender_id.eq.'+_user.id+',receiver_id.eq.'+uid+'),and(sender_id.eq.'+uid+',receiver_id.eq.'+_user.id+')')
+      .order('created_at',{ascending:true});
+    if(!msgs||!msgs.length){el.innerHTML='<div class="empty"><div class="empty-icon">💬</div>Say hello!</div>';return;}
+    el.innerHTML=msgs.map(m=>msgHTML(m,m.sender_id===_user.id)).join('');
+    el.scrollTop=el.scrollHeight;
+  } catch(e) {}
+}
+
+function msgHTML(msg,isMe) {
+  const time=new Date(msg.created_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  return '<div class="msg '+(isMe?'me':'them')+'"><div class="msg-bubble">'+msg.body+'</div><div class="msg-time">'+time+'</div></div>';
 }
 
 async function sendMsg(uid) {
-  const input = document.getElementById('chat-input');
-  const text = input.value.trim();
-  if (!text) return;
-  input.value = '';
+  const input=document.getElementById('chat-input');
+  const text=input.value.trim(); if(!text) return;
+  input.value='';
   try {
-    const { data, error } = await _sb.from('messages').insert({ sender_id: _user.id, receiver_id: uid, body: text }).select().single();
-    if (error) { toast('❌ Message failed'); return; }
-    const el = document.getElementById('chat-msgs');
-    if (el) {
-      const div = document.createElement('div');
-      div.innerHTML = msgBubble(data, true);
-      el.appendChild(div.firstChild);
-      el.scrollTop = el.scrollHeight;
-    }
-  } catch(e) { toast('❌ Failed'); }
+    const {data,error}=await _sb.from('messages').insert({sender_id:_user.id,receiver_id:uid,body:text}).select().single();
+    if(error){toast('❌ Message failed');return;}
+    const el=document.getElementById('chat-msgs');
+    if(el){const div=document.createElement('div');div.innerHTML=msgHTML(data,true);el.appendChild(div.firstChild);el.scrollTop=el.scrollHeight;}
+    // Send notification to recipient
+    await _sb.from('notifications').insert({user_id:uid,from_user_id:_user.id,type:'message',message:(_profile?_profile.full_name:'Someone')+' sent you a message'});
+    updateNotifBadge();
+  } catch(e){toast('❌ Failed');}
+}
+
+async function loadUnreadMsgCount() {
+  try {
+    const {count}=await _sb.from('messages').select('*',{count:'exact',head:true}).eq('receiver_id',_user.id).eq('is_read',false);
+    const badge=document.getElementById('msg-badge');
+    if(badge){badge.textContent=count||0; badge.classList.toggle('hidden',!count);}
+  } catch(e) {}
 }
 
 // ============================================================
@@ -1369,250 +1426,254 @@ async function sendMsg(uid) {
 // ============================================================
 async function loadProfilePage() {
   await loadProfile();
-  const p = _profile;
-  if (!p) return;
-  document.getElementById('profile-name').textContent = p.full_name || '';
-  document.getElementById('profile-profession').textContent = p.profession || 'Add your profession';
-  document.getElementById('profile-bio').textContent = p.bio || 'Add a summary about yourself...';
-  document.getElementById('edit-profession').value = p.profession || '';
-  document.getElementById('edit-bio-input').value = p.bio || '';
-  const rm = {entrepreneur:'💡 Entrepreneur',investor:'💼 Investor',both:'⚡ Both'};
-  document.getElementById('profile-role-tag').textContent = rm[p.role] || '';
-  // Big avatar
-  const bigAv = document.getElementById('profile-av-lg');
-  if (p.avatar_url) bigAv.innerHTML = '<img src="' + p.avatar_url + '">';
-  else if (p.avatar_emoji) { bigAv.innerHTML = '<span style="font-size:38px;">' + p.avatar_emoji + '</span>'; bigAv.style.background = p.avatar_color; }
-  else { bigAv.textContent = getIni(p.full_name); bigAv.style.background = p.avatar_color || '#4f46e5'; }
-  // Stats
+  const p=_profile; if(!p) return;
+  document.getElementById('profile-name').textContent=p.full_name||'';
+  document.getElementById('profile-profession').textContent=p.profession||'Add your profession';
+  document.getElementById('profile-bio').textContent=p.bio||'Add a summary about yourself...';
+  document.getElementById('edit-profession').value=p.profession||'';
+  document.getElementById('edit-bio-input').value=p.bio||'';
+  document.getElementById('profile-role-tag').textContent=ROLE_BADGE[p.role]||'';
+  const bigAv=document.getElementById('profile-av-lg');
+  if(p.avatar_url)bigAv.innerHTML='<img src="'+p.avatar_url+'">';
+  else if(p.avatar_emoji){bigAv.innerHTML='<span style="font-size:38px;">'+p.avatar_emoji+'</span>';bigAv.style.background=avBg(p);}
+  else{bigAv.textContent=getIni(p.full_name);bigAv.style.background=avBg(p);}
   try {
-    const [{ count: pc }, { count: flrc }, { count: flgc }] = await Promise.all([
-      _sb.from('ideas').select('*', {count:'exact',head:true}).eq('user_id', _user.id),
-      _sb.from('follows').select('*', {count:'exact',head:true}).eq('following_id', _user.id),
-      _sb.from('follows').select('*', {count:'exact',head:true}).eq('follower_id', _user.id),
+    const [{count:pc},{count:flrc},{count:flgc}]=await Promise.all([
+      _sb.from('ideas').select('*',{count:'exact',head:true}).eq('user_id',_user.id),
+      _sb.from('follows').select('*',{count:'exact',head:true}).eq('following_id',_user.id),
+      _sb.from('follows').select('*',{count:'exact',head:true}).eq('follower_id',_user.id),
     ]);
-    document.getElementById('pstat-posts').textContent = pc || 0;
-    document.getElementById('pstat-followers').textContent = flrc || 0;
-    document.getElementById('pstat-following').textContent = flgc || 0;
+    document.getElementById('pstat-posts').textContent=pc||0;
+    document.getElementById('pstat-followers').textContent=flrc||0;
+    document.getElementById('pstat-following').textContent=flgc||0;
   } catch(e) {}
-  // Avatar picker
-  const picker = document.getElementById('av-picker');
-  picker.innerHTML = AVATARS.map(av =>
-    '<div class="av-opt ' + (p.avatar_emoji === av.e ? 'active' : '') + '" style="background:' + av.c + ';" onclick="setAvatar(\'' + av.e + '\',\'' + av.c + '\')">' + av.e + '</div>'
+  document.getElementById('av-picker').innerHTML=AVATARS.map(av=>
+    '<div class="av-opt '+(p.avatar_emoji===av.e?'active':'')+'" style="background:'+av.c+'" onclick="setAvatar(\''+av.e+'\',\''+av.c+'\')">'+av.e+'</div>'
   ).join('');
-  // My posts
   try {
-    const { data: posts } = await _sb.from('ideas').select('*, profiles(full_name,role,avatar_color,avatar_url,avatar_emoji,profession)').eq('user_id', _user.id).order('created_at', {ascending:false});
-    document.getElementById('my-posts').innerHTML = (posts && posts.length) ? posts.map(ideaCard).join('') : '<div class="empty"><div class="empty-icon">📝</div>No posts yet!</div>';
+    const {data:posts}=await _sb.from('ideas').select('*, profiles(full_name,role,avatar_color,avatar_url,avatar_emoji,profession)').eq('user_id',_user.id).order('created_at',{ascending:false});
+    document.getElementById('my-posts').innerHTML=(posts&&posts.length)?posts.map(ideaCard).join(''):'<div class="empty"><div class="empty-icon">📝</div>No posts yet!</div>';
   } catch(e) {}
 }
 
 async function saveProfile() {
   try {
-    await _sb.from('profiles').update({ profession: document.getElementById('edit-profession').value.trim(), bio: document.getElementById('edit-bio-input').value.trim() }).eq('id', _user.id);
-    await loadProfile();
-    loadProfilePage();
-    toast('✅ Profile saved!');
-  } catch(e) { toast('❌ Failed'); }
+    await _sb.from('profiles').update({profession:document.getElementById('edit-profession').value.trim(),bio:document.getElementById('edit-bio-input').value.trim()}).eq('id',_user.id);
+    await loadProfile(); loadProfilePage(); toast('✅ Profile saved!');
+  } catch(e){toast('❌ Failed');}
 }
 
-async function setAvatar(emoji, color) {
+async function setAvatar(emoji,color) {
   try {
-    await _sb.from('profiles').update({ avatar_emoji: emoji, avatar_color: color, avatar_url: null }).eq('id', _user.id);
-    await loadProfile();
-    updateNavAv();
-    loadProfilePage();
-    toast('✅ Avatar updated!');
-  } catch(e) { toast('❌ Failed'); }
+    await _sb.from('profiles').update({avatar_emoji:emoji,avatar_color:color,avatar_url:null}).eq('id',_user.id);
+    await loadProfile(); updateNavAv(); loadProfilePage(); toast('✅ Avatar updated!');
+  } catch(e){toast('❌ Failed');}
 }
 
-async function uploadProfilePhoto(input) {
-  const file = input.files[0];
-  if (!file) return;
+async function uploadPhoto(input) {
+  const file=input.files[0]; if(!file) return;
   toast('⏳ Uploading photo...');
   try {
-    const ext = file.name.split('.').pop();
-    const path = 'avatars/' + _user.id + '.' + ext;
-    const { error } = await _sb.storage.from('avatars').upload(path, file, { upsert: true });
-    if (error) { toast('❌ ' + error.message); return; }
-    const { data: { publicUrl } } = _sb.storage.from('avatars').getPublicUrl(path);
-    await _sb.from('profiles').update({ avatar_url: publicUrl, avatar_emoji: null }).eq('id', _user.id);
-    await loadProfile();
-    updateNavAv();
-    loadProfilePage();
-    toast('✅ Photo updated!');
-  } catch(e) { toast('❌ Upload failed'); }
+    const ext=file.name.split('.').pop();
+    const path='avatars/'+_user.id+'.'+ext;
+    const {error}=await _sb.storage.from('avatars').upload(path,file,{upsert:true});
+    if(error){toast('❌ '+error.message);return;}
+    const {data:{publicUrl}}=_sb.storage.from('avatars').getPublicUrl(path);
+    await _sb.from('profiles').update({avatar_url:publicUrl,avatar_emoji:null}).eq('id',_user.id);
+    await loadProfile(); updateNavAv(); loadProfilePage(); toast('✅ Photo updated!');
+  } catch(e){toast('❌ Upload failed');}
 }
 
 // ============================================================
 // NOTIFICATIONS
 // ============================================================
-async function loadNotifications() {
+async function loadNotifs() {
   try {
-    const { data: notifs } = await _sb.from('notifications').select('*').eq('user_id', _user.id).order('created_at', {ascending:false}).limit(10);
-    const unread = (notifs||[]).filter(n => !n.is_read).length;
-    const badge = document.getElementById('notif-badge');
-    badge.textContent = unread;
-    badge.classList.toggle('hidden', unread === 0);
-    const listEl = document.getElementById('notif-list');
-    if (!notifs || !notifs.length) { listEl.innerHTML = '<div class="empty"><div class="empty-icon">🔔</div>No notifications</div>'; return; }
-    const icons = {follow:'👤',like:'❤️',comment:'💬',connect:'💼'};
-    listEl.innerHTML = notifs.map(n =>
-      '<div class="notif-item ' + (n.is_read?'':'unread') + '" onclick="readNotif(\'' + n.id + '\',this)">' +
-      '<div class="notif-icon" style="background:rgba(79,70,229,0.08);">' + (icons[n.type]||'🔔') + '</div>' +
-      '<div><div class="notif-text">' + n.message + '</div><div class="notif-time">' + new Date(n.created_at).toLocaleString() + '</div></div>' +
+    const {data:notifs}=await _sb.from('notifications').select('*').eq('user_id',_user.id).order('created_at',{ascending:false}).limit(15);
+    const unread=(notifs||[]).filter(n=>!n.is_read).length;
+    const badge=document.getElementById('notif-badge');
+    badge.textContent=unread; badge.classList.toggle('hidden',unread===0);
+    const listEl=document.getElementById('notif-list');
+    if(!notifs||!notifs.length){listEl.innerHTML='<div class="empty"><div class="empty-icon">🔔</div>No notifications</div>';return;}
+    const icons={follow:'👤',like:'❤️',comment:'💬',connect:'💼',message:'💬',pitch:'💡'};
+    listEl.innerHTML=notifs.map(n=>
+      '<div class="notif-item '+(n.is_read?'':'unread')+'" onclick="readNotif(\''+n.id+'\',this,'+(n.from_user_id?'\''+n.from_user_id+'\'':'null')+')">' +
+      '<div class="notif-icon" style="background:rgba(79,70,229,.08);">'+(icons[n.type]||'🔔')+'</div>' +
+      '<div><div class="notif-text">'+n.message+'</div><div class="notif-time">'+new Date(n.created_at).toLocaleString()+'</div></div>' +
       '</div>'
     ).join('');
   } catch(e) {}
 }
 
-async function readNotif(id, el) {
-  try { await _sb.from('notifications').update({is_read:true}).eq('id', id); } catch(e) {}
+async function readNotif(id, el, fromUserId) {
+  try{await _sb.from('notifications').update({is_read:true}).eq('id',id);}catch(e){}
   el.classList.remove('unread');
   updateNotifBadge();
+  closeNotifPanel();
+  if(fromUserId) viewUser(fromUserId);
 }
 
 async function clearAllNotifs() {
-  try { await _sb.from('notifications').update({is_read:true}).eq('user_id', _user.id); } catch(e) {}
-  document.querySelectorAll('.notif-item').forEach(el => el.classList.remove('unread'));
+  try{await _sb.from('notifications').update({is_read:true}).eq('user_id',_user.id);}catch(e){}
+  document.querySelectorAll('.notif-item').forEach(el=>el.classList.remove('unread'));
   updateNotifBadge();
 }
 
 function updateNotifBadge() {
-  const count = document.querySelectorAll('.notif-item.unread').length;
-  const badge = document.getElementById('notif-badge');
-  badge.textContent = count;
-  badge.classList.toggle('hidden', count === 0);
+  const count=document.querySelectorAll('.notif-item.unread').length;
+  const b=document.getElementById('notif-badge');
+  b.textContent=count; b.classList.toggle('hidden',count===0);
 }
 
-function toggleNotifPanel() {
-  _notifOpen = !_notifOpen;
-  document.getElementById('notif-panel').classList.toggle('open', _notifOpen);
+function toggleNotifPanel() { _notifOpen=!_notifOpen; document.getElementById('notif-panel').classList.toggle('open',_notifOpen); }
+function closeNotifPanel() { _notifOpen=false; const el=document.getElementById('notif-panel'); if(el) el.classList.remove('open'); }
+
+function checkNotifPerm() {
+  if(!('Notification'in window)) return;
+  if(Notification.permission==='default') document.getElementById('notif-banner').classList.add('show');
 }
 
-function closeNotifPanel() {
-  _notifOpen = false;
-  const el = document.getElementById('notif-panel');
-  if (el) el.classList.remove('open');
-}
-
-function checkNotifPermission() {
-  if (!('Notification' in window)) return;
-  if (Notification.permission === 'default') {
-    document.getElementById('notif-banner').classList.add('show');
-  }
+function sendBrowserNotif(title, body) {
+  if(Notification.permission==='granted') new Notification(title,{body,icon:'/favicon.ico'});
 }
 
 // ============================================================
 // NDA / INVEST
 // ============================================================
-function openInvest(id) {
-  _currentIdeaId = id;
-  document.getElementById('nda-check').checked = false;
-  document.getElementById('invest-modal').classList.add('open');
-}
+function openInvest(id) { _ideaId=id; document.getElementById('nda-check').checked=false; document.getElementById('invest-modal').classList.add('open'); }
 
 async function confirmInvest() {
-  if (!document.getElementById('nda-check').checked) { toast('⚠️ Please agree to the NDA first'); return; }
-  try {
-    await _sb.from('nda_requests').insert({ idea_id: _currentIdeaId, investor_id: _user.id, status: 'pending' });
+  if(!document.getElementById('nda-check').checked){toast('⚠️ Please agree to the NDA first');return;}
+  try{
+    await _sb.from('nda_requests').insert({idea_id:_ideaId,investor_id:_user.id,status:'pending'});
     document.getElementById('invest-modal').classList.remove('open');
     toast('✅ Request sent! Admin will schedule your call.');
-  } catch(e) { toast('❌ Failed'); }
+  }catch(e){toast('❌ Failed');}
 }
 
 // ============================================================
 // PITCH FORM
 // ============================================================
-function openPitchModal() {
-  _pitchStep = 0;
-  updatePitchUI();
-  document.getElementById('pitch-modal').classList.add('open');
-}
-
-function setPitchStep(step) {
-  _pitchStep = step;
-  updatePitchUI();
-}
-
+function openPitchModal() { _pitchStep=0; updatePitchUI(); document.getElementById('pitch-modal').classList.add('open'); }
+function setPitchStep(s) { _pitchStep=s; updatePitchUI(); }
 function updatePitchUI() {
-  for (let i = 0; i < 5; i++) {
-    const s = document.getElementById('ps' + i);
-    const d = document.getElementById('pd' + i);
-    if (s) s.classList.toggle('active', i === _pitchStep);
-    if (d) d.classList.toggle('done', i <= _pitchStep);
+  for(let i=0;i<5;i++){
+    const st=document.getElementById('ps'+i), dt=document.getElementById('pd'+i);
+    if(st) st.classList.toggle('active',i===_pitchStep);
+    if(dt) dt.classList.toggle('done',i<=_pitchStep);
   }
 }
 
+function getVal(id) { const el=document.getElementById(id); return el?el.value:''; }
+
 async function submitPitch() {
-  const btn = document.getElementById('pitch-submit-btn');
-  btn.disabled = true; btn.textContent = 'Submitting...';
-  const d = {
-    user_id: _user.id, user_name: _profile ? _profile.full_name : '', user_email: _user.email,
-    problem: (document.getElementById('pq1')||{}).value, target_customer: (document.getElementById('pq2')||{}).value,
-    market_size: (document.getElementById('pq3')||{}).value, differentiation: (document.getElementById('pq4')||{}).value,
-    competitors: (document.getElementById('pq5')||{}).value, has_product: (document.getElementById('pq6')||{}).value,
-    users_count: (document.getElementById('pq7')||{}).value, monthly_revenue: (document.getElementById('pq8')||{}).value,
-    growth_rate: (document.getElementById('pq9')||{}).value, loi: (document.getElementById('pq10')||{}).value,
-    funding_ask: (document.getElementById('pq11')||{}).value, funding_use: (document.getElementById('pq12')||{}).value,
-    equity_offered: (document.getElementById('pq13')||{}).value, prev_funding: (document.getElementById('pq14')||{}).value,
-    valuation: (document.getElementById('pq15')||{}).value, founders: (document.getElementById('pq16')||{}).value,
-    employees: (document.getElementById('pq17')||{}).value, advisors: (document.getElementById('pq18')||{}).value,
-    business_model: (document.getElementById('pq19')||{}).value, burn_rate: (document.getElementById('pq20')||{}).value,
-    runway: (document.getElementById('pq21')||{}).value, profitable_when: (document.getElementById('pq22')||{}).value,
-    status: 'pending'
+  if(!getVal('pq1').trim()){toast('⚠️ Please fill in the problem statement');return;}
+  if(!getVal('pq2').trim()){toast('⚠️ Please fill in your target customer');return;}
+  const btn=document.getElementById('pitch-submit-btn');
+  btn.disabled=true; btn.textContent='Submitting...';
+  const d={
+    user_id:_user.id, user_name:_profile?_profile.full_name:'', user_email:_user.email,
+    problem:getVal('pq1'), target_customer:getVal('pq2'), market_size:getVal('pq3'),
+    differentiation:getVal('pq4'), competitors:getVal('pq5'), has_product:getVal('pq6'),
+    users_count:getVal('pq7'), monthly_revenue:getVal('pq8'), growth_rate:getVal('pq9'), loi:getVal('pq10'),
+    funding_ask:getVal('pq11'), funding_use:getVal('pq12'), equity_offered:getVal('pq13'),
+    prev_funding:getVal('pq14'), valuation:getVal('pq15'), founders:getVal('pq16'),
+    employees:getVal('pq17'), advisors:getVal('pq18'), business_model:getVal('pq19'),
+    burn_rate:getVal('pq20'), runway:getVal('pq21'), profitable_when:getVal('pq22'),
+    status:'pending'
   };
   try {
     await _sb.from('pitches').insert(d);
+    // In-app notification
+    await _sb.from('notifications').insert({user_id:_user.id,from_user_id:_user.id,type:'pitch',message:'Your pitch has been submitted! We are reviewing it and will get back to you soon.'});
+    // Browser notification
+    sendBrowserNotif('Pitch Submitted! 🚀','We received your pitch and will review it within 3-5 business days.');
+    // Update notification badge
+    await loadNotifs();
+    // Send emails
     await sendPitchEmails(d);
     document.getElementById('pitch-modal').classList.remove('open');
-    toast('🚀 Pitch submitted! Check your email.');
+    toast('🚀 Pitch submitted! Check your email for confirmation.');
     loadMyPitches();
   } catch(e) { toast('❌ Submission failed. Try again.'); }
-  btn.disabled = false; btn.textContent = 'Submit Pitch 🚀';
+  btn.disabled=false; btn.textContent='Submit Pitch 🚀';
 }
 
-async function sendPitchEmails(data) {
-  // ============================================================
-  // PASTE YOUR EMAILJS KEYS BELOW
-  // Sign up free at emailjs.com
-  // ============================================================
-  const SERVICE_ID = 'service_b2gsl4o';
-  const TEMPLATE_ID = 'template_o6eeqkk';
-  const PUBLIC_KEY = 'DjGvoMavHPkHcV4XM';
-  const COMPANY_EMAIL = 'dennyfranklin2004@gmail.com';
-  // ============================================================
-  if (SERVICE_ID === 'YOUR_EMAILJS_SERVICE_ID') { console.log('EmailJS not configured.'); return; }
-  const date = new Date().toLocaleString();
+async function sendPitchEmails(d) {
+  if(EJS_SERVICE==='YOUR_EMAILJS_SERVICE_ID'){console.log('EmailJS not configured yet.');return;}
+  const date=new Date().toLocaleString();
+  // EMAIL 1 — Confirmation to entrepreneur
+  const entrepreneurParams = {
+    to_email: d.user_email,
+    to_name: d.user_name,
+    subject: 'We received your pitch! 🚀 — PitchBridge',
+    user_name: d.user_name,
+    problem: d.problem,
+    funding_ask: d.funding_ask||'Not specified',
+    submitted_date: date,
+    message: 'Hey '+d.user_name+'!\n\nThank you for submitting your pitch to PitchBridge.\n\nWe have received your startup pitch and our team is currently reviewing it carefully.\n\nHere is what happens next:\n✅ Step 1 — Our team reviews your pitch (3-5 business days)\n✅ Step 2 — We match you with the right investors\n✅ Step 3 — We schedule a call between you and the investor\n✅ Step 4 — You pitch, we facilitate, deals get closed!\n\nWe will keep you posted on every update.\n\nWe believe in your idea. Lets make it happen! 💪\n\nWarm regards,\nTeam PitchBridge'
+  };
+  // EMAIL 2 — Full details to company
+  const companyParams = {
+    to_email: COMPANY_EMAIL,
+    to_name: 'PitchBridge Team',
+    subject: '🚨 New Pitch: '+d.user_name+' — PitchBridge',
+    user_name: d.user_name,
+    problem: d.problem,
+    funding_ask: d.funding_ask||'Not specified',
+    submitted_date: date,
+    message:
+      'Hi PitchBridge Team,\n\nNew pitch submitted! Full details below:\n\n' +
+      '════════════════════\n👤 SUBMITTED BY\n════════════════════\n' +
+      'Name:  '+d.user_name+'\nEmail: '+d.user_email+'\nDate:  '+date+'\n\n' +
+      '════════════════════\n🏢 ABOUT THE BUSINESS\n════════════════════\n' +
+      '1. Problem:\n'+d.problem+'\n\n' +
+      '2. Target Customer:\n'+d.target_customer+'\n\n' +
+      '3. Market Size:\n'+(d.market_size||'Not specified')+'\n\n' +
+      '4. Differentiation:\n'+(d.differentiation||'Not specified')+'\n\n' +
+      '5. Competitors:\n'+(d.competitors||'Not specified')+'\n\n' +
+      '════════════════════\n📈 TRACTION\n════════════════════\n' +
+      '6. Has Product: '+d.has_product+'\n' +
+      '7. Users: '+(d.users_count||'Not specified')+'\n' +
+      '8. Revenue: '+(d.monthly_revenue||'Not specified')+'\n' +
+      '9. Growth: '+(d.growth_rate||'Not specified')+'\n' +
+      '10. LOI: '+(d.loi||'Not specified')+'\n\n' +
+      '════════════════════\n💰 FUNDING\n════════════════════\n' +
+      '11. Funding Ask: '+(d.funding_ask||'Not specified')+'\n' +
+      '12. Use of Funds: '+(d.funding_use||'Not specified')+'\n' +
+      '13. Equity: '+(d.equity_offered||'Not specified')+'\n' +
+      '14. Previous Funding: '+(d.prev_funding||'Not specified')+'\n' +
+      '15. Valuation: '+(d.valuation||'Not specified')+'\n\n' +
+      '════════════════════\n👥 TEAM\n════════════════════\n' +
+      '16. Founders:\n'+(d.founders||'Not specified')+'\n' +
+      '17. Employees: '+(d.employees||'Not specified')+'\n' +
+      '18. Advisors: '+(d.advisors||'Not specified')+'\n\n' +
+      '════════════════════\n📊 FINANCIALS\n════════════════════\n' +
+      '19. Business Model:\n'+(d.business_model||'Not specified')+'\n' +
+      '20. Burn Rate: '+(d.burn_rate||'Not specified')+'\n' +
+      '21. Runway: '+(d.runway||'Not specified')+'\n' +
+      '22. Profitable When: '+(d.profitable_when||'Not specified')+'\n\n' +
+      '════════════════════\nLogin to Admin Dashboard to review.\n— PitchBridge System'
+  };
   try {
-    // Email to entrepreneur
-    await emailjs.send(SERVICE_ID, TEMPLATE_ID, {
-      to_email: data.user_email, to_name: data.user_name,
-      subject: 'We received your pitch! 🚀 — PitchBridge',
-      message: 'Hey ' + data.user_name + '!\n\nThank you for submitting your pitch to PitchBridge.\n\nWe have received your startup pitch and our team is currently reviewing it carefully.\n\nHere is what happens next:\n✅ Step 1 — Our team reviews your pitch (3-5 business days)\n✅ Step 2 — We match you with the right investors\n✅ Step 3 — We schedule a call between you and the investor\n✅ Step 4 — You pitch, we facilitate, deals get closed!\n\nWe will keep you posted on every update.\n\nWe believe in your idea. Lets make it happen! 💪\n\nWarm regards,\nTeam PitchBridge'
-    }, PUBLIC_KEY);
-    // Email to company
-    await emailjs.send(SERVICE_ID, TEMPLATE_ID, {
-      to_email: COMPANY_EMAIL, to_name: 'PitchBridge Team',
-      subject: '🚨 New Pitch by ' + data.user_name + ' — PitchBridge',
-      message: 'Hi PitchBridge Team,\n\nNew pitch submitted!\n\n════════════════════\n👤 SUBMITTED BY\n════════════════════\nName:  ' + data.user_name + '\nEmail: ' + data.user_email + '\nDate:  ' + date + '\n\n════════════════════\n🏢 ABOUT THE BUSINESS\n════════════════════\n1. Problem:\n' + data.problem + '\n\n2. Target Customer:\n' + data.target_customer + '\n\n3. Market Size:\n' + data.market_size + '\n\n4. Differentiation:\n' + data.differentiation + '\n\n5. Competitors:\n' + data.competitors + '\n\n════════════════════\n📈 TRACTION\n════════════════════\n6. Has Product: ' + data.has_product + '\n7. Users: ' + data.users_count + '\n8. Revenue: ' + data.monthly_revenue + '\n9. Growth: ' + data.growth_rate + '\n10. LOI: ' + data.loi + '\n\n════════════════════\n💰 FUNDING\n════════════════════\n11. Ask: ' + data.funding_ask + '\n12. Use: ' + data.funding_use + '\n13. Equity: ' + data.equity_offered + '\n14. Prev Funding: ' + data.prev_funding + '\n15. Valuation: ' + data.valuation + '\n\n════════════════════\n👥 TEAM\n════════════════════\n16. Founders: ' + data.founders + '\n17. Employees: ' + data.employees + '\n18. Advisors: ' + data.advisors + '\n\n════════════════════\n📊 FINANCIALS\n════════════════════\n19. Model: ' + data.business_model + '\n20. Burn Rate: ' + data.burn_rate + '\n21. Runway: ' + data.runway + '\n22. Profitable: ' + data.profitable_when + '\n\n════════════════════\nLogin to Admin Dashboard to review.\n— PitchBridge System'
-    }, PUBLIC_KEY);
-  } catch(e) { console.error('Email failed:', e); }
+    await emailjs.send(EJS_SERVICE, EJS_TEMPLATE, entrepreneurParams, EJS_KEY);
+    await emailjs.send(EJS_SERVICE, EJS_TEMPLATE, companyParams, EJS_KEY);
+  } catch(e) { console.error('Email error:', e); }
 }
 
 async function loadMyPitches() {
-  const el = document.getElementById('pitch-list');
-  if (!el) return;
+  const el=document.getElementById('pitch-list'); if(!el) return;
   try {
-    const { data: pitches } = await _sb.from('pitches').select('*').eq('user_id', _user.id).order('created_at', {ascending:false});
-    if (!pitches || !pitches.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">💡</div>No pitches submitted yet. Click Submit New Pitch to get started!</div>'; return; }
-    el.innerHTML = '<div class="pitch-submissions">' + pitches.map(p =>
+    const {data:pitches}=await _sb.from('pitches').select('*').eq('user_id',_user.id).order('created_at',{ascending:false});
+    if(!pitches||!pitches.length){el.innerHTML='<div class="empty"><div class="empty-icon">💡</div>No pitches yet. Click Submit New Pitch!</div>';return;}
+    el.innerHTML='<div class="pitch-submissions">'+pitches.map(p=>
       '<div class="pitch-item">' +
       '<div class="pitch-item-icon">💡</div>' +
-      '<div><div class="pitch-item-title">' + (p.funding_ask||'Startup Pitch') + '</div><div class="pitch-item-meta">Submitted ' + new Date(p.created_at).toLocaleDateString() + ' · ' + (p.market_size||'') + '</div></div>' +
-      '<div class="pitch-status ' + (p.status||'pending') + '">' + (p.status==='reviewing'?'🔍 Reviewing':'⏳ Pending') + '</div>' +
+      '<div><div class="pitch-item-title">'+(p.funding_ask||'Startup Pitch')+'</div><div class="pitch-item-meta">Submitted '+new Date(p.created_at).toLocaleDateString()+' · '+(p.problem?p.problem.slice(0,40)+'...':'')+'</div></div>' +
+      '<div class="pitch-status '+(p.status||'pending')+'">'+(p.status==='reviewing'?'🔍 Reviewing':'⏳ Pending')+'</div>' +
       '</div>'
-    ).join('') + '</div>';
-  } catch(e) { el.innerHTML = '<div class="empty">Could not load pitches.</div>'; }
+    ).join('')+'</div>';
+  } catch(e){el.innerHTML='<div class="empty">Could not load pitches.</div>';}
 }
 
 // ============================================================
@@ -1620,226 +1681,177 @@ async function loadMyPitches() {
 // ============================================================
 async function loadAdmin() {
   try {
-    const [{ count: pc }, { count: uc }, { data: pending }, { data: connects }] = await Promise.all([
-      _sb.from('ideas').select('*', {count:'exact',head:true}),
-      _sb.from('profiles').select('*', {count:'exact',head:true}),
-      _sb.from('profiles').select('*').in('role', ['investor','both']).eq('is_verified', false),
-      _sb.from('connect_requests').select('*, from:from_user_id(full_name), to:to_user_id(full_name)').eq('status', 'pending'),
+    const [{count:pc},{count:uc},{data:pending},{data:connects}]=await Promise.all([
+      _sb.from('ideas').select('*',{count:'exact',head:true}),
+      _sb.from('profiles').select('*',{count:'exact',head:true}),
+      _sb.from('profiles').select('*').in('role',['investor','both']).eq('is_verified',false),
+      _sb.from('connect_requests').select('*, from:from_user_id(full_name), to:to_user_id(full_name)').eq('status','pending'),
     ]);
-    document.getElementById('a-posts').textContent = pc || 0;
-    document.getElementById('a-users').textContent = uc || 0;
-    document.getElementById('a-pending').textContent = (pending&&pending.length) || 0;
-    document.getElementById('a-connects').textContent = (connects&&connects.length) || 0;
-    const vEl = document.getElementById('admin-verif');
-    vEl.innerHTML = (pending&&pending.length) ? pending.map(p =>
+    document.getElementById('a-posts').textContent=pc||0;
+    document.getElementById('a-users').textContent=uc||0;
+    document.getElementById('a-pending').textContent=(pending&&pending.length)||0;
+    document.getElementById('a-connects').textContent=(connects&&connects.length)||0;
+    const vEl=document.getElementById('admin-verif');
+    vEl.innerHTML=(pending&&pending.length)?pending.map(p=>
       '<div class="admin-request">' +
-      '<div class="req-av" style="background:' + (p.avatar_color||'#4f46e5') + ';">' + getIni(p.full_name) + '</div>' +
-      '<div style="flex:1;"><div class="req-name">' + (p.full_name||'User') + '</div><div class="req-detail">' + (p.email||'') + '</div></div>' +
-      '<button class="req-approve" onclick="approveInvestor(\'' + p.id + '\',\'' + p.full_name + '\')">Approve</button>' +
+      '<div class="req-av" style="background:'+(p.avatar_color||'#4f46e5')+'">'+getIni(p.full_name)+'</div>' +
+      '<div style="flex:1;"><div class="req-name">'+( p.full_name||'User')+'</div><div class="req-detail">'+(p.email||'')+'</div></div>' +
+      '<button class="req-approve" onclick="approveInvestor(\''+p.id+'\',\''+p.full_name+'\')">Approve</button>' +
       '<button class="req-deny" onclick="toast(\'❌ Denied\')">Deny</button>' +
       '</div>'
-    ).join('') : '<div class="empty"><div class="empty-icon">✅</div>No pending verifications.</div>';
-    const cEl = document.getElementById('admin-connects');
-    cEl.innerHTML = (connects&&connects.length) ? connects.map(r =>
+    ).join(''):'<div class="empty"><div class="empty-icon">✅</div>No pending verifications.</div>';
+    const cEl=document.getElementById('admin-connects');
+    cEl.innerHTML=(connects&&connects.length)?connects.map(r=>
       '<div class="admin-request">' +
-      '<div class="req-av" style="background:var(--accent);">' + getIni(r.from&&r.from.full_name) + '</div>' +
-      '<div style="flex:1;"><div class="req-name">' + (r.from&&r.from.full_name?r.from.full_name:'?') + ' → ' + (r.to&&r.to.full_name?r.to.full_name:'?') + '</div><div class="req-detail">Ready to schedule Zoom</div></div>' +
-      '<button class="req-approve" onclick="scheduleZoom(\'' + r.id + '\')">Schedule Call</button>' +
+      '<div class="req-av" style="background:var(--accent)">'+getIni(r.from&&r.from.full_name)+'</div>' +
+      '<div style="flex:1;"><div class="req-name">'+( r.from&&r.from.full_name?r.from.full_name:'?')+' → '+(r.to&&r.to.full_name?r.to.full_name:'?')+'</div></div>' +
+      '<button class="req-approve" onclick="scheduleZoom(\''+r.id+'\')">Schedule Zoom</button>' +
       '</div>'
-    ).join('') : '<div class="empty"><div class="empty-icon">📅</div>No connect requests.</div>';
-  } catch(e) { console.error(e); }
+    ).join(''):'<div class="empty"><div class="empty-icon">📅</div>No requests.</div>';
+  } catch(e){console.error(e);}
 }
-
-async function approveInvestor(id, name) {
-  try { await _sb.from('profiles').update({is_verified:true}).eq('id',id); toast('✅ ' + name + ' verified!'); loadAdmin(); } catch(e) { toast('❌ Failed'); }
-}
-async function scheduleZoom(id) {
-  try { await _sb.from('connect_requests').update({status:'scheduled'}).eq('id',id); toast('📅 Zoom link sent!'); loadAdmin(); } catch(e) { toast('❌ Failed'); }
-}
+async function approveInvestor(id,name){try{await _sb.from('profiles').update({is_verified:true}).eq('id',id);toast('✅ '+name+' verified!');loadAdmin();}catch(e){toast('❌ Failed');}}
+async function scheduleZoom(id){try{await _sb.from('connect_requests').update({status:'scheduled'}).eq('id',id);toast('📅 Zoom link sent!');loadAdmin();}catch(e){toast('❌ Failed');}}
 
 // ============================================================
-// MEDIA PREVIEW
-// ============================================================
-function previewMedia(input, type) {
-  const file = input.files[0]; if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    const prev = document.getElementById('media-preview');
-    if (type === 'image') {
-      const img = document.createElement('img'); img.src = e.target.result; img.className = 'media-thumb'; prev.appendChild(img);
-    } else {
-      const vid = document.createElement('video'); vid.src = e.target.result; vid.className = 'media-thumb'; vid.controls = true; prev.appendChild(vid);
-    }
-    _mediaFiles.push({type, url: e.target.result});
-  };
-  reader.readAsDataURL(file);
-}
-
-// ============================================================
-// EVENT LISTENERS — All wired up here, NO onclick in HTML
+// EVENT LISTENERS
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
 
-  // ============================================================
-  // PASTE YOUR SUPABASE KEYS HERE
-  // ============================================================
-  const SUPABASE_URL = 'https://dovwpenkxxkzzyjhdnve.supabase.co';
-  const SUPABASE_ANON_KEY = 'sb_publishable_VM9-r1qNqGotIqatBGrDJw_dzofGd7m';
-  // ============================================================
-
   // Init Supabase
   try {
-    const { createClient } = supabase;
-    _sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  } catch(e) { console.error('Supabase init failed:', e); }
+    const {createClient}=supabase;
+    _sb=createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+  } catch(e) { console.error('Supabase init failed:',e); }
 
-  // Check existing session
-  if (_sb) {
-    _sb.auth.getSession().then(({ data: { session } }) => {
-      if (!session) return;
-      _user = session.user;
-      loadProfile().then(() => {
-        if (_profile) enterApp();
-        else showPersonaScreen(_user);
-      });
+  // Check session
+  if(_sb) {
+    _sb.auth.getSession().then(({data:{session}})=>{
+      if(!session) return;
+      _user=session.user;
+      loadProfile().then(()=>{ if(_profile) enterApp(); else showPersonaScreen(_user); });
     });
-    _sb.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN' && session && !_user) {
-        _user = session.user;
-        loadProfile().then(() => {
-          if (!_profile) showPersonaScreen(_user);
-          else enterApp();
-        });
+    _sb.auth.onAuthStateChange((event,session)=>{
+      if(event==='SIGNED_IN'&&session&&!_user){
+        _user=session.user;
+        loadProfile().then(()=>{ if(!_profile) showPersonaScreen(_user); else enterApp(); });
       }
     });
   }
 
-  // LANDING BUTTONS
+  // LANDING
   document.getElementById('btn-get-started').addEventListener('click', showSignup);
   document.getElementById('btn-sign-in').addEventListener('click', showLogin);
 
-  // AUTH BUTTONS
-  document.getElementById('google-signup-btn').addEventListener('click', signInWithGoogle);
-  document.getElementById('google-login-btn').addEventListener('click', signInWithGoogle);
+  // AUTH
+  document.getElementById('google-signup-btn').addEventListener('click', googleSignIn);
+  document.getElementById('google-login-btn').addEventListener('click', googleSignIn);
   document.getElementById('su-btn').addEventListener('click', doSignup);
   document.getElementById('li-btn').addEventListener('click', doLogin);
   document.getElementById('goto-login').addEventListener('click', showLogin);
   document.getElementById('goto-signup').addEventListener('click', showSignup);
-
-  // ROLE PILLS on signup
-  document.querySelectorAll('#signup-view .role-pill').forEach(pill => {
-    pill.addEventListener('click', () => {
-      document.querySelectorAll('#signup-view .role-pill').forEach(p => p.classList.remove('active'));
-      pill.classList.add('active');
-      _selectedRole = pill.dataset.role;
+  document.querySelectorAll('#su-role-pills .role-pill').forEach(pill=>{
+    pill.addEventListener('click',()=>{
+      document.querySelectorAll('#su-role-pills .role-pill').forEach(p=>p.classList.remove('active'));
+      pill.classList.add('active'); _role=pill.dataset.role;
     });
   });
 
-  // PERSONA SCREEN
-  document.querySelectorAll('#persona-screen .role-pill').forEach(pill => {
-    pill.addEventListener('click', () => {
-      document.querySelectorAll('#persona-screen .role-pill').forEach(p => p.classList.remove('active'));
+  // PERSONA
+  document.querySelectorAll('#persona-role-pills .role-pill').forEach(pill=>{
+    pill.addEventListener('click',()=>{
+      document.querySelectorAll('#persona-role-pills .role-pill').forEach(p=>p.classList.remove('active'));
       pill.classList.add('active');
     });
   });
-  document.getElementById('persona-btn').addEventListener('click', async () => {
-    const sel = document.querySelector('#persona-screen .role-pill.active');
-    if (!sel) { toast('⚠️ Please select your role!'); return; }
-    const role = sel.dataset.role;
-    const user = _pendingGoogleUser;
-    const name = user.user_metadata?.full_name || user.user_metadata?.name || user.email.split('@')[0];
-    const photo = user.user_metadata?.avatar_url || null;
-    const btn = document.getElementById('persona-btn');
-    btn.disabled = true; btn.textContent = 'Setting up...';
+  document.getElementById('persona-btn').addEventListener('click',async()=>{
+    const sel=document.querySelector('#persona-role-pills .role-pill.active');
+    if(!sel){toast('⚠️ Please select your role!');return;}
+    const role=sel.dataset.role, user=_pendingGU;
+    const name=user.user_metadata?.full_name||user.user_metadata?.name||user.email.split('@')[0];
+    const photo=user.user_metadata?.avatar_url||null;
+    const btn=document.getElementById('persona-btn');
+    btn.disabled=true; btn.textContent='Setting up...';
     try {
-      const color = COLORS[Math.floor(Math.random() * COLORS.length)];
-      await _sb.from('profiles').insert({ id: user.id, full_name: name, email: user.email, role, is_admin: false, is_verified: false, avatar_color: color, avatar_url: photo });
-      _user = user;
-      await loadProfile();
-      enterApp();
-    } catch(e) { toast('❌ Setup failed. Try again.'); btn.disabled = false; btn.textContent = 'Enter PitchBridge →'; }
+      const color=COLORS[Math.floor(Math.random()*COLORS.length)];
+      await _sb.from('profiles').insert({id:user.id,full_name:name,email:user.email,role,is_admin:false,is_verified:false,avatar_color:color,avatar_url:photo});
+      _user=user; await loadProfile(); enterApp();
+    } catch(e){toast('❌ Setup failed.');btn.disabled=false;btn.textContent='Enter PitchBridge →';}
   });
 
-  // NAV TABS
-  document.querySelectorAll('.nav-tab').forEach(tab => {
-    tab.addEventListener('click', () => goToPage(tab.dataset.page));
+  // NAV
+  document.querySelectorAll('.nav-tab').forEach(tab=>{
+    tab.addEventListener('click',()=>goToPage(tab.dataset.page));
   });
-
-  // LOGOUT
-  document.getElementById('logout-btn').addEventListener('click', confirmLogout);
-  document.getElementById('logout-confirm-btn').addEventListener('click', doLogout);
-  document.getElementById('logout-cancel-btn').addEventListener('click', () => document.getElementById('logout-modal').classList.remove('open'));
+  document.getElementById('nav-logo-btn').addEventListener('click',()=>goToPage('feed'));
+  document.getElementById('nav-av').addEventListener('click',()=>goToPage('profile'));
+  document.getElementById('logout-btn').addEventListener('click',askLogout);
+  document.getElementById('logout-confirm-btn').addEventListener('click',doLogout);
+  document.getElementById('logout-cancel-btn').addEventListener('click',()=>document.getElementById('logout-modal').classList.remove('open'));
 
   // NOTIFICATIONS
-  document.getElementById('notif-btn').addEventListener('click', toggleNotifPanel);
-  document.getElementById('notif-clear-btn').addEventListener('click', clearAllNotifs);
-  document.getElementById('notif-allow-btn').addEventListener('click', () => {
+  document.getElementById('notif-btn').addEventListener('click',toggleNotifPanel);
+  document.getElementById('notif-clear-btn').addEventListener('click',clearAllNotifs);
+  document.getElementById('notif-allow-btn').addEventListener('click',()=>{
     document.getElementById('notif-banner').classList.remove('show');
-    if ('Notification' in window) Notification.requestPermission().then(p => { if (p === 'granted') toast('🔔 Notifications enabled!'); });
+    if('Notification'in window) Notification.requestPermission().then(p=>{if(p==='granted')toast('🔔 Notifications enabled!');});
   });
-  document.getElementById('notif-deny-btn').addEventListener('click', () => document.getElementById('notif-banner').classList.remove('show'));
-
-  // CLOSE NOTIF PANEL ON OUTSIDE CLICK
-  document.addEventListener('click', e => {
-    if (_notifOpen && !e.target.closest('.notif-panel') && !e.target.closest('#notif-btn')) closeNotifPanel();
+  document.getElementById('notif-deny-btn').addEventListener('click',()=>document.getElementById('notif-banner').classList.remove('show'));
+  document.addEventListener('click',e=>{
+    if(_notifOpen&&!e.target.closest('.notif-panel')&&!e.target.closest('#notif-btn')) closeNotifPanel();
+    if(!e.target.closest('.search-wrap')) document.querySelectorAll('.search-dropdown').forEach(el=>el.classList.remove('open'));
   });
 
   // POST BOX
-  document.getElementById('post-btn').addEventListener('click', postIdea);
-  document.getElementById('photo-btn').addEventListener('click', () => document.getElementById('photo-input').click());
-  document.getElementById('video-btn').addEventListener('click', () => document.getElementById('video-input').click());
-  document.getElementById('photo-input').addEventListener('change', function() { previewMedia(this, 'image'); });
-  document.getElementById('video-input').addEventListener('change', function() { previewMedia(this, 'video'); });
-
-  // TAGS
-  document.querySelectorAll('.tag').forEach(tag => {
-    tag.addEventListener('click', () => {
-      document.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
-      tag.classList.add('active');
-      _selectedTag = tag.dataset.tag;
+  document.getElementById('post-btn').addEventListener('click',postIdea);
+  document.getElementById('photo-btn').addEventListener('click',()=>document.getElementById('photo-input').click());
+  document.getElementById('video-btn').addEventListener('click',()=>document.getElementById('video-input').click());
+  document.getElementById('photo-input').addEventListener('change',function(){previewMedia(this,'image');});
+  document.getElementById('video-input').addEventListener('change',function(){previewMedia(this,'video');});
+  document.querySelectorAll('.tag').forEach(tag=>{
+    tag.addEventListener('click',()=>{
+      document.querySelectorAll('.tag').forEach(t=>t.classList.remove('active'));
+      tag.classList.add('active'); _tag=tag.dataset.tag;
     });
   });
 
   // SEARCH
-  document.getElementById('feed-search').addEventListener('input', function() { doSearch(this.value, 'feed-search-results'); });
-  document.getElementById('net-search').addEventListener('input', function() { doSearch(this.value, 'net-search-results'); });
-  document.addEventListener('click', e => {
-    if (!e.target.closest('.search-wrap')) document.querySelectorAll('.search-dropdown').forEach(el => el.classList.remove('open'));
-  });
+  document.getElementById('feed-search').addEventListener('input',function(){doSearch(this.value,'feed-search-results');});
+  document.getElementById('net-search').addEventListener('input',function(){doSearch(this.value,'net-search-results');});
 
   // NETWORK TABS
-  document.querySelectorAll('.net-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      document.querySelectorAll('.net-tab').forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      loadNetwork(tab.dataset.tab);
+  document.querySelectorAll('.net-tab').forEach(tab=>{
+    tab.addEventListener('click',()=>{
+      document.querySelectorAll('.net-tab').forEach(t=>t.classList.remove('active'));
+      tab.classList.add('active'); loadNetwork(tab.dataset.tab);
     });
   });
 
   // PROFILE
-  document.getElementById('save-profile-btn').addEventListener('click', saveProfile);
-  document.getElementById('profile-photo-trigger').addEventListener('click', () => document.getElementById('profile-photo-input').click());
-  document.getElementById('profile-photo-input').addEventListener('change', function() { uploadProfilePhoto(this); });
-  document.getElementById('nav-av').addEventListener('click', () => goToPage('profile'));
+  document.getElementById('save-profile-btn').addEventListener('click',saveProfile);
+  document.getElementById('profile-photo-trigger').addEventListener('click',()=>document.getElementById('profile-photo-input').click());
+  document.getElementById('profile-photo-input').addEventListener('change',function(){uploadPhoto(this);});
+
+  // USER PROFILE MODAL
+  document.getElementById('pm-close-btn').addEventListener('click',()=>document.getElementById('user-profile-modal').classList.remove('open'));
+  document.getElementById('user-profile-modal').addEventListener('click',function(e){if(e.target===this) this.classList.remove('open');});
 
   // PITCH
-  document.getElementById('open-pitch-btn').addEventListener('click', openPitchModal);
-  document.getElementById('pitch-modal-close').addEventListener('click', () => document.getElementById('pitch-modal').classList.remove('open'));
-  document.getElementById('pitch-submit-btn').addEventListener('click', submitPitch);
-  document.querySelectorAll('[data-next]').forEach(btn => {
-    btn.addEventListener('click', () => setPitchStep(parseInt(btn.dataset.next)));
-  });
-  document.querySelectorAll('[data-prev]').forEach(btn => {
-    btn.addEventListener('click', () => setPitchStep(parseInt(btn.dataset.prev)));
-  });
-  document.getElementById('upload-zone').addEventListener('click', () => document.getElementById('pitch-deck-input').click());
-  document.getElementById('pitch-deck-input').addEventListener('change', function() {
-    if (this.files[0]) document.getElementById('upload-file-name').textContent = '✅ ' + this.files[0].name;
-  });
+  document.getElementById('open-pitch-btn').addEventListener('click',openPitchModal);
+  document.getElementById('pitch-modal-close').addEventListener('click',()=>document.getElementById('pitch-modal').classList.remove('open'));
+  document.getElementById('pitch-submit-btn').addEventListener('click',submitPitch);
+  document.querySelectorAll('[data-next]').forEach(btn=>btn.addEventListener('click',()=>setPitchStep(parseInt(btn.dataset.next))));
+  document.querySelectorAll('[data-prev]').forEach(btn=>btn.addEventListener('click',()=>setPitchStep(parseInt(btn.dataset.prev))));
+  document.getElementById('upload-zone').addEventListener('click',()=>document.getElementById('pitch-deck-input').click());
+  document.getElementById('pitch-deck-input').addEventListener('change',function(){if(this.files[0])document.getElementById('upload-file-name').textContent='✅ '+this.files[0].name;});
 
-  // INVEST MODAL
-  document.getElementById('invest-modal-close').addEventListener('click', () => document.getElementById('invest-modal').classList.remove('open'));
-  document.getElementById('invest-confirm-btn').addEventListener('click', confirmInvest);
+  // NDA INVEST MODAL
+  document.getElementById('invest-modal-close').addEventListener('click',()=>document.getElementById('invest-modal').classList.remove('open'));
+  document.getElementById('invest-confirm-btn').addEventListener('click',confirmInvest);
+
+  // LOGOUT MODAL OUTSIDE CLICK
+  document.getElementById('logout-modal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
+  document.getElementById('invest-modal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
 
 });
 </script>

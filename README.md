@@ -1,13 +1,13 @@
-# PitchBridge — Fresh Build
+# PitchBridge — Setup
 
-## Fix these 2 things in index.html:
+## Fix in index.html (search for these):
 
-### 1. Supabase Keys
-Search: YOUR_SUPABASE_URL_HERE
-Replace with your real URL and anon key
+1. YOUR_SUPABASE_URL_HERE → your Supabase URL
+2. YOUR_SUPABASE_ANON_KEY_HERE → your Supabase anon key
+3. YOUR_EMAILJS_SERVICE_ID → your EmailJS service ID
+4. YOUR_EMAILJS_TEMPLATE_ID → your EmailJS template ID
+5. YOUR_EMAILJS_PUBLIC_KEY → your EmailJS public key
+6. YOUR_COMPANY_EMAIL_HERE → your company email
 
-### 2. EmailJS Keys
-Search: YOUR_EMAILJS_SERVICE_ID  
-Replace with your real keys and company email
-
-## Then upload to Netlify!
+## Then run database.sql in Supabase SQL Editor
+## Then upload to Netlify — done!
