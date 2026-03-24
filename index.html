@@ -521,6 +521,16 @@ input,textarea,select,button{font-family:'Cabinet Grotesk',sans-serif;}
           <input class="search-input" id="feed-search" placeholder="Search people, ideas...">
           <div class="search-dropdown" id="feed-search-results"></div>
         </div>
+        <!-- ROLE SELECTION BANNER for Google users who skipped persona -->
+        <div id="role-banner" style="display:none;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:var(--r);padding:20px 24px;margin-bottom:20px;color:#fff;">
+          <div style="font-family:'Clash Display',sans-serif;font-size:18px;font-weight:700;margin-bottom:6px;">👋 One quick thing!</div>
+          <div style="font-size:14px;opacity:.9;margin-bottom:16px;">Please select your role to continue using PitchBridge.</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <button onclick="setRoleFromBanner('entrepreneur')" style="padding:10px 20px;border-radius:10px;background:#fff;color:var(--accent);border:none;font-weight:700;font-size:14px;cursor:pointer;">💡 Entrepreneur</button>
+            <button onclick="setRoleFromBanner('investor')" style="padding:10px 20px;border-radius:10px;background:rgba(255,255,255,.2);color:#fff;border:2px solid rgba(255,255,255,.4);font-weight:700;font-size:14px;cursor:pointer;">💼 Investor</button>
+            <button onclick="setRoleFromBanner('both')" style="padding:10px 20px;border-radius:10px;background:rgba(255,255,255,.2);color:#fff;border:2px solid rgba(255,255,255,.4);font-weight:700;font-size:14px;cursor:pointer;">⚡ Both</button>
+          </div>
+        </div>
         <div class="post-box" id="post-box">
           <div class="post-row">
             <div class="post-av" id="post-av">D</div>
@@ -574,6 +584,12 @@ input,textarea,select,button{font-family:'Cabinet Grotesk',sans-serif;}
 
       <!-- CHAT -->
       <div class="page" id="page-chat">
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input class="search-input page-search" placeholder="Search people...">
+          <div class="search-dropdown page-search-results"></div>
+        </div>
+
         <div class="chat-layout">
           <div class="chat-sidebar">
             <div class="chat-sidebar-header">💬 Messages</div>
@@ -587,6 +603,12 @@ input,textarea,select,button{font-family:'Cabinet Grotesk',sans-serif;}
 
       <!-- PITCH -->
       <div class="page" id="page-pitch">
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input class="search-input page-search" placeholder="Search people...">
+          <div class="search-dropdown page-search-results"></div>
+        </div>
+
         <div class="pitch-hero">
           <div class="pitch-hero-title">💡 Pitch Your Idea</div>
           <div class="pitch-hero-sub">Submit your startup pitch to PitchBridge. We review every submission and connect you with the right investors.</div>
@@ -598,6 +620,12 @@ input,textarea,select,button{font-family:'Cabinet Grotesk',sans-serif;}
 
       <!-- PROFILE -->
       <div class="page" id="page-profile">
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input class="search-input page-search" placeholder="Search people...">
+          <div class="search-dropdown page-search-results"></div>
+        </div>
+
         <div class="profile-cover"></div>
         <div class="profile-card">
           <div class="profile-av-wrap">
@@ -622,6 +650,7 @@ input,textarea,select,button{font-family:'Cabinet Grotesk',sans-serif;}
           <div class="field"><label>Profession</label><input type="text" id="edit-profession" placeholder="e.g. Founder & CEO"></div>
           <div class="field"><label>About Me</label><textarea id="edit-bio-input" placeholder="Tell people about yourself..." style="height:80px;resize:none;width:100%;border:2px solid var(--border);border-radius:10px;padding:12px 15px;background:var(--bg);font-size:14px;outline:none;"></textarea></div>
           <button class="btn btn-primary btn-sm" id="save-profile-btn">Save Changes</button>
+          <button class="btn btn-outline btn-sm" id="remove-photo-btn" style="margin-left:8px;color:var(--red);border-color:var(--red);">🗑 Remove Photo</button>
         </div>
         <div class="edit-card">
           <div class="edit-card-title">🎭 Choose Avatar</div>
@@ -634,6 +663,12 @@ input,textarea,select,button{font-family:'Cabinet Grotesk',sans-serif;}
 
       <!-- ADMIN -->
       <div class="page" id="page-admin">
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input class="search-input page-search" placeholder="Search people...">
+          <div class="search-dropdown page-search-results"></div>
+        </div>
+
         <div class="page-title">🛡 Admin Dashboard</div>
         <div class="admin-stats">
           <div class="admin-stat"><div class="admin-stat-n" id="a-posts">—</div><div class="admin-stat-l">Total Posts</div></div>
@@ -788,6 +823,13 @@ input,textarea,select,button{font-family:'Cabinet Grotesk',sans-serif;}
   </div>
 </div>
 
+
+        <!-- CONNECT REQUESTS PANEL -->
+        <div id="connect-requests-panel" style="display:none;position:fixed;top:calc(var(--nav-h) + 8px);right:360px;width:300px;background:var(--white);border:1px solid var(--border);border-radius:var(--r);box-shadow:0 16px 48px rgba(0,0,0,.12);z-index:500;overflow:hidden;">
+          <div style="padding:14px 16px;border-bottom:1px solid var(--border);font-family:'Clash Display',sans-serif;font-size:15px;font-weight:600;">Connection Requests</div>
+          <div id="connect-requests-list"><div class="empty" style="padding:20px;">No pending requests</div></div>
+        </div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -796,17 +838,17 @@ input,textarea,select,button{font-family:'Cabinet Grotesk',sans-serif;}
 // ============================================================
 // SUPABASE CONFIG — Replace with your real keys!
 // ============================================================
-const SUPABASE_URL = 'https://dovwpenkxxkzzyjhdnve.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_VM9-r1qNqGotIqatBGrDJw_dzofGd7m';
+const SUPABASE_URL = 'YOUR_SUPABASE_URL_HERE';
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY_HERE';
 // ============================================================
 
 // ============================================================
 // EMAILJS CONFIG — Replace with your real keys!
 // ============================================================
-const EJS_SERVICE = 'service_b2gsl4o';
-const EJS_TEMPLATE = 'template_856ro3q';
-const EJS_KEY = 'DjGvoMavHPkHcV4XM';
-const COMPANY_EMAIL = 'dennyfranklin2004@gmail.com';
+const EJS_SERVICE = 'YOUR_EMAILJS_SERVICE_ID';
+const EJS_TEMPLATE = 'YOUR_EMAILJS_TEMPLATE_ID';
+const EJS_KEY = 'YOUR_EMAILJS_PUBLIC_KEY';
+const COMPANY_EMAIL = 'YOUR_COMPANY_EMAIL_HERE';
 // ============================================================
 
 // STATE
@@ -1000,6 +1042,8 @@ function enterApp() {
   loadFeed(); loadSidebar(); loadNotifs(); loadUnreadMsgCount();
   restorePage();
   setTimeout(checkNotifPerm, 2500);
+  setTimeout(checkRoleBanner, 500);
+  setTimeout(initPageSearches, 300);
   toast('👋 Welcome, '+(_profile?_profile.full_name.split(' ')[0]:'there')+'!');
 }
 
@@ -1095,15 +1139,17 @@ async function postIdea() {
       if (mf.type === 'image') imageUrls.push(mf.url);
       if (mf.type === 'video') videoUrl = mf.url;
     }
-    await _sb.from('ideas').insert({
+    const insertData = {
       user_id:_user.id,
       title:document.getElementById('post-title').value.trim(),
       body,
       funding_ask:document.getElementById('post-ask').value.trim()||null,
-      category:_tag||'Tech', likes:0,
-      images:imageUrls.length?imageUrls:null,
-      video_url:videoUrl
-    });
+      category:_tag||'Tech', likes:0
+    };
+    // Add media if columns exist
+    if(imageUrls.length) { try { insertData.images = imageUrls; } catch(e){} }
+    if(videoUrl) { try { insertData.video_url = videoUrl; } catch(e){} }
+    await _sb.from('ideas').insert(insertData);
     document.getElementById('post-text').value='';
     document.getElementById('post-title').value='';
     document.getElementById('post-ask').value='';
@@ -1228,7 +1274,8 @@ async function viewUser(uid) {
       followBtn.style.display='block';
       followBtn.textContent=myF?'✓ Following':'+ Follow';
       followBtn.className='btn '+(myF?'btn-outline':'btn-primary')+' pm-follow-btn';
-      followBtn.onclick=()=>pmToggleFollow(uid,myF?true:false,followBtn);
+      followBtn.textContent = myF ? '✓ Connected' : '+ Connect';
+    followBtn.onclick=()=>{ if(!myF) { sendConnectRequest(uid, u.full_name); document.getElementById('user-profile-modal').classList.remove('open'); } };
     }
   } catch(e) {toast('❌ Could not load profile');}
 }
@@ -1363,6 +1410,7 @@ async function openChat(uid) {
   _activeChat=uid;
   document.querySelectorAll('.chat-person').forEach(el=>el.classList.remove('active'));
   const cp=document.getElementById('cp-'+uid); if(cp) cp.classList.add('active');
+  clearMessageNotifs();
   try {
     const {data:u}=await _sb.from('profiles').select('*').eq('id',uid).single();
     if(!u) return;
@@ -1408,7 +1456,10 @@ async function sendMsg(uid) {
     const el=document.getElementById('chat-msgs');
     if(el){const div=document.createElement('div');div.innerHTML=msgHTML(data,true);el.appendChild(div.firstChild);el.scrollTop=el.scrollHeight;}
     // Send notification to recipient
-    await _sb.from('notifications').insert({user_id:uid,from_user_id:_user.id,type:'message',message:(_profile?_profile.full_name:'Someone')+' sent you a message'});
+    await _sb.from('notifications').insert({
+      user_id:uid, from_user_id:_user.id, type:'message',
+      message:(_profile?_profile.full_name:'Someone')+' sent you a message: '+text.slice(0,50)+(text.length>50?'...':'')
+    });
     updateNotifBadge();
   } catch(e){toast('❌ Failed');}
 }
@@ -1505,12 +1556,8 @@ async function loadNotifs() {
   } catch(e) {}
 }
 
-async function readNotif(id, el, fromUserId) {
-  try{await _sb.from('notifications').update({is_read:true}).eq('id',id);}catch(e){}
-  el.classList.remove('unread');
-  updateNotifBadge();
-  closeNotifPanel();
-  if(fromUserId) viewUser(fromUserId);
+async function readNotif(id, el, fromUserId, type, meta) {
+  await handleNotifClick(id, el, type, fromUserId, meta);
 }
 
 async function clearAllNotifs() {
@@ -1852,8 +1899,197 @@ document.addEventListener('DOMContentLoaded', () => {
   // LOGOUT MODAL OUTSIDE CLICK
   document.getElementById('logout-modal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
   document.getElementById('invest-modal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
+  // REMOVE PHOTO
+  document.getElementById('remove-photo-btn').addEventListener('click', removeProfilePhoto);
+  // CLOSE CONNECT PANEL ON OUTSIDE CLICK
+  document.addEventListener('click', e => {
+    const cp = document.getElementById('connect-requests-panel');
+    if(cp && cp.style.display==='block' && !e.target.closest('#connect-requests-panel')) {
+      cp.style.display='none';
+    }
+  });
 
 });
+
+// ============================================================
+// ROLE BANNER — For Google users who haven't set role
+// ============================================================
+async function setRoleFromBanner(role) {
+  try {
+    await _sb.from('profiles').update({role}).eq('id',_user.id);
+    await loadProfile();
+    document.getElementById('role-banner').style.display='none';
+    if(role==='investor'){const pb=document.getElementById('post-box');if(pb)pb.style.display='none';}
+    toast('✅ Role set! Welcome to PitchBridge!');
+    loadFeed();
+  } catch(e){toast('❌ Failed to set role');}
+}
+
+function checkRoleBanner() {
+  if(!_profile||!_profile.role) {
+    document.getElementById('role-banner').style.display='block';
+  }
+}
+
+// ============================================================
+// SEARCH ON ALL PAGES
+// ============================================================
+function initPageSearches() {
+  document.querySelectorAll('.page-search').forEach((input, idx) => {
+    const resultsEl = input.nextElementSibling;
+    input.addEventListener('input', async function() {
+      const query = this.value.trim();
+      if(!query||query.length<2){resultsEl.classList.remove('open');return;}
+      try {
+        const {data:users}=await _sb.from('profiles').select('*').ilike('full_name','%'+query+'%').limit(8);
+        resultsEl.classList.add('open');
+        if(!users||!users.length){resultsEl.innerHTML='<div class="search-empty">No results for "'+query+'"</div>';return;}
+        resultsEl.innerHTML=users.map(u=>{
+          const av=u.avatar_url?'<img src="'+u.avatar_url+'">':(u.avatar_emoji||getIni(u.full_name));
+          return '<div class="search-item" onclick="viewUser(''+u.id+'')">' +
+            '<div class="search-av" style="background:'+(u.avatar_color||'#4f46e5')+';">'+av+'</div>' +
+            '<div><div class="search-name">'+(u.full_name||'User')+'</div><div class="search-role">'+(ROLE_MAP[u.role]||'Member')+'</div></div>' +
+            '</div>';
+        }).join('');
+      } catch(e) {}
+    });
+  });
+}
+
+// ============================================================
+// CONNECT REQUESTS — Accept/Decline
+// ============================================================
+async function sendConnectRequest(toUserId, toUserName) {
+  try {
+    // Check if already sent
+    const {data:existing}=await _sb.from('connect_requests')
+      .select('id').eq('from_user_id',_user.id).eq('to_user_id',toUserId).maybeSingle();
+    if(existing){toast('⏳ Request already sent!');return;}
+    
+    await _sb.from('connect_requests').insert({
+      from_user_id:_user.id, to_user_id:toUserId, status:'pending'
+    });
+    await _sb.from('notifications').insert({
+      user_id:toUserId, from_user_id:_user.id,
+      type:'connect_request',
+      message:(_profile?_profile.full_name:'Someone')+' wants to connect with you',
+      meta: JSON.stringify({from_user_id:_user.id, request_type:'connect'})
+    });
+    toast('✅ Connection request sent to '+toUserName+'!');
+    loadNotifs();
+  } catch(e){toast('❌ Failed to send request');}
+}
+
+async function loadConnectRequests() {
+  try {
+    const {data:requests}=await _sb.from('connect_requests')
+      .select('*, from:from_user_id(id,full_name,avatar_color,avatar_url,avatar_emoji)')
+      .eq('to_user_id',_user.id).eq('status','pending');
+    const listEl=document.getElementById('connect-requests-list');
+    if(!requests||!requests.length){
+      listEl.innerHTML='<div class="empty" style="padding:20px;font-size:13px;">No pending requests</div>';
+      return;
+    }
+    listEl.innerHTML=requests.map(r=>{
+      const u=r.from||{};
+      const av=u.avatar_url?'<img src="'+u.avatar_url+'">':(u.avatar_emoji||getIni(u.full_name));
+      return '<div style="display:flex;gap:10px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--border);">' +
+        '<div class="search-av" style="background:'+(u.avatar_color||'#4f46e5')+';width:36px;height:36px;border-radius:50%;">'+av+'</div>' +
+        '<div style="flex:1;"><div style="font-size:13px;font-weight:600;">'+(u.full_name||'User')+'</div><div style="font-size:11px;color:var(--muted);">wants to connect</div></div>' +
+        '<button onclick="acceptConnect(''+r.id+'',''+u.id+'')" style="padding:5px 10px;border-radius:8px;background:var(--green);color:#fff;border:none;font-size:11px;font-weight:700;cursor:pointer;margin-right:4px;">Accept</button>' +
+        '<button onclick="declineConnect(''+r.id+'')" style="padding:5px 10px;border-radius:8px;background:#fff;color:var(--red);border:1px solid var(--red);font-size:11px;font-weight:700;cursor:pointer;">Decline</button>' +
+        '</div>';
+    }).join('');
+  } catch(e){}
+}
+
+async function acceptConnect(requestId, fromUserId) {
+  try {
+    await _sb.from('connect_requests').update({status:'accepted'}).eq('id',requestId);
+    await _sb.from('follows').insert({follower_id:_user.id,following_id:fromUserId});
+    await _sb.from('follows').insert({follower_id:fromUserId,following_id:_user.id});
+    await _sb.from('notifications').insert({
+      user_id:fromUserId, from_user_id:_user.id,
+      type:'connect_accepted',
+      message:(_profile?_profile.full_name:'Someone')+' accepted your connection request! You can now chat.',
+      meta: null
+    });
+    toast('✅ Connection accepted!');
+    loadConnectRequests(); loadNotifs();
+  } catch(e){toast('❌ Failed');}
+}
+
+async function declineConnect(requestId) {
+  try {
+    await _sb.from('connect_requests').update({status:'declined'}).eq('id',requestId);
+    toast('Connection declined.');
+    loadConnectRequests();
+  } catch(e){toast('❌ Failed');}
+}
+
+// ============================================================
+// FIX NOTIFICATION CLICK — goes to right content
+// ============================================================
+async function handleNotifClick(id, el, type, fromUserId, meta) {
+  // Mark as read
+  try{await _sb.from('notifications').update({is_read:true}).eq('id',id);}catch(e){}
+  el.classList.remove('unread');
+  updateNotifBadge();
+  closeNotifPanel();
+  
+  // Navigate to right place based on type
+  if(type==='message') {
+    // Go to chat and open conversation with sender
+    goToPage('chat');
+    const tab=document.querySelector('.nav-tab[data-page="chat"]');
+    if(tab) tab.classList.add('active');
+    if(fromUserId) {
+      await loadChatList();
+      openChat(fromUserId);
+    }
+  } else if(type==='connect_request') {
+    // Show connection requests
+    loadConnectRequests();
+    document.getElementById('connect-requests-panel').style.display='block';
+  } else if(type==='connect_accepted') {
+    // Go to chat with that person
+    goToPage('chat');
+    if(fromUserId) { await loadChatList(); openChat(fromUserId); }
+  } else if(type==='pitch') {
+    // Go to pitch page
+    goToPage('pitch');
+  } else if(fromUserId) {
+    // Default: view user profile
+    viewUser(fromUserId);
+  }
+}
+
+// ============================================================
+// REMOVE PROFILE PHOTO
+// ============================================================
+async function removeProfilePhoto() {
+  if(!confirm('Remove your profile photo?')) return;
+  try {
+    await _sb.from('profiles').update({avatar_url:null}).eq('id',_user.id);
+    await loadProfile(); updateNavAv(); loadProfilePage();
+    toast('✅ Photo removed');
+  } catch(e){toast('❌ Failed');}
+}
+
+// ============================================================
+// CLEAR NOTIFICATIONS WHEN OPENING CHAT
+// ============================================================
+async function clearMessageNotifs() {
+  try {
+    await _sb.from('notifications').update({is_read:true})
+      .eq('user_id',_user.id).eq('type','message');
+    // Reset msg badge
+    const badge=document.getElementById('msg-badge');
+    if(badge){badge.textContent='0';badge.classList.add('hidden');}
+    updateNotifBadge();
+  } catch(e){}
+}
+
 </script>
 </body>
 </html>

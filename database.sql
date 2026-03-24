@@ -176,9 +176,12 @@ create policy "Users read own pitches" on pitches for select using (auth.uid()=u
 create policy "Auth users submit pitches" on pitches for insert with check (auth.uid()=user_id);
 create policy "Admin update pitches" on pitches for update using (true);
 
--- Add images and video columns to ideas table
+-- Add images and video columns to ideas table (run if not already added)
 alter table ideas add column if not exists images text[];
 alter table ideas add column if not exists video_url text;
+
+-- Add meta column to notifications for routing
+alter table notifications add column if not exists meta text;
 
 -- Add pitches table
 create table if not exists pitches (
@@ -198,6 +201,13 @@ create table if not exists pitches (
 alter table pitches enable row level security;
 create policy "Users read own pitches" on pitches for select using (auth.uid()=user_id);
 create policy "Auth users submit pitches" on pitches for insert with check (auth.uid()=user_id);
+create policy "Admin update pitches" on pitches for update using (true);
 
 -- Add is_read to messages
 alter table messages add column if not exists is_read boolean default false;
+
+-- Update connect_requests to allow anyone to insert
+drop policy if exists "Auth users insert requests" on connect_requests;
+create policy "Auth users insert requests" on connect_requests for insert with check (auth.uid()=from_user_id);
+create policy "Users read own connect requests" on connect_requests for select using (auth.uid()=from_user_id or auth.uid()=to_user_id);
+create policy "Users update own connect requests" on connect_requests for update using (auth.uid()=to_user_id or auth.uid()=from_user_id);
