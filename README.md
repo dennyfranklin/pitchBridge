@@ -1,12 +1,16 @@
-# PitchBridge V3 — Setup
+# PitchBridge — Final Setup
 
-Fix these 6 things in index.html:
-1. YOUR_SUPABASE_URL_HERE
-2. YOUR_SUPABASE_ANON_KEY_HERE
-3. YOUR_EMAILJS_SERVICE_ID
-4. YOUR_EMAILJS_TEMPLATE_ID
-5. YOUR_EMAILJS_PUBLIC_KEY
-6. YOUR_COMPANY_EMAIL_HERE
+## Step 1 — Add your keys to index.html (search for these):
+- YOUR_SUPABASE_URL_HERE
+- YOUR_SUPABASE_ANON_KEY_HERE
+- YOUR_EMAILJS_SERVICE_ID
+- YOUR_EMAILJS_TEMPLATE_ID
+- YOUR_EMAILJS_PUBLIC_KEY
+- YOUR_COMPANY_EMAIL_HERE
 
-Run database.sql in Supabase SQL Editor
-Upload to Netlify — done!
+## Step 2 — Run database.sql in Supabase SQL Editor
+
+## Step 3 — Make yourself admin
+Sign up → Supabase → Table Editor → profiles → set is_admin = true
+
+## Step 4 — Upload to Netlify
