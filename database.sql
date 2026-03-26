@@ -144,3 +144,15 @@ create policy "update avatars" on storage.objects for update using (bucket_id='a
 -- REALTIME
 alter publication supabase_realtime add table messages;
 alter publication supabase_realtime add table notifications;
+
+-- ============================================================
+-- RUN THIS IF YOU ALREADY HAVE THE TABLES (adds media columns)
+-- ============================================================
+alter table ideas add column if not exists images text[];
+alter table ideas add column if not exists video_url text;
+
+-- ============================================================
+-- ALSO UPDATE the ideas RLS policy to allow any update (for likes)
+-- ============================================================
+drop policy if exists "update likes" on ideas;
+create policy "update likes" on ideas for update using (true);
