@@ -156,3 +156,13 @@ alter table ideas add column if not exists video_url text;
 -- ============================================================
 drop policy if exists "update likes" on ideas;
 create policy "update likes" on ideas for update using (true);
+
+-- Add reply_to column to messages
+alter table messages add column if not exists reply_to text;
+
+-- Add is_read column to messages if not exists
+alter table messages add column if not exists is_read boolean default false;
+
+-- Update messages RLS to allow marking as read
+drop policy if exists "mark messages read" on messages;
+create policy "mark messages read" on messages for update using (auth.uid()=receiver_id or auth.uid()=sender_id);

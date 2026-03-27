@@ -238,7 +238,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .chat-left{width:250px;border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;}
 .chat-left-hdr{padding:15px;border-bottom:1px solid var(--border);font-family:'Syne',sans-serif;font-size:15px;font-weight:700;}
 .chat-list{flex:1;overflow-y:auto;}
-.chat-person{display:flex;gap:9px;align-items:center;padding:12px 13px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s;}
+.chat-person{display:flex;gap:9px;align-items:center;padding:12px 13px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s;position:relative;}
+.chat-unread-badge{min-width:18px;height:18px;background:var(--red);color:#fff;border-radius:50%;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-left:auto;flex-shrink:0;padding:0 4px;}
+.chat-unread-badge.hide{display:none;}
 .chat-person:hover,.chat-person.on{background:var(--accent-lt);}
 .chat-person-av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff;flex-shrink:0;overflow:hidden;}
 .chat-person-av img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
@@ -274,6 +276,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .msg-reactions{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px;}
 .msg-reaction{font-size:12px;background:var(--bg);border:1px solid var(--border);border-radius:100px;padding:2px 8px;cursor:pointer;transition:all .15s;}
 .msg-reaction:hover{background:var(--accent-lt);border-color:var(--accent);}
+.msg-reaction-opt{font-size:14px;cursor:pointer;padding:2px 4px;border-radius:6px;transition:transform .15s;opacity:0.5;}
+.msg-reaction-opt:hover{transform:scale(1.3);opacity:1;}
+.msg-reply-preview{font-size:11px;color:var(--sub);background:rgba(0,0,0,.06);border-radius:6px;padding:4px 10px;margin-bottom:4px;border-left:2px solid var(--accent);}
+.msg.me .msg-reply-preview{text-align:right;}
+
 
 
 /* ── PITCH ── */
@@ -823,13 +830,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 // ============================================================
 // ⚠️  REPLACE THESE WITH YOUR REAL KEYS
 // ============================================================
-const SB_URL  = 'https://dovwpenkxxkzzyjhdnve.supabase.co';
-const SB_KEY  = 'sb_publishable_VM9-r1qNqGotIqatBGrDJw_dzofGd7m';
-const EJS_SVC = 'service_b2gsl4o';
-const EJS_TPL_USER = 'template_856ro3q';    // Template for entrepreneur confirmation email
-const EJS_TPL_COMPANY = 'template_o6eeqkk'; // Template for company email with all answers
-const EJS_KEY = 'DjGvoMavHPkHcV4XM';
-const CO_EMAIL= 'dennyfranklin2004@gmail.com';
+const SB_URL  = 'YOUR_SUPABASE_URL_HERE';
+const SB_KEY  = 'YOUR_SUPABASE_ANON_KEY_HERE';
+const EJS_SVC = 'YOUR_EMAILJS_SERVICE_ID';
+const EJS_TPL_USER = 'YOUR_EMAILJS_USER_TEMPLATE_ID';    // Template for entrepreneur confirmation email
+const EJS_TPL_COMPANY = 'YOUR_EMAILJS_COMPANY_TEMPLATE_ID'; // Template for company email with all answers
+const EJS_KEY = 'YOUR_EMAILJS_PUBLIC_KEY';
+const CO_EMAIL= 'YOUR_COMPANY_EMAIL_HERE';
 // ============================================================
 
 // ── STATE ──
@@ -1313,13 +1320,42 @@ async function viewUser(uid){
 async function loadChatList(){
   const el=$('chat-list');
   try{
-    const{data:users}=await sb.from('profiles').select('*').neq('id',CU.id).order('full_name',{ascending:true});
+    const{data:users}=await sb.from('profiles').select('*').neq('id',CU.id);
     if(!users||!users.length){el.innerHTML='<div class="empty-state" style="padding:16px;font-size:13px;">No users yet.</div>';return;}
+
+    // Get unread message counts per sender
+    const{data:unreadMsgs}=await sb.from('messages').select('sender_id').eq('receiver_id',CU.id).eq('is_read',false);
+    const unreadMap={};
+    (unreadMsgs||[]).forEach(m=>{unreadMap[m.sender_id]=(unreadMap[m.sender_id]||0)+1;});
+
+    // Get last message time per user to sort by recency
+    const{data:lastMsgs}=await sb.from('messages').select('sender_id,receiver_id,created_at,body')
+      .or(`sender_id.eq.${CU.id},receiver_id.eq.${CU.id}`)
+      .order('created_at',{ascending:false});
+
+    // Build last message map
+    const lastMsgMap={};
+    (lastMsgs||[]).forEach(m=>{
+      const otherId=m.sender_id===CU.id?m.receiver_id:m.sender_id;
+      if(!lastMsgMap[otherId]) lastMsgMap[otherId]={time:m.created_at,body:m.body};
+    });
+
+    // Sort users: those with recent messages first
+    users.sort((a,b)=>{
+      const ta=lastMsgMap[a.id]?new Date(lastMsgMap[a.id].time).getTime():0;
+      const tb=lastMsgMap[b.id]?new Date(lastMsgMap[b.id].time).getTime():0;
+      return tb-ta;
+    });
+
     el.innerHTML=users.map(u=>{
       const av=u.avatar_url?`<img src="${u.avatar_url}">`:(u.avatar_emoji||ini(u.full_name));
+      const unread=unreadMap[u.id]||0;
+      const lastMsg=lastMsgMap[u.id];
+      const preview=lastMsg?lastMsg.body.slice(0,28)+(lastMsg.body.length>28?'...':''):'Click to chat';
       return `<div class="chat-person" id="cp-${u.id}" onclick="openChat('${u.id}')">
         <div class="chat-person-av" style="background:${avBg(u)};">${av}</div>
-        <div><div class="chat-person-name">${u.full_name||'User'}</div><div class="chat-person-prev">Click to chat</div></div>
+        <div style="flex:1;min-width:0;"><div class="chat-person-name">${u.full_name||'User'}</div><div class="chat-person-prev">${preview}</div></div>
+        <div class="chat-unread-badge${unread?'':' hide'}" id="ub-${u.id}">${unread||''}</div>
       </div>`;
     }).join('');
   }catch(e){}
@@ -1344,9 +1380,13 @@ async function openChat(uid){
       <button class="chat-send" onclick="sendMsg('${uid}')">➤</button>
     </div>`;
     loadMsgs(uid);
-    // Mark message notifs as read
+    // Mark messages as read and clear unread badge
+    await sb.from('messages').update({is_read:true}).eq('receiver_id',CU.id).eq('sender_id',uid);
     await sb.from('notifications').update({is_read:true}).eq('user_id',CU.id).eq('type','message').eq('from_user_id',uid);
     updateNotifBadge();
+    // Clear the unread badge for this person
+    const ub=document.getElementById('ub-'+uid);
+    if(ub){ub.textContent='';ub.classList.add('hide');}
   }catch(e){}
 }
 
@@ -1365,17 +1405,26 @@ async function loadMsgs(uid){
 function msgHTML(msg,isMe){
   const time=new Date(msg.created_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
   const msgId=msg.id||Math.random().toString(36).slice(2);
+  const safeBody=msg.body.replace(/'/g,"\'").replace(/"/g,'&quot;');
   return `<div class="msg ${isMe?'me':'them'}" id="msg-${msgId}">
-    <div class="msg-bubble" onmouseenter="showMsgActions('${msgId}')" onmouseleave="hideMsgActions('${msgId}')">${msg.body}
+    ${msg.replyTo?`<div class="msg-reply-preview">↩ ${msg.replyTo.slice(0,40)}${msg.replyTo.length>40?'...':''}</div>`:''}
+    <div class="msg-bubble" onmouseenter="showMsgActions('${msgId}')" onmouseleave="hideMsgActions('${msgId}')">
+      ${msg.body}
       <div class="msg-actions" id="ma-${msgId}" style="display:none;">
         <button class="msg-action-btn" onclick="reactMsg('${msgId}','👍')" title="Like">👍</button>
         <button class="msg-action-btn" onclick="reactMsg('${msgId}','❤️')" title="Love">❤️</button>
         <button class="msg-action-btn" onclick="reactMsg('${msgId}','😂')" title="Haha">😂</button>
         <button class="msg-action-btn" onclick="reactMsg('${msgId}','🔥')" title="Fire">🔥</button>
-        <button class="msg-action-btn" onclick="copyMsg('${msg.body}')" title="Copy">📋</button>
+        <button class="msg-action-btn" onclick="setReply('${safeBody}')" title="Reply">↩</button>
+        <button class="msg-action-btn" onclick="copyMsg('${safeBody}')" title="Copy">📋</button>
       </div>
     </div>
-    <div class="msg-reactions" id="mr-${msgId}"></div>
+    <div class="msg-reactions" id="mr-${msgId}">
+      <span class="msg-reaction-opt" onclick="reactMsg('${msgId}','👍')">👍</span>
+      <span class="msg-reaction-opt" onclick="reactMsg('${msgId}','❤️')">❤️</span>
+      <span class="msg-reaction-opt" onclick="reactMsg('${msgId}','😂')">😂</span>
+      <span class="msg-reaction-opt" onclick="reactMsg('${msgId}','🔥')">🔥</span>
+    </div>
     <div class="msg-time">${time}</div>
   </div>`;
 }
@@ -1384,17 +1433,47 @@ function showMsgActions(id){const el=document.getElementById('ma-'+id);if(el)el.
 function hideMsgActions(id){const el=document.getElementById('ma-'+id);if(el)el.style.display='none';}
 function copyMsg(text){navigator.clipboard.writeText(text).then(()=>toast('📋 Message copied!')).catch(()=>toast('📋 Copied!'));}
 function reactMsg(msgId,emoji){
-  const el=document.getElementById('mr-'+msgId); if(!el) return;
-  const existing=el.querySelector(`[data-emoji="${emoji}"]`);
-  if(existing){const n=parseInt(existing.dataset.count||1)+1;existing.dataset.count=n;existing.textContent=emoji+' '+n;}
-  else{const span=document.createElement('span');span.className='msg-reaction';span.dataset.emoji=emoji;span.dataset.count=1;span.textContent=emoji+' 1';el.appendChild(span);}
+  const container=document.getElementById('mr-'+msgId); if(!container) return;
+  // Remove quick-select options, show actual reactions
+  container.querySelectorAll('.msg-reaction-opt').forEach(el=>el.style.display='none');
+  const existing=container.querySelector(`[data-emoji="${emoji}"]`);
+  if(existing){
+    const n=parseInt(existing.dataset.count||1)+1;
+    existing.dataset.count=n;
+    existing.textContent=emoji+' '+n;
+  } else {
+    const span=document.createElement('span');
+    span.className='msg-reaction';
+    span.dataset.emoji=emoji;
+    span.dataset.count=1;
+    span.textContent=emoji+' 1';
+    span.onclick=()=>reactMsg(msgId,emoji);
+    container.appendChild(span);
+  }
 }
+
+let _replyText='';
+function setReply(text){
+  _replyText=text;
+  let bar=document.getElementById('reply-bar');
+  if(!bar){
+    bar=document.createElement('div');
+    bar.id='reply-bar';
+    bar.style.cssText='background:rgba(80,70,228,.08);border-left:3px solid var(--accent);padding:8px 12px;font-size:12px;color:var(--sub);display:flex;justify-content:space-between;align-items:center;';
+    const inputRow=document.querySelector('.chat-input-row');
+    if(inputRow) inputRow.parentNode.insertBefore(bar,inputRow);
+  }
+  bar.innerHTML='<span>↩ Replying to: <b>'+text.slice(0,40)+(text.length>40?'...':'')+'</b></span><button onclick="clearReply()" style="background:none;border:none;cursor:pointer;font-size:16px;color:var(--sub);">✕</button>';
+  const inp=document.getElementById('chat-in'); if(inp) inp.focus();
+}
+function clearReply(){_replyText='';const bar=document.getElementById('reply-bar');if(bar)bar.remove();}
 
 async function sendMsg(uid){
   const input=$('chat-in'); const text=input.value.trim(); if(!text) return;
-  input.value='';
+  const replyTo=_replyText||null;
+  input.value=''; clearReply();
   try{
-    const{data,error}=await sb.from('messages').insert({sender_id:CU.id,receiver_id:uid,body:text}).select().single();
+    const{data,error}=await sb.from('messages').insert({sender_id:CU.id,receiver_id:uid,body:text,reply_to:replyTo}).select().single();
     if(error){toast('❌ Failed');return;}
     const el=$('chat-msgs');
     if(el){const d=document.createElement('div');d.innerHTML=msgHTML(data,true);el.appendChild(d.firstChild);el.scrollTop=el.scrollHeight;}
@@ -1404,7 +1483,7 @@ async function sendMsg(uid){
     const cp=$('cp-'+uid);
     if(cp){
       const prev=cp.querySelector('.chat-person-prev');
-      if(prev)prev.textContent=text.slice(0,30);
+      if(prev)prev.textContent=text.slice(0,28)+(text.length>28?'...':'');
       const chatList=$('chat-list');
       if(chatList&&cp.parentNode===chatList) chatList.insertBefore(cp,chatList.firstChild);
     }
@@ -1644,8 +1723,8 @@ async function sendPitchEmails(d){
   // Uses template: EJS_TPL_USER
   // Your EmailJS template needs these variables: {{to_email}}, {{to_name}}, {{subject}}, {{message}}
   const userParams = {
-    to_email: d.user_email,
-    to_name: d.user_name,
+    to_email: String(d.user_email||''),
+    to_name: String(d.user_name||''),
     subject: 'We received your pitch! 🚀 — PitchBridge',
     message:
       'Hey ' + d.user_name + '!\n\n' +
@@ -1656,7 +1735,7 @@ async function sendPitchEmails(d){
       '✅ Step 2 — We match you with the right investors\n' +
       '✅ Step 3 — We schedule a call between you and the investor\n' +
       '✅ Step 4 — You pitch, we facilitate, deals get closed!\n\n' +
-      'We believe in your idea 💪\n\n' +
+      'We believe in your idea. Let's make it happen! 💪\n\n' +
       'Warm regards,\nTeam PitchBridge'
   };
 
@@ -1664,9 +1743,9 @@ async function sendPitchEmails(d){
   // Uses template: EJS_TPL_COMPANY
   // Your EmailJS template needs these variables: {{to_email}}, {{to_name}}, {{subject}}, {{message}}
   const companyParams = {
-    to_email: CO_EMAIL,
+    to_email: String(CO_EMAIL||''),
     to_name: 'PitchBridge Team',
-    subject: '🚨 New Pitch Submitted: ' + d.user_name,
+    subject: '🚨 New Pitch Submitted: ' + String(d.user_name||''),
     message:
       'Hi PitchBridge Team,\n\n' +
       'A new pitch has been submitted. Full details below:\n\n' +
